@@ -4,8 +4,13 @@ import Home from '../views/Home.vue'
 import Landing from '../views/Landing.vue'
 import About from '../views/About.vue'
 import Explorar from '../views/Explorar.vue'
+import mdiVue from 'mdi-vue/v2'
+import * as mdijs from '@mdi/js'
 
 Vue.use(VueRouter)
+Vue.use(mdiVue, {
+  icons: mdijs
+}) 
 
 const routes = [
   {

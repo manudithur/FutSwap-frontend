@@ -1,8 +1,9 @@
 <template>
     <v-img src="../assets/fondo.png">
+      <title>Test</title>
       <v-app-bar app height="85%">
         <v-toolbar-title>
-          <router-link to="/landing">
+          <router-link to="/landing" style="text-decoration: none;">
             <v-img
               lazy-src=""
               max-height="100"
@@ -14,15 +15,15 @@
         <v-spacer></v-spacer>
         <v-toolbar-items>
           <v-btn
-          flat
-          v-for="item in menuItems"
-          :key="item.title"
-          :to="item.path">
-          {{ item.title }}
-        </v-btn>
+            flat
+            v-for="item in menuItems"
+            :key="item.title"
+            :to="item.path">
+            {{ item.title }}
+          </v-btn>
         </v-toolbar-items>
       </v-app-bar>
-      <v-app id="inspire" class="transparent">
+      <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
           <v-container class="mt-12 pt-10">
             <v-row justify="center">
             <v-col cols="12" md="7" lg="6" class="d-flex align-center mt-10 pt-10">
@@ -38,7 +39,7 @@
                   Te ayudamos a encontrar gente con la cual intercambiar o vender figuritas cerca de tu ubicacion. !Swappea o vende, vos elegis!
                 </h4>
                 <div class="mt-16 pt-2">
-                  <router-link to="/">
+                  <router-link to="/" style="text-decoration: none;">
                     <v-btn
                       rounded
                       color="error"
@@ -51,7 +52,7 @@
                       Ingresar/Registrar
                     </v-btn>
                   </router-link>
-                  <router-link to="/about">
+                  <router-link to="/about" style="text-decoration: none;">
                     <v-btn
                       nuxt
                       large
@@ -75,6 +76,17 @@
       </v-app>
     </v-img>
   </template>
+  <style>
+      html {
+        overflow: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+  </style>
   
   <script>
   export default {

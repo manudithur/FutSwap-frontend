@@ -2,7 +2,7 @@
   <v-img src="../assets/fondo.png">
     <v-app-bar app height="85%">
       <v-toolbar-title>
-        <router-link to="/landing">
+        <router-link to="/landing" style="text-decoration: none;">
           <v-img
             lazy-src=""
             max-height="100"
@@ -42,7 +42,9 @@
                             />
                           </v-form>
                           <a href="#" class="text-decoration-underline text-center">Olvidaste tu contraseña?</a>
-                          <router-link to="/explorar">
+                          <router-link to="/explorar" style="text-decoration: none;"
+                          
+                          >
                             <div class="text-center mt-10">
                               <v-btn rounded color="blue darken-4" dark>INGRESAR</v-btn>
                             </div>
@@ -117,8 +119,8 @@
 </template>
 <style>
   html {
-    overflow: hidden !important;
-    scrollbar-width: none;
+    overflow: hidden;
+    scrollbar-width: none !important;
     -ms-overflow-style: none;
   }
   

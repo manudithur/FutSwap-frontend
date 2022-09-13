@@ -2,7 +2,7 @@
     <v-img src="../assets/fondo.png">
         <v-app-bar app height="85%">
             <v-toolbar-title>
-            <router-link to="/landing">
+            <router-link to="/landing" style="text-decoration: none;">
             <v-img
                 lazy-src=""
                 max-height="100"
@@ -26,14 +26,19 @@
             </v-btn>
             </v-toolbar-items>
         </v-app-bar>
-        <v-app id="inspire" class="transparent">
+        <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
             <div class="container">
                 <div class="row pa-5">
                     <div class="col-md-4 grey lighten-5 text--white pa-3" :key="product.id" v-for="product in products">
                         <v-card class="card card-product" outlined>
                             <div class="img-wrap"><v-img src="../assets/persona.jpg" :alt="product.description"></v-img></div>
                             <figcaption class="info-wrap">
-                                <h4 class="title"> {{product.name}} </h4>
+                                <div class="text-center ma-2">
+                                    <h4 class="title"> {{product.name}} </h4>
+                                    <v-rating :value="product.rating" half-increments color="orange" background-color="orange" size="20" dense></v-rating>
+                                </div>
+                            </figcaption>
+                            <figcaption class="info-wrap">
                                 <p class="desc"> {{product.description}} </p>
                                 <div class="rating-wrap">
                                     <div class="label-rating">13 Calificaciones</div>
@@ -71,14 +76,15 @@
     .card-product .img-wrap {
         border-radius: 3px 3px 0 0;
         border-color: black;
-        overflow: hidden;
         position: relative;
+        overflow: hidden;
         height: 220px;
         text-align: center;
     }
     .card-product .img-wrap img {
         max-height: 100%;
         max-width: 100%;
+        overflow: hidden;
         object-fit: cover;
     }
     .card-product .info-wrap {
@@ -100,6 +106,11 @@
     .card-product .price-old {
         color: #999;
     }
+
+    html {
+      overflow: visible;
+      -ms-overflow-style: none;
+    }
 </style>
 
 <script>
@@ -107,19 +118,17 @@
         data: () => ({
         step: 1,
         appTitle: 'FutSwap',
-            sidebar: false,
             menuItems: [
                 {title: 'Explorar', path: '/explorar'},
                 {title: 'Perfil (15 FutCoins)', path: ''}, 
         ],
         products: [
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg'},
-        ]
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'},
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '2'},
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'},
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'},
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'},
+                {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'}]
         }),
         props: {
         source: String
