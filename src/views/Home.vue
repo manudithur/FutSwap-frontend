@@ -27,6 +27,7 @@
                           <v-form>
                             <v-text-field
                               label="Email"
+                              v-model="LEmail"
                               name="Email"
                               prepend-icon="email"
                               type="text"
@@ -35,6 +36,7 @@
                             <v-text-field
                               id="password"
                               label="Contraseña"
+                              v-model="LPassword"
                               name="password"
                               prepend-icon="lock"
                               type="password"
@@ -42,13 +44,9 @@
                             />
                           </v-form>
                           <a href="#" class="text-decoration-underline text-center">Olvidaste tu contraseña?</a>
-                          <router-link to="/explorar" style="text-decoration: none;"
-                          
-                          >
                             <div class="text-center mt-10">
-                              <v-btn rounded color="blue darken-4" dark>INGRESAR</v-btn>
+                              <v-btn rounded color="blue darken-4" dark @click="submitLogin">INGRESAR</v-btn>
                             </div>
-                         </router-link>
 
                         </v-card-text>
                       </v-col>
@@ -71,6 +69,7 @@
                           <v-form>
                             <v-text-field
                               label="Nombre"
+                              v-model="RName"
                               name="Name"
                               prepend-icon="person"
                               type="text"
@@ -78,6 +77,7 @@
                             />
                             <v-text-field
                               label="Email"
+                              v-model="REmail"
                               name="Email"
                               prepend-icon="email"
                               type="text"
@@ -86,6 +86,7 @@
 
                             <v-text-field
                               id="password"
+                              v-model="RPass"
                               label="Contraseña"
                               name="password"
                               prepend-icon="lock"
@@ -95,7 +96,7 @@
                           </v-form>
                         </v-card-text>
                         <div class="text-center mt-n5 pa-5">
-                          <v-btn rounded color="blue darken-4" dark>Crear Cuenta</v-btn>
+                          <v-btn rounded color="blue darken-4" dark @click="submitNewUser">Crear Cuenta</v-btn>
                         </div>
                       </v-col>
                       <v-col cols="14" md="5" class="blue darken-4">
@@ -131,6 +132,7 @@
   </style>
 
 <script>
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 export default {
   data: () => ({
     step: 1,
@@ -138,6 +140,39 @@ export default {
   }),
   props: {
     source: String
+  },
+  methods: {
+    submitLogin(){
+      const lemail = this.LEmail;
+      const lpassword = this.LPassword;
+      alert("Email: " + lemail + "\nPassword: " + lpassword)
+
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, lemail, lpassword)
+        .then((userCredential) => {
+          alert("Welcome " + userCredential.user);
+        })
+        .catch(function (error){
+          if(error.code != ''){
+              alert("Check email / password!");
+          }
+        });
+    },
+    submitNewUser(){
+      const email = this.REmail;
+      const password = this.RPass;
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("User created: "+ userCredential.user.email);
+        })
+        .catch(function (error){
+          var errorCode = error.code;
+          if(errorCode == 'auth/email-already-in-use'){
+            alert("Email already in use");
+          }
+        });
+    }
   },
 };
 
