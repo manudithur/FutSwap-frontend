@@ -43,7 +43,7 @@
                               color="blue darken-4"
                             />
                           </v-form>
-                          <a href="#" class="text-decoration-underline text-center">Olvidaste tu contraseña?</a>
+                          <a @click="resetPass" class="text-decoration-underline text-center">Olvidaste tu contraseña?</a>
                             <div class="text-center mt-10">
                               <v-btn rounded color="blue darken-4" dark @click="submitLogin">INGRESAR</v-btn>
                             </div>
@@ -129,51 +129,74 @@
     width: 0;
     height: 0;
   }
-  </style>
+</style>
 
 <script>
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-export default {
-  data: () => ({
-    step: 1,
-    appTitle: 'FutSwap',
-  }),
-  props: {
-    source: String
-  },
-  methods: {
-    submitLogin(){
-      const lemail = this.LEmail;
-      const lpassword = this.LPassword;
-      alert("Email: " + lemail + "\nPassword: " + lpassword)
-
-      const auth = getAuth();
-      signInWithEmailAndPassword(auth, lemail, lpassword)
-        .then((userCredential) => {
-          alert("Welcome " + userCredential.user);
-        })
-        .catch(function (error){
-          if(error.code != ''){
-              alert("Check email / password!");
-          }
-        });
+  import { getAuth, sendEmailVerification,createUserWithEmailAndPassword, signInWithEmailAndPassword} from "firebase/auth";
+  import router from '../router/index';
+  import Swal from 'sweetalert2'
+  export default {
+    data: () => ({
+      step: 1,
+      appTitle: 'FutSwap',
+    }),
+    props: {
+      source: String
     },
-    submitNewUser(){
-      const email = this.REmail;
-      const password = this.RPass;
-      const auth = getAuth();
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          alert("User created: "+ userCredential.user.email);
-        })
-        .catch(function (error){
-          var errorCode = error.code;
-          if(errorCode == 'auth/email-already-in-use'){
-            alert("Email already in use");
-          }
-        });
-    }
-  },
-};
+    methods: {
+      submitLogin(){
+        const lemail = this.LEmail;
+        const lpassword = this.LPassword;
 
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, lemail, lpassword)
+          .then(() => {
+            router.push('/explorar');
+          })
+          .catch(function (error){
+            if(error.code != ''){
+                Swal.fire({
+                  position: 'center',
+                  icon: 'error',
+                  title: 'Contrasena/email incorrectos',
+                  showConfirmButton: true,
+                })
+            }
+          });
+      },
+      submitNewUser(){
+        const email = this.REmail;
+        const password = this.RPass;
+        const auth = getAuth();
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            sendEmailVerification(userCredential.user)
+            const string = "Se envio a: " + userCredential.user.email + "\n un email para verificar tu cuenta"
+            Swal.fire({
+                position: 'center',
+                icon: 'info',
+                title: string,
+                showConfirmButton: false,
+            });
+            setTimeout(function(){
+                location.reload();
+            }, 5000); 
+          })
+          .catch(function (error){
+            var errorCode = error.code;
+            if(errorCode == 'auth/email-already-in-use'){
+              Swal.fire({
+                position: 'center',
+                icon: 'warning',
+                title: 'El email ya esta en uso',
+                showConfirmButton: true,
+              })
+            }
+          });
+      },
+      resetPass(){
+        router.push('./resetPass')
+      }
+    }
+  };
 </script>

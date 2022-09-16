@@ -24,6 +24,9 @@
                 {{item.logo}}
             </v-icon>
             </v-btn>
+            <v-btn flat @click="logout">
+                Cerrar Sesion
+            </v-btn>
             </v-toolbar-items>
         </v-app-bar>
         <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
@@ -114,13 +117,19 @@
 </style>
 
 <script>
+    import {getAuth} from 'firebase/auth'
+    import router from '../router/index';
+    import { signOut } from "firebase/auth";
+    const auth = getAuth();
+    //var current = auth.currentUser;
+  
     export default {
         data: () => ({
         step: 1,
         appTitle: 'FutSwap',
             menuItems: [
                 {title: 'Explorar', path: '/explorar'},
-                {title: 'Perfil (15 FutCoins)', path: ''}, 
+                {title: auth.currentUser.email, path: ''}, 
         ],
         products: [
                 {distance:'0,7', name:'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5'},
@@ -133,5 +142,13 @@
         props: {
         source: String
         },
+        methods: {
+            logout(){
+                const auth = getAuth();
+                signOut(auth).then(()=>{
+                    router.push('/landing')
+                });
+            },
+        }
     };
 </script>

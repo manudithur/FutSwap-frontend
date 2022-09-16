@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Landing from '../views/Landing.vue'
 import About from '../views/About.vue'
 import Explorar from '../views/Explorar.vue'
+import ResetPass from '../views/ResetPass.vue'
+
 import mdiVue from 'mdi-vue/v2'
 import * as mdijs from '@mdi/js'
 
@@ -32,6 +34,11 @@ const routes = [
     path: '/explorar',
     name: 'explorar',
     component: Explorar
+  },
+  {
+    path: '/resetPass',
+    name: 'resetPass',
+    component: ResetPass
   }
 ]
 
