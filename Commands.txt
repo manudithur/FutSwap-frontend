@@ -1,0 +1,14 @@
+Node
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+
+	nvm install --lts
+
+Vue
+	npm install -g @vue/cli
+
+Vuetify 
+	npm install vuetify
+
+Firebase
+	npm install firebase
+

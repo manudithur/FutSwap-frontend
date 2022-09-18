@@ -86,7 +86,8 @@
                     Swal.fire({
                         position: 'center',
                         icon: 'error',
-                        title: 'Correo ingresado no esta asociado a ninguna cuenta',
+                        title: 'Email invalido',
+                        text: 'No se encontro una cuenta asociada al email',
                         showConfirmButton: true,
                     })
                 });
