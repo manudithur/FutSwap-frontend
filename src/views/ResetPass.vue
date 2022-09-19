@@ -57,41 +57,42 @@
   </style>
   
   <script>
-    import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
     import router from '../router/index';
     import Swal from 'sweetalert2'
-    export default {
-        data: () => ({
-            step: 1,
-            appTitle: 'FutSwap',
-        }),
-        props: {
-            source: String
-        },
-        methods: {
-            resetPass(){
-                const email = this.REmail;
-                const auth = getAuth();
-                sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'info',
-                        title: 'Revisar correo electronico',
-                        showConfirmButton: true,
-                    })
-                    router.push('/')
-                })
-                .catch(() => {
-                    Swal.fire({
-                        position: 'center',
-                        icon: 'error',
-                        title: 'Email invalido',
-                        text: 'No se encontro una cuenta asociada al email',
-                        showConfirmButton: true,
-                    })
-                });
-            }
-        },
-    };
+export default {
+  data: () => ({
+    step: 1,
+    appTitle: 'FutSwap',
+  }),
+
+  props: {
+    source: String
+  },
+
+  methods: {
+    resetPass: async function () {
+      const email = this.REmail;
+      const auth = getAuth();
+      try {
+        await sendPasswordResetEmail(auth, email);
+        await Swal.fire({
+          position: 'center',
+          icon: 'info',
+          title: 'Revisar correo electronico',
+          showConfirmButton: true,
+        });
+        await router.push('/')
+      } catch {
+        await Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Email invalido',
+          text: 'No se encontro una cuenta asociada al email',
+          showConfirmButton: true,
+        });
+      }
+    }
+  },
+};
   </script>

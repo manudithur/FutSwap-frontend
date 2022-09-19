@@ -108,39 +108,38 @@ import { getAuth } from 'firebase/auth'
 import router from '../router/index';
 import { signOut } from "firebase/auth";
 const auth = getAuth();
-//var current = auth.currentUser;
 
 export default {
-    data: () => ({
-        loading: false,
-        form: {
-            firstName: 'John',
-            lastName: 'Doe',
-            contactEmail: 'john@doe.com',
-            avatar: 'MALE_CAUCASIAN_BLOND_BEARD'
-        },
-        showAvatarPicker: false,
-        step: 1,
-        appTitle: 'FutSwap',
-        menuItems: [
-            { title: 'Explorar', path: '/explorar' },
-            { title: auth.currentUser.email, path: '' },
-        ],
-        email: auth.currentUser.email,
-        name: auth.currentUser.displayName,
-
-    }),
-    props: {
-        source: String
+  data: () => ({
+    loading: false,
+    form: {
+      firstName: 'John',
+      lastName: 'Doe',
+      contactEmail: 'john@doe.com',
+      avatar: 'MALE_CAUCASIAN_BLOND_BEARD'
     },
-    methods: {
-        logout() {
-            const auth = getAuth();
-            signOut(auth).then(() => {
-                router.push('/landing')
-            });
-        },
-    }
-};
+    showAvatarPicker: false,
+    step: 1,
+    appTitle: 'FutSwap',
+    menuItems: [
+      {title: 'Explorar', path: '/explorar'},
+      {title: auth.currentUser.email, path: ''},
+    ],
+    email: auth.currentUser.email,
+    name: auth.currentUser.displayName,
 
+  }),
+
+  props: {
+    source: String
+  },
+
+  methods: {
+    logout: async function () {
+      const auth = getAuth();
+      await signOut(auth);
+      await router.push('/landing');
+    },
+  }
+};
 </script>

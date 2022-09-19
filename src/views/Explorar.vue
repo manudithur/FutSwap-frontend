@@ -114,34 +114,76 @@ import { getAuth } from 'firebase/auth'
 import router from '../router/index';
 import { signOut } from "firebase/auth";
 const auth = getAuth();
-//var current = auth.currentUser;
 
 export default {
-    data: () => ({
-        step: 1,
-        appTitle: 'FutSwap',
-        menuItems: [
-            { title: 'Explorar', path: '/explorar' },
-            { title: auth.currentUser.email, path: '/profile' },
-        ],
-        products: [
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5' },
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '2' },
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5' },
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5' },
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5' },
-            { distance: '0,7', name: 'Nestor', description: '7 figuritas', id: 'test', product_img: '../assets/persona.jpg', rating: '5' }]
-    }),
-    props: {
-        source: String
+  data: () => ({
+    step: 1,
+    appTitle: 'FutSwap',
+    menuItems: [
+      {title: 'Explorar', path: '/explorar'},
+      {title: auth.currentUser.email, path: '/profile'},
+    ],
+    products: [
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '5'
+      },
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '2'
+      },
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '5'
+      },
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '5'
+      },
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '5'
+      },
+      {
+        distance: '0,7',
+        name: 'Nestor',
+        description: '7 figuritas',
+        id: 'test',
+        product_img: '../assets/persona.jpg',
+        rating: '5'
+      }]
+  }),
+
+  props: {
+    source: String
+  },
+
+  methods: {
+    logout: async function () {
+      const auth = getAuth();
+      await signOut(auth);
+      await router.push('/landing');
     },
-    methods: {
-        logout() {
-            const auth = getAuth();
-            signOut(auth).then(() => {
-                router.push('/landing')
-            });
-        },
-    }
+  }
 };
 </script>

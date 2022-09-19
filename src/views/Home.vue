@@ -105,7 +105,7 @@ html::-webkit-scrollbar {
 <script>
 import { getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import router from '../router/index';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 import { signOut } from "firebase/auth";
 
 export default {
@@ -113,77 +113,80 @@ export default {
     step: 1,
     appTitle: 'FutSwap',
   }),
+
   props: {
     source: String
   },
+
   methods: {
-    submitLogin() {
+    submitLogin: async function () {
       const lemail = this.LEmail;
       const lpassword = this.LPassword;
 
       const auth = getAuth();
-      signInWithEmailAndPassword(auth, lemail, lpassword)
-        .then(() => {
-          if (!auth.currentUser.emailVerified) {
-            Swal.fire({
-              position: 'center',
-              icon: 'error',
-              title: 'Email no fue verificado',
-              text: 'Por favor revisar casilla de correo y volver a ingresar',
-              showConfirmButton: true,
-            });
-            signOut(auth);
-          } else {
-            router.push('/explorar');
-          }
-        })
-        .catch(function (error) {
-          if (error.code != '') {
-            Swal.fire({
-              position: 'center',
-              icon: 'error',
-              title: 'Contrasena/email incorrectos',
-              text: 'Verifica que los datos ingresados son correctos',
-              showConfirmButton: true,
-            })
-          }
-        });
+      try {
+        const currentUser = await signInWithEmailAndPassword(auth, lemail, lpassword);
+        if (!currentUser) {
+          await Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Email no fue verificado',
+            text: 'Por favor revisar casilla de correo y volver a ingresar',
+            showConfirmButton: true,
+          });
+          await signOut(auth);
+        } else {
+          await router.push('/explorar');
+        }
+      } catch (error) {
+        if (error.code !== '') {
+          await Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Contrasena/email incorrectos',
+            text: 'Verifica que los datos ingresados son correctos',
+            showConfirmButton: true,
+          })
+        }
+      }
     },
-    submitNewUser() {
+
+    submitNewUser: async function () {
       const email = this.REmail;
       const password = this.RPass;
       const auth = getAuth();
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          sendEmailVerification(userCredential.user)
-          const string = "Se envio a: " + userCredential.user.email + "\n un email para verificar tu cuenta"
-          Swal.fire({
-            position: 'center',
-            icon: 'info',
-            title: string,
-            showConfirmButton: false,
-          });
-          setTimeout(function () {
-            location.reload();
-          }, 5000);
-        })
-        .catch(function(error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            if (errorCode == 'auth/weak-password') {
-                alert('The password is too weak.');
-            } else if (errorCode == 'auth/email-already-in-use') {
-                alert('The email is already taken.');
-            } else if (errorCode == 'auth/weak-password') {
-                alert('Password is weak');
-            } else {
-                alert(errorMessage);
-            }
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      try {
+        await sendEmailVerification(userCredential.user);
+        const string = "Se envio a: " + userCredential.user.email + "\n un email para verificar tu cuenta";
+        await Swal.fire({
+          position: 'center',
+          icon: 'info',
+          title: string,
+          showConfirmButton: false,
         });
+        setTimeout(function () {
+          location.reload();
+        }, 5000);
+      } catch (error) {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode === 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else if (errorCode === 'auth/email-already-in-use') {
+          alert('The email is already taken.');
+        } else if (errorCode === 'auth/weak-password') {
+          alert('Password is weak');
+        } else {
+          alert(errorMessage);
+        }
+      }
     },
-    resetPass() {
-      router.push('./resetPass')
+
+    resetPass: function () {
+      router.push('./resetPass');
     }
+
   }
 };
 </script>

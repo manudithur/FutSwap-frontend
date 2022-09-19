@@ -26,10 +26,11 @@ export default {
     appTitle: 'FutSwap',
     sidebar: false,
     menuItems: [
-      { title: '¿Que es FutSwap?', path: '' },
-      { title: 'Ingresar / Registrame', path: '/' },
+      {title: '¿Que es FutSwap?', path: ''},
+      {title: 'Ingresar / Registrame', path: '/'},
     ]
   }),
+
   props: {
     source: String
   },
