@@ -32,19 +32,6 @@
                   Te ayudamos a encontrar gente con la cual intercambiar o vender figuritas cerca de tu ubicacion.
                   !Swappea o vende, vos elegis!
                 </h4>
-                <div class="mt-16 pt-2">
-                  <router-link to="/" style="text-decoration: none;">
-                    <v-btn rounded color="error" class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md" nuxt large
-                      target="_blank" elevation="0">
-                      Ingresar/Registrar
-                    </v-btn>
-                  </router-link>
-                  <router-link to="/about" style="text-decoration: none;">
-                    <v-btn nuxt large rounded to="/about" outlined color="white" elevation="0">
-                      Conocer Mas
-                    </v-btn>
-                  </router-link>
-                </div>
               </div>
             </v-card>
           </v-col>

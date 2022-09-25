@@ -2,7 +2,7 @@
     <v-img src="../assets/fondo.png">
         <v-app-bar app height="85%">
             <v-toolbar-title>
-                <router-link to="/landing" style="text-decoration: none;">
+                <router-link to="/explorar" style="text-decoration: none;">
                     <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
                     </v-img>
                 </router-link>
@@ -15,15 +15,17 @@
                         {{item.logo}}
                     </v-icon>
                 </v-btn>
-                <v-btn flat @click="logout">
-                    Cerrar Sesion
+                <v-btn flat @click="logout"> 
+                    <v-icon rightdark>
+                        logout
+                    </v-icon>
                 </v-btn>
             </v-toolbar-items>
         </v-app-bar>
         <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
             <div class="container">
                 <div class="row pa-5">
-                    <div class="col-md-4 grey lighten-5 text--white pa-3" :key="product.id" v-for="product in products">
+                    <div class="col-md-4 white text--white pa-3" :key="product.id" v-for="product in products">
                         <v-card class="card card-product" outlined>
                             <div class="img-wrap">
                                 <v-img src="../assets/persona.jpg" :alt="product.description"></v-img>
@@ -46,10 +48,12 @@
                                 </div>
                             </figcaption>
                             <div class="text-center pa-3">
-                                <v-btn rounded outlined color="blue darken-4"
-                                    class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md white--text" nuxt target="_blank" :to="/Trading">
-                                    Enviar oferta
-                                </v-btn>
+                                <router-link to="/trading">
+                                    <v-btn rounded outlined color="blue darken-4"
+                                        class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md white--text">
+                                        Enviar oferta
+                                    </v-btn>
+                                </router-link>
                             </div>
                         </v-card>
                     </div>
@@ -60,13 +64,8 @@
 </template>
 
 <style scoped>
-.card-product {
-    border-radius: 10px;
-    border-color: #333;
-}
-
 .card-product .img-wrap {
-    border-radius: 3px 3px 0 0;
+    border-radius: 4px 4px 0 0;
     border-color: black;
     position: relative;
     overflow: hidden;
@@ -120,8 +119,9 @@ export default {
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
-      {title: 'Explorar', path: '/explorar'},
-      {title: auth.currentUser.email, path: '/profile'},
+        {title: 'Explorar', path: '/explorar'},
+        {title: 'Inventario', path:''},
+        {title: auth.currentUser.email, path: '/profile'},
     ],
     products: [
       {
