@@ -47,7 +47,7 @@
                             </figcaption>
                             <div class="text-center pa-3">
                                 <v-btn rounded outlined color="blue darken-4"
-                                    class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md white--text" nuxt target="_blank">
+                                    class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md white--text" nuxt target="_blank" :to="/Trading">
                                     Enviar oferta
                                 </v-btn>
                             </div>
