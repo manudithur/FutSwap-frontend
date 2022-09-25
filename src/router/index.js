@@ -6,6 +6,7 @@ import About from '../views/About.vue'
 import Explorar from '../views/Explorar.vue'
 import ResetPass from '../views/ResetPass.vue'
 import Profile from '../views/Profile.vue'
+import Collection from '../views/Collection.vue'
 
 import mdiVue from 'mdi-vue/v2'
 import * as mdijs from '@mdi/js'
@@ -45,6 +46,11 @@ const routes = [
     path: '/profile',
     name: 'profile',
     component: Profile
+  },
+  {
+    path: '/collection',
+    name: 'collection',
+    component: Collection
   }
 ]
 
