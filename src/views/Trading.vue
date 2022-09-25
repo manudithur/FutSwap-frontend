@@ -1,210 +1,166 @@
 <template>
   <v-img src="../assets/fondo.png">
-      <v-app-bar app height="85%">
-          <v-toolbar-title>
-              <router-link to="/landing" style="text-decoration: none;">
-                  <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-                  </v-img>
-              </router-link>
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-              <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
-                  {{ item.title }}
-                  <v-icon dark>
-                      {{item.logo}}
-                  </v-icon>
-              </v-btn>
-              <v-btn flat @click="logout">
-                  Cerrar Sesion
-              </v-btn>
-          </v-toolbar-items>
-      </v-app-bar>
-      <v-app id="TradingSpace" class="transparent" style="overflow-y:scroll;">
-        <div class="contain">
-          <v-row>
-            <v-col cols="5">  
-              <v-card>
-                <v-cardtile class="text--black"> His Available Trades </v-cardtile>
-                <div>
-                  <v-list shaped>
-                    <v-list-item-group multiple>
-                      <template v-for="(tradeitem, i) in tradeitems">
-                        <v-divider
-                          v-if="!tradeitem.name"
-                          :key="`divider-${i}`"
-                        ></v-divider>
+    <v-app-bar app height="85%">
+      <v-toolbar-title>
+        <router-link to="/explorar" style="text-decoration: none;">
+          <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
+          </v-img>
+        </router-link>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
+          {{ item.title }}
+          <v-icon dark>
+            {{item.logo}}
+          </v-icon>
+        </v-btn>
+        <v-btn flat @click="logout">
+          Cerrar Sesion
+        </v-btn>
+      </v-toolbar-items>
+    </v-app-bar>
+    <v-app id="TradingSpace" class="transparent" style="overflow-y:scroll;">
+      <div class="container pt-10">
+        <v-card>
+          <v-row class="justify-center">
+            <v-card-title class="text-center">
+              <h1 class="text-center display-2 font-weight-bold blue--text text--darken-4 pt-5">REALIZAR OFERTA</h1>
+            </v-card-title>
+          </v-row>
+          <v-row class="justify-center pt-8">
+            <v-col cols="5">
+              <v-card class="pt-5">
+                <v-list>
+                  <v-list-item-group multiple class="pa-5">
+                    <template v-for="(tradeitem, i) in tradeitems" class="pa-5">
+                      <v-divider v-if="!tradeitem.name" :key="`divider-${i}`"></v-divider>
 
-                        <v-list-item
-                          v-else
-                          :key="`tradeitem-${i}`"
-                          :value="tradeitem.name"
-                          active-class="deep-blue--text text--accent-4">
+                      <v-list-item v-else :key="`tradeitem-${i}`" :value="tradeitem.name"
+                        active-class="deep-blue--text text--accent-4">
 
-                          <template v-slot:default="{ active }">
-                            <v-list-item-content>
-                              <v-list-item-title v-text="tradeitem.name"></v-list-item-title>
-                            </v-list-item-content>
+                        <template v-slot:default="{ active }">
 
-                            <v-list-item-action>
-                              <v-checkbox
-                                :input-value="active"
-                                color="deep-blue accent-4"
-                              ></v-checkbox>
-                            </v-list-item-action>
-                          </template>
-                        </v-list-item>
-                      </template>
-                    </v-list-item-group> 
-                  </v-list>
-                </div>
+                          <v-avatar size="70">
+                            <v-img :src=tradeitem.img>
+                            </v-img>
+                          </v-avatar>
+
+                          <v-list-item-content class="pa-8">
+                            <v-list-item-title v-text="tradeitem.name"></v-list-item-title>
+                          </v-list-item-content>
+
+                          <v-list-item-action>
+                            <v-checkbox :input-value="active" color="deep-blue accent-4"></v-checkbox>
+                          </v-list-item-action>
+
+                        </template>
+                      </v-list-item>
+                    </template>
+                  </v-list-item-group>
+                </v-list>
               </v-card>
-              <v-card>
-                <v-cardtile class="text--black"> Your Available Trades </v-cardtile>
-                <div>
-                  <v-list shaped>
-                    <v-list-item-group multiple>
-                      <template v-for="(invitem, i) in yourinventory">
-                        <v-divider
-                          v-if="!invitem.name"
-                          :key="`divider-${i}`"
-                        ></v-divider>
+            </v-col>
+            <v-col cols="5">
+              <v-card class="pt-5">
+                <v-list>
+                  <v-list-item-group multiple class="pa-5">
+                    <template v-for="(myinv, i) in yourinventory" class="pa-5">
+                      <v-divider v-if="!myinv.name" :key="`divider-${i}`"></v-divider>
 
-                        <v-list-item
-                          v-else
-                          :key="`invitem-${i}`"
-                          :value="invitem.name"
-                          active-class="deep-blue--text text--accent-4">
+                      <v-list-item v-else :key="`myinv-${i}`" :value="myinv.name"
+                        active-class="deep-blue--text text--accent-4">
 
-                          <template v-slot:default="{ active }">
-                            <v-list-item-content>
-                              <v-list-item-title v-text="invitem.name"></v-list-item-title>
-                            </v-list-item-content>
+                        <template v-slot:default="{ active }">
 
-                            <v-list-item-action>
-                              <v-checkbox
-                                :input-value="active"
-                                color="deep-blue accent-4"
-                              ></v-checkbox>
-                            </v-list-item-action>
-                          </template>
-                        </v-list-item>
-                      </template>
-                    </v-list-item-group> 
-                  </v-list>
-                </div>
+                          <v-avatar size="70">
+                            <v-img :src=myinv.img>
+                            </v-img>
+                          </v-avatar>
+
+                          <v-list-item-content class="pa-8">
+                            <v-list-item-title v-text="myinv.name"></v-list-item-title>
+                          </v-list-item-content>
+
+                          <v-list-item-action>
+                            <v-checkbox :input-value="active" color="deep-blue accent-4"></v-checkbox>
+                          </v-list-item-action>
+
+                        </template>
+                      </v-list-item>
+                    </template>
+                  </v-list-item-group>
+                </v-list>
               </v-card>
-              <div>
-                <v-button class="blue">
-                  SendTrade
-                </v-button>
-              </div>
             </v-col>
           </v-row>
-        </div>
-      </v-app>
+          <v-row class="justify-center">
+            <v-card-actions class="justify-center pa-8">
+              <v-btn large   color="primary pa-5" @click="update">
+                ENVIAR OFERTA
+                <v-icon right dark>mdi-checkbox-marked-circle</v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-row>
+        </v-card>
+      </div>
+      <v-container class="pt-8">
+
+      </v-container>
+    </v-app>
   </v-img>
 </template>
 
 <script>
-  import { getAuth } from 'firebase/auth'
-  import router from '../router/index';
-  import { signOut } from "firebase/auth";
-  const auth = getAuth();
+import { getAuth } from 'firebase/auth'
+import router from '../router/index';
+import { signOut } from "firebase/auth";
+const auth = getAuth();
 
-  export default {
+export default {
   data: () => ({
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
-      {title: 'Explorar', path: '/explorar'},
-      {title: auth.currentUser.email, path: '/profile'},
+      { title: 'Explorar', path: '/explorar' },
+      { title: auth.currentUser.email, path: '/profile' },
     ],
     tradeitems: [
       {
-        name: 'sen 5',
-        quantity: '2'
+        name: 'ARG 5',
+        img: require("../assets/figus/arg05.jpg")
       },
       {
-        name: 'arg 10',
-        quantity: '1',
+        name: 'ARG 10',
+        img: require("../assets/figus/arg10.jpg")
       },
       {
-        name: 'fra 6',
-        quantity: '2',
+        name: 'FRA 6',
+        img: require("../assets/figus/fra06.jpg")
       },
       {
-        name: 'jap 3',
-        quantity: '3',
+        name: 'JPN 3',
+        img: require("../assets/figus/jpn03.jpg")
       }
     ],
     yourinventory: [
       {
-        name: 'chi 5',
-        quantity: '2'
+        name: 'BEL 6',
+        img: require("../assets/figus/bel06.jpg")
       },
       {
-        name: 'arg 1',
-        quantity: '1',
+        name: 'ARG 1',
+        img: require("../assets/figus/arg01.jpg")
       },
       {
-        name: 'ger 6',
-        quantity: '1',
+        name: 'GER 6',
+        img: require("../assets/figus/ger06.jpg")
       },
       {
-        name: 'chi 3',
-        quantity: '3',
+        name: 'POR 3',
+        img: require("../assets/figus/por03.jpg")
       }
     ]
-    /*products: [
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '2'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      }]*/
   }),
 
   props: {
