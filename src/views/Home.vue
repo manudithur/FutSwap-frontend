@@ -22,9 +22,9 @@
                           <h1 class="text-center display-2 font-weight-bold blue--text text--darken-4 pa-5">Ingresa a tu
                             cuenta</h1>
                           <v-form>
-                            <v-text-field label="Email" v-model="LEmail" name="Email" prepend-icon="email" type="text"
+                            <v-text-field label="Email" outlined v-model="LEmail" name="Email" prepend-icon="email" type="text"
                               color="blue darken-4" />
-                            <v-text-field id="password" label="Contraseña" v-model="LPassword" name="password"
+                            <v-text-field id="password" label="Contraseña" outlined v-model="LPassword" name="password"
                               prepend-icon="lock" type="password" color="blue darken-4" />
                           </v-form>
                           <a @click="resetPass" class="text-decoration-underline text-center">Olvidaste tu
@@ -32,7 +32,6 @@
                           <div class="text-center mt-10">
                             <v-btn rounded color="blue darken-4" dark @click="submitLogin">INGRESAR</v-btn>
                           </div>
-
                         </v-card-text>
                       </v-col>
                       <v-col cols="14" md="5" class="blue darken-4">
@@ -53,16 +52,13 @@
                           <h1 class="text-center display-2 blue--text text--darken-4 font-weight-bold pa-5">¡Bienvenido!
                           </h1>
                           <v-form>
-                            <v-text-field label="Nombre" v-model="RName" name="Name" prepend-icon="person" type="text"
+                            <v-text-field label="Nombre Completo" outlined v-model="RName" name="Name" prepend-icon="person" type="text"
+                              color="blue darken-4"/>
+                            <v-text-field label="Email" outlined v-model="REmail" name="Email" prepend-icon="email" type="text"
                               color="blue darken-4" />
-                            <v-text-field label="Apellido" v-model="RLastName" name="Name" prepend-icon="person" type="text"
-                              color="blue darken-4" />
-                            <v-text-field label="Fecha de Nac" v-model="RDate" name="Name" prepend-icon="mdi.calendar" type="date"
-                              color="blue darken-4" />
-                            <v-text-field label="Email" v-model="REmail" name="Email" prepend-icon="email" type="text"
-                              color="blue darken-4" />
-
-                            <v-text-field id="password" v-model="RPass" label="Contraseña" name="password"
+                            <v-text-field id="password" outlined v-model="RPhone" label="Telefono Celular" name="password"
+                              prepend-icon="phone" type="text" color="blue darken-4" />
+                            <v-text-field id="password" outlined v-model="RPass" label="Contraseña" name="password"
                               prepend-icon="lock" type="password" color="blue darken-4" />
                           </v-form>
                         </v-card-text>
@@ -103,10 +99,10 @@ html::-webkit-scrollbar {
 </style>
 
 <script>
-import { getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser } from "firebase/auth";
 import router from '../router/index';
 import Swal from 'sweetalert2';
-import { signOut } from "firebase/auth";
+import { signOut, updateProfile } from "firebase/auth";
 
 export default {
   data: () => ({
@@ -126,7 +122,7 @@ export default {
       const auth = getAuth();
       try {
         const currentUser = await signInWithEmailAndPassword(auth, lemail, lpassword);
-        if (!currentUser) {
+        if (!currentUser.user.emailVerified) {
           await Swal.fire({
             position: 'center',
             icon: 'error',
@@ -157,9 +153,12 @@ export default {
       const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       try {
-        await sendEmailVerification(userCredential.user);
-        const string = "Se envio a: " + userCredential.user.email + "\n un email para verificar tu cuenta";
-        await Swal.fire({
+        const curruser = auth.currentUser;
+        updateProfile(curruser, {displayName: this.RName, phoneNumber: this.RPhone})
+
+        await sendEmailVerification(curruser);
+        const string = "Se envio a: " +curruser.email + "\n un email para verificar tu cuenta";
+        Swal.fire({
           position: 'center',
           icon: 'info',
           title: string,
@@ -171,14 +170,29 @@ export default {
       } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
+
         if (errorCode === 'auth/weak-password') {
-          alert('The password is too weak.');
+          await Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: 'Password is too weak',
+            showConfirmButton: false,
+          });
         } else if (errorCode === 'auth/email-already-in-use') {
-          alert('The email is already taken.');
-        } else if (errorCode === 'auth/weak-password') {
-          alert('Password is weak');
+          await Swal.fire({
+            position: 'center',
+            icon: 'info',
+            title: "Email is already taken",
+            showConfirmButton: false,
+          });
         } else {
-          alert(errorMessage);
+          await deleteUser(userCredential.user);
+          await Swal.fire({
+            position: 'center',
+            icon: 'info',
+            title: errorMessage,
+            showConfirmButton: false,
+          });
         }
       }
     },
