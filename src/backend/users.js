@@ -6,14 +6,14 @@ import {
 /**
  * Registers a new user with an email and password and sends a verification email.
  * This also leaves the user signed in.
- * @param {String} email
- * @param {String} password
- * @returns {Promise<UserCredential>}
+ * @param {string} email
+ * @param {string} password
+ * @returns {UserCredential}
  */
-async function registerWithEmailAsync(email, password) {
+export async function registerWithEmailAsync(email, password) {
     const auth = getAuth();
     const user = await createUserWithEmailAndPassword(auth, email, password);
-    await resendVerificationEmailAsync(user.user);
+    await resendVerificationEmailAsync();
     return user;
 }
 
@@ -21,18 +21,18 @@ async function registerWithEmailAsync(email, password) {
  * Sends the currently signed-in user a new verification email.
  * @returns {Promise<void>}
  */
-function resendVerificationEmailAsync() {
+export function resendVerificationEmailAsync() {
     const auth = getAuth();
     return sendEmailVerification(auth.currentUser);
 }
 
 /**
  * Signs in a user with email and password.
- * @param {String} email
- * @param {String} password
- * @returns {Promise<UserCredential>}
+ * @param {string} email
+ * @param {string} password
+ * @returns {UserCredential}
  */
-function signInWithEmailAsync(email, password) {
+export function signInWithEmailAsync(email, password) {
     const auth = getAuth();
     return signInWithEmailAndPassword(auth, email, password);
 }
@@ -41,7 +41,7 @@ function signInWithEmailAsync(email, password) {
  * Sends a password reset email
  * @returns {Promise<void>}
  */
-function resetPasswordWithEmailAsync(email) {
+export function resetPasswordWithEmailAsync(email) {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
 }
@@ -50,7 +50,7 @@ function resetPasswordWithEmailAsync(email) {
  * Signs out the current user.
  * @returns {Promise<void>}
  */
-function signOutAsync() {
+export function signOutAsync() {
     const auth = getAuth();
     return signOut(auth);
 }
@@ -59,7 +59,7 @@ function signOutAsync() {
  * Deletes the currently signed-in user, and signs out.
  * @returns {Promise<void>}
  */
-function deleteUserAsync() {
+export function deleteUserAsync() {
     const auth = getAuth();
     return deleteUser(auth.currentUser);
 }
@@ -68,7 +68,7 @@ function deleteUserAsync() {
  * Gets the currently signed-in user.
  * @returns {User}
  */
-function getCurrentUser() {
+export function getCurrentUser() {
     const auth = getAuth();
     return auth.currentUser;
 }
@@ -77,17 +77,17 @@ function getCurrentUser() {
  * Deletes the currently signed-in user.
  * @returns {Promise<void>}
  */
-function deleteCurrentUserAsync() {
+export function deleteCurrentUserAsync() {
     const auth = getAuth();
     return auth.currentUser.delete();
 }
 
 /**
  * Updates the currently signed-in user's email. This will send a verification email to the new address first.
- * @param {String} newEmail
+ * @param {string} newEmail
  * @returns {Promise<void>}
  */
-function updateUserEmailAsync(newEmail) {
+export function updateUserEmailAsync(newEmail) {
     const auth = getAuth();
     return verifyBeforeUpdateEmail(auth.currentUser, newEmail);
 }
@@ -95,11 +95,11 @@ function updateUserEmailAsync(newEmail) {
 /**
  * Updates the currently signed-in user's. For any of the parameters, pass undefined to
  * not update that parameter, or pass null to delete the current value.
- * @param {String?} displayName
- * @param {String?} photoURL
+ * @param {string?} displayName
+ * @param {string?} photoURL
  * @returns {Promise<void>}
  */
-function updateUserProfileAsync(displayName, photoURL) {
+export function updateUserProfileAsync(displayName, photoURL) {
     const auth = getAuth();
 
     let params = {};
@@ -115,22 +115,9 @@ function updateUserProfileAsync(displayName, photoURL) {
  * Updates the currently signed-in user's phone number. NOT IMPLEMENTED YET
  * @returns {Promise<unknown>}
  */
-/*function updateUserPhoneAsync() {
+/*export function updateUserPhoneAsync() {
     // TODO
     // const auth = getAuth();
     // https://stackoverflow.com/questions/56841486/how-do-i-update-a-firebaseusers-phone-number-in-firebase-auth}
     return new Promise(resolve => setTimeout(resolve, 1000));
 }*/
-
-export default {
-    registerWithEmailAsync,
-    resendVerificationEmailAsync,
-    signInWithEmailAsync,
-    resetPasswordWithEmailAsync,
-    signOutAsync,
-    deleteUserAsync,
-    getCurrentUser,
-    deleteCurrentUserAsync,
-    updateUserEmailAsync,
-    updateUserProfileAsync,
-}
