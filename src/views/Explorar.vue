@@ -24,15 +24,25 @@
         </v-app-bar>
         <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
             <div class="container">
-                <div class="row pa-5">
-                    <div class="col-md-4 white text--white pa-3" :key="product.id" v-for="product in products">
-                        <v-card class="card card-product" outlined>
+                <v-row class="pt-2 pl-7 pr-7">
+                    <v-card class="d-flex mx-auto" width="100%" tile>
+                        <v-img class="white--text align-center" :aspect-ratio="5" src="../assets/banner.webp"
+                            gradient="to top right, rgba(178,216,255,0.3), rgba(178,216,255,0.6)">
+                            <v-card-title class="justify-center text-uppercase" style="text-shadow: 0px 2px 16px #000000">
+                                <h1>Explorar swaps</h1>
+                            </v-card-title>
+                        </v-img>
+                    </v-card>
+                </v-row>
+                <div class="row pl-7 pr-7">
+                    <div class="col-md-4 text--white pa-5" style="background-color: white;" :key="product.id" v-for="product in products">
+                        <v-card class="card card-product" elevation="5">
                             <div class="img-wrap">
-                                <v-img src="../assets/persona.jpg" :alt="product.description"></v-img>
+                                <v-img :src=product.img :alt="product.description"></v-img>
                             </div>
                             <figcaption class="info-wrap">
                                 <div class="text-center ma-2">
-                                    <h4 class="title"> {{product.name}} </h4>
+                                    <h3 class="title"> {{product.name}} </h3>
                                     <v-rating :value="product.rating" half-increments color="orange"
                                         background-color="orange" size="20" dense></v-rating>
                                 </div>
@@ -47,9 +57,9 @@
                                     <div class="label-rating">{{product.distance}} km</div>
                                 </div>
                             </figcaption>
-                            <div class="text-center pa-3">
+                            <div class="text-center pa-7">
                                 <router-link to="/trading" style="text-decoration:none">
-                                    <v-btn rounded outlined color="blue darken-4"
+                                    <v-btn rounded color="rgb(62,77,124)"
                                         class="mr-0 mr-md-8 mb-5 mb-md-0 btn-custom-md white--text">
                                         Enviar oferta
                                     </v-btn>
@@ -120,7 +130,7 @@ export default {
     appTitle: 'FutSwap',
     menuItems: [
         {title: 'Explorar', path: '/explorar'},
-        {title: 'Inventario', path:''},
+        {title: 'Inventario', path:'/collection'},
         {title: auth.currentUser.email, path: '/profile'},
     ],
     products: [
@@ -128,49 +138,49 @@ export default {
         distance: '0,7',
         name: 'Nestor',
         description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
+        id: '1',
+        img: require("../assets/persona1.jpeg"),
         rating: '5'
       },
       {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
+        distance: '0,2',
+        name: 'Cristian',
+        description: '2 figuritas',
+        id: '2',
+        img: require("../assets/persona2.jpg"),
         rating: '2'
       },
       {
         distance: '0,7',
-        name: 'Nestor',
+        name: 'Miguel',
         description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
+        id: '3',
+        img: require("../assets/persona3.jpg"),
+        rating: '3.5'
+      },
+      {
+        distance: '6',
+        name: 'Jony',
+        description: '10 figuritas',
+        id: '4',
+        img: require("../assets/persona4.jpg"),
         rating: '5'
       },
       {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
+        distance: '100',
+        name: 'Esequiel',
+        description: '200 figuritas',
+        id: '5',
+        img: require("../assets/persona5.webp"),
+        rating: '1.5'
       },
       {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
-      },
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: 'test',
-        product_img: '../assets/persona.jpg',
-        rating: '5'
+        distance: '250',
+        name: 'Ricardo',
+        description: '2 figuritas',
+        id: '6  ',
+        img: require("../assets/persona6.webp"),
+        rating: '0.5'
       }]
   }),
 

@@ -35,9 +35,9 @@
                             </v-card-title>
                             <v-card-text>
                                 <v-card-actions class="justify-center pa-5">
-                                    <v-btn color="primary pa-5" small elevation="2" :loading="isSelecting"  @click="handleFileImport">
-                                        <v-icon left dark>mdi-cloud-upload</v-icon>
+                                    <v-btn color="rgb(62,77,124)" style="color:white" small elevation="2" :loading="isSelecting"  @click="handleFileImport">
                                         foto
+                                        <v-icon left dark>mdi-cloud-upload</v-icon>
                                     </v-btn>
                                     <input 
                                         ref="uploader" 
@@ -51,9 +51,9 @@
                                 <v-text-field v-model="form.contactEmail" disabled outlined label="Correo Electronico"></v-text-field>
                             </v-card-text>
                             <v-card-actions class="justify-center pb-5 pt-n5">
-                                <v-btn color="primary pa-5" @click="update">
-                                    <v-icon left dark>check</v-icon>
+                                <v-btn color="rgb(62,77,124)" style="color:white" @click="update">
                                     Guardar cambios
+                                    <v-icon left dark>check</v-icon>
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -92,7 +92,7 @@ export default {
     appTitle: 'FutSwap',
     menuItems: [
         {title: 'Explorar', path: '/explorar'},
-        {title: 'Inventario', path:''},
+        {title: 'Inventario', path:'/collection'},
         {title: auth.currentUser.email, path: ''},
     ],
     isSelecting: false,

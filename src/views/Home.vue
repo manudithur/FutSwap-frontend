@@ -10,7 +10,7 @@
     </v-app-bar>
     <v-app id="inspire" class="transparent mt-n11">
       <v-content>
-        <v-container class="fill-height" fluid style="max-width:1500px;">
+        <v-container class="fill-height mt-n11" fluid style="max-width:1500px;">
           <v-row class="center" justify="center">
             <v-col cols="14" sm="8" md="8">
               <v-card>
@@ -19,22 +19,22 @@
                     <v-row>
                       <v-col cols="14" md="7">
                         <v-card-text class="mt-auto pa-5">
-                          <h1 class="text-center display-2 font-weight-bold blue--text text--darken-4 pa-5">Ingresa a tu
+                          <h1 class="text-center display-2 font-weight-bold pa-5" style="color: rgb(62,77,124)">Ingresa a tu
                             cuenta</h1>
                           <v-form>
                             <v-text-field label="Email" outlined v-model="LEmail" name="Email" prepend-icon="email" type="text"
-                              color="blue darken-4" />
+                              color="rgb(230,191,63)" />
                             <v-text-field id="password" label="Contraseña" outlined v-model="LPassword" name="password"
-                              prepend-icon="lock" type="password" color="blue darken-4" />
+                              prepend-icon="lock" type="password" color="rgb(230,191,63)" />
                           </v-form>
                           <a @click="resetPass" class="text-decoration-underline text-center">Olvidaste tu
                             contraseña?</a>
                           <div class="text-center mt-10">
-                            <v-btn rounded color="blue darken-4" dark @click="submitLogin">INGRESAR</v-btn>
+                            <v-btn rounded color="rgb(62,77,124)" dark @click="submitLogin">INGRESAR</v-btn>
                           </div>
                         </v-card-text>
                       </v-col>
-                      <v-col cols="14" md="5" class="blue darken-4">
+                      <v-col cols="14" md="5" style="background-color: rgb(62,77,124)">
                         <v-card-text class="white--text mt-auto">
                           <h1 class="text-center display-1 font-weight-mid">¿Sos nuevo?</h1>
                           <h5 class="text-center">Registrate ya y empeza a swapear!</h5>
@@ -49,24 +49,24 @@
                     <v-row class="fill-height">
                       <v-col cols="14" md="7">
                         <v-card-text class="mt-auto">
-                          <h1 class="text-center display-2 blue--text text--darken-4 font-weight-bold pa-5">¡Bienvenido!
+                          <h1 class="text-center display-2 font-weight-bold pa-5" style="color: rgb(62,77,124)">¡Bienvenido!
                           </h1>
                           <v-form>
                             <v-text-field label="Nombre Completo" outlined v-model="RName" name="Name" prepend-icon="person" type="text"
-                              color="blue darken-4"/>
+                              color="rgb(230,191,63)"/>
                             <v-text-field label="Email" outlined v-model="REmail" name="Email" prepend-icon="email" type="text"
-                              color="blue darken-4" />
+                              color="rgb(230,191,63)" />
                             <v-text-field id="password" outlined v-model="RPhone" label="Telefono Celular" name="password"
-                              prepend-icon="phone" type="text" color="blue darken-4" />
+                              prepend-icon="phone" type="text" color="rgb(230,191,63)" />
                             <v-text-field id="password" outlined v-model="RPass" label="Contraseña" name="password"
-                              prepend-icon="lock" type="password" color="blue darken-4" />
+                              prepend-icon="lock" type="password" color="rgb(230,191,63)" />
                           </v-form>
                         </v-card-text>
                         <div class="text-center mt-n5 pa-5">
-                          <v-btn rounded color="blue darken-4" dark @click="submitNewUser">Crear Cuenta</v-btn>
+                          <v-btn rounded color="rgb(62,77,124)" dark @click="submitNewUser">Crear Cuenta</v-btn>
                         </div>
                       </v-col>
-                      <v-col cols="14" md="5" class="blue darken-4">
+                      <v-col cols="14" md="5" style="background-color: rgb(62,77,124)">
                         <v-card-text class="white--text mt-auto">
                           <h1 class="text-center display-1">¿Ya sos parte de FutSwap?</h1>
                           <div class="text-center pa-5">

@@ -25,12 +25,15 @@
         <v-card>
           <v-row class="justify-center">
             <v-card-title class="text-center">
-              <h1 class="text-center display-2 font-weight-bold blue--text text--darken-4 pt-5">REALIZAR OFERTA</h1>
+              <h1 class="display-2 font-weight-bold pt-5" style="color:rgb(62,77,124)">REALIZAR OFERTA</h1>
             </v-card-title>
           </v-row>
-          <v-row class="justify-center pt-8">
+          <v-row class="justify-center pt-2 ">
             <v-col cols="5">
-              <v-card class="pt-5">
+              <v-card class="pt-5" elevation="0">
+                <v-card-title  class="text-center justify-center">
+                  <h4 class="display-1 font-weight-regular pt-5" style="color:rgb(62,77,124)">RECIBIR</h4>
+                </v-card-title>
                 <v-list>
                   <v-list-item-group multiple class="pa-5">
                     <template v-for="(tradeitem, i) in tradeitems" class="pa-5">
@@ -62,7 +65,10 @@
               </v-card>
             </v-col>
             <v-col cols="5">
-              <v-card class="pt-5">
+              <v-card class="pt-5" elevation="0">
+                <v-card-title  class="text-center justify-center">
+                  <h4 class="display-1 font-weight-regular pt-5" style="color:rgb(62,77,124)">OFERTAR</h4>
+                </v-card-title>
                 <v-list>
                   <v-list-item-group multiple class="pa-5">
                     <template v-for="(myinv, i) in yourinventory" class="pa-5">
@@ -96,7 +102,7 @@
           </v-row>
           <v-row class="justify-center">
             <v-card-actions class="justify-center pa-8">
-              <v-btn large   color="primary pa-5" @click="update">
+              <v-btn large color="rgb(62,77,124)" style="color:white" @click="update">
                 ENVIAR OFERTA
                 <v-icon right dark>mdi-checkbox-marked-circle</v-icon>
               </v-btn>
