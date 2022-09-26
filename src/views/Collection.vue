@@ -5,6 +5,7 @@ Dark Blue: #3E4D7C
 Gold: #E6BF3F
 Silver: #666666 -->
 
+
 <template>
     <v-app id="inspire">
         <title>Test</title>
