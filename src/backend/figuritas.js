@@ -1,4 +1,5 @@
 import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { validateAlbum, validateFiguCode } from "@/backend/validation";
 
 /**
  * Represents a figurita's data.
@@ -7,28 +8,6 @@ import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firesto
  * @property {String} category The figurita's category, such as "Fifa World Cup", "Coca", or country's name.
  * @property {number} number The figurita's number within its category. For example, 3 for 'arg03'.
  */
-
-/**
- * Validates that an album name is in the valid format. This does not verify that it exists.
- * @returns {string} The verified and sanitized album name.
- */
-function validateAlbum(album) {
-    album = album.trim().toLowerCase();
-    if (!album.match(/^[a-z0-9]+$/))
-        throw 'Invalid album: ' + album;
-    return album;
-}
-
-/**
- * Validates that a figu code is in the valid format. This does not verify that it exists.
- * @returns {string} The verified and sanitized figu code.
- */
-function validateFiguCode(figuCode) {
-    figuCode = figuCode.trim().toLowerCase();
-    if (!figuCode.match(/^([a-z]{3}[0-9]{2})$/))
-        throw 'Invalid figuCode: ' + figuCode;
-    return figuCode;
-}
 
 /**
  * Gets a figu's data from its album and figuCode.
