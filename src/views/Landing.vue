@@ -37,7 +37,7 @@
             </v-card>
           </v-col>
           -->
-          <v-col cols="5" class="align-center mt-10 pt-10">
+          <v-col cols="8" class="align-center mt-10 pt-10">
             <v-card class="pa-3 " style="background-color: rgb(62,77,124)">
               <v-img src="../assets/VideoPlayer.png"></v-img>
             </v-card>
@@ -45,9 +45,9 @@
         </v-row>
       </v-container>
       <v-container fluid id="features" class="mt-2">
-        <v-row align="center" justify="center">
+        <v-row justify="center">
           <v-col cols="10">
-            <v-row align="center" justify="space-around">
+            <v-row  justify="space-around">
               <v-col
                 cols="12"
                 sm="4"

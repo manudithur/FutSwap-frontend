@@ -99,10 +99,9 @@ html::-webkit-scrollbar {
 </style>
 
 <script>
-import { getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser } from "firebase/auth";
 import router from '../router/index';
 import Swal from 'sweetalert2';
-import { signOut, updateProfile } from "firebase/auth";
+import { deleteUserAsync, registerWithEmailAsync, signOutAsync, updateUserProfileAsync, signInWithEmailAsync, getCurrentUser } from "../backend/users";
 
 export default {
   data: () => ({
@@ -119,9 +118,8 @@ export default {
       const lemail = this.LEmail;
       const lpassword = this.LPassword;
 
-      const auth = getAuth();
       try {
-        const currentUser = await signInWithEmailAndPassword(auth, lemail, lpassword);
+        const currentUser = await signInWithEmailAsync(lemail, lpassword);
         if (!currentUser.user.emailVerified) {
           await Swal.fire({
             position: 'center',
@@ -130,7 +128,7 @@ export default {
             text: 'Por favor revisar casilla de correo y volver a ingresar',
             showConfirmButton: true,
           });
-          await signOut(auth);
+          await signOutAsync();
         } else {
           await router.push('/explorar');
         }
@@ -150,23 +148,22 @@ export default {
     submitNewUser: async function () {
       const email = this.REmail;
       const password = this.RPass;
-      const auth = getAuth();
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await  registerWithEmailAsync(email, password);
       try {
-        const curruser = auth.currentUser;
-        updateProfile(curruser, {displayName: this.RName, phoneNumber: this.RPhone})
-
-        await sendEmailVerification(curruser);
-        const string = "Se envio a: " +curruser.email + "\n un email para verificar tu cuenta";
+        const curruser = getCurrentUser();
+        updateUserProfileAsync(this.RName, '')
+        const string = "Se envio a: " + curruser.email + "\n un email para verificar tu cuenta";
         Swal.fire({
           position: 'center',
           icon: 'info',
           title: string,
+          text:"Aguarde y sera redirigido",
+          allowOutsideClick: false, 
           showConfirmButton: false,
         });
         setTimeout(function () {
           location.reload();
-        }, 5000);
+        }, 4000);
       } catch (error) {
         const errorCode = error.code;
         const errorMessage = error.message;
@@ -186,7 +183,7 @@ export default {
             showConfirmButton: false,
           });
         } else {
-          await deleteUser(userCredential.user);
+          await deleteUserAsync();
           await Swal.fire({
             position: 'center',
             icon: 'info',

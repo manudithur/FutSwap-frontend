@@ -74,26 +74,24 @@ html {
 </style>
 
 <script> 
-import { getAuth } from 'firebase/auth'
+import { getCurrentUser, signOutAsync, updateUserProfileAsync } from '../backend/users';
+import Swal from 'sweetalert2';
 import router from '../router/index';
-import { signOut } from "firebase/auth";
-
-const auth = getAuth();
-
+const curr = getCurrentUser();
 export default {
   data: () => ({
     loading: false,
     form: {
-      name: auth.currentUser.displayName,
-      contactEmail: auth.currentUser.email,
-      phone: auth.currentUser.phoneNumber,
+      name: curr.displayName,
+      contactEmail: curr.email,
+      phone: curr.phoneNumber,
     },
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
         {title: 'Explorar', path: '/explorar'},
         {title: 'Inventario', path:'/collection'},
-        {title: auth.currentUser.email, path: ''},
+        {title: curr.email, path: ''},
     ],
     isSelecting: false,
     selectedFile: null
@@ -105,14 +103,18 @@ export default {
 
   methods: {
     logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
+      signOutAsync();
       await router.push('/landing');
     },
     update: async function () {
-        alert(auth.currentUser.uid);
-        alert(auth.currentUser.displayName);
-        alert(auth.currentUser.phoneNumber);
+        updateUserProfileAsync(this.form.name, ' ');
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Cambios guardados',
+            showConfirmButton: false,
+            timer: 1500
+        });
     },
     handleFileImport() {
                 this.isSelecting = true;
