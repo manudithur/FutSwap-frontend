@@ -20,7 +20,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-app id="TradingSpace" class="transparent" style="overflow-y:scroll;">
+    <v-app id="TradingSpace" class="transparent">
       <div class="container pt-10">
         <v-card>
           <v-row class="justify-center">
@@ -118,10 +118,8 @@
 </template>
 
 <script>
-import { getAuth } from 'firebase/auth'
 import router from '../router/index';
-import { signOut } from "firebase/auth";
-const auth = getAuth();
+import { getCurrentUser, signOutAsync } from '../backend/users';
 
 export default {
   data: () => ({
@@ -129,7 +127,8 @@ export default {
     appTitle: 'FutSwap',
     menuItems: [
       { title: 'Explorar', path: '/explorar' },
-      { title: auth.currentUser.email, path: '/profile' },
+      { title: 'Inventario', path: '/collection'},
+      { title: getCurrentUser().email, path: '/profile' },
     ],
     tradeitems: [
       {
@@ -175,8 +174,7 @@ export default {
 
   methods: {
     logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
+      signOutAsync();
       await router.push('/landing');
     },
   }
