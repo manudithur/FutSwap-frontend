@@ -34,6 +34,7 @@
                                 </v-avatar>
                             </v-card-title>
                             <v-card-text>
+                                
                                 <v-card-actions class="justify-center pa-5">
                                     <v-btn color="rgb(62,77,124)" style="color:white" small elevation="2" :loading="isSelecting"  @click="handleFileImport">
                                         foto
@@ -107,7 +108,7 @@ export default {
       await router.push('/landing');
     },
     update: async function () {
-        updateUserProfileAsync(this.form.name, ' ');
+        updateUserProfileAsync(this.form.name, '');
         Swal.fire({
             position: 'center',
             icon: 'success',

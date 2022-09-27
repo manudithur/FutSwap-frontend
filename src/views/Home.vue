@@ -174,6 +174,7 @@ export default {
             icon: 'error',
             title: 'Password is too weak',
             showConfirmButton: false,
+            confirmButtonColor: '#3e4d7c',
           });
         } else if (errorCode === 'auth/email-already-in-use') {
           await Swal.fire({
