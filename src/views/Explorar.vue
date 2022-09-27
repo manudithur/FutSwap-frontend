@@ -112,10 +112,6 @@
     color: #999;
 }
 
-html {
-    overflow: visible;
-    -ms-overflow-style: none;
-}
 </style>
 
 <script>

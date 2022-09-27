@@ -108,17 +108,6 @@ Silver: #666666 -->
     background-size: cover;
 }
 
-html {
-    overflow: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-}
-
 .grow {
     transition: all .2s ease-in-out;
 }

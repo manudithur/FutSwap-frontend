@@ -85,18 +85,6 @@
     </v-app>
   </v-img>
 </template>
-<style>
-html {
-  overflow: hidden;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-</style>
 
 <script>
 import router from '../router/index';

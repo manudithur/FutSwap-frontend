@@ -16,7 +16,9 @@
           </v-icon>
         </v-btn>
         <v-btn flat @click="logout">
-          Cerrar Sesion
+            <v-icon rightdark>
+                logout
+            </v-icon>
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>

@@ -37,7 +37,7 @@
             </v-card>
           </v-col>
           -->
-          <v-col cols="8" class="align-center mt-10 pt-10">
+          <v-col cols="6" class="align-center mt-10 pt-10">
             <v-card class="pa-3 " style="background-color: rgb(62,77,124)">
               <v-img src="../assets/VideoPlayer.png"></v-img>
             </v-card>
@@ -82,19 +82,6 @@
     </v-app>
   </v-img>
 </template>
-
-<style>
-html {
-  overflow: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-</style>
   
 <script>
 export default {

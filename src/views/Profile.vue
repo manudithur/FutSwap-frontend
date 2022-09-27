@@ -47,9 +47,9 @@
                                         @change="onFileChanged"
                                     >
                                 </v-card-actions>
-                                <v-text-field v-model="form.name" outlined label="Nombre"></v-text-field>
-                                <v-text-field v-model="form.phone" outlined label="Telefono"></v-text-field>
-                                <v-text-field v-model="form.contactEmail" disabled outlined label="Correo Electronico"></v-text-field>
+                                <v-text-field v-model="currentUser.displayName" outlined label="Nombre"></v-text-field>
+                                <v-text-field v-model="currentUser.phoneNumber" outlined label="Telefono"></v-text-field>
+                                <v-text-field v-model="currentUser.email" disabled outlined label="Correo Electronico"></v-text-field>
                             </v-card-text>
                             <v-card-actions class="justify-center pb-5 pt-n5">
                                 <v-btn color="rgb(62,77,124)" style="color:white" @click="update">
@@ -65,14 +65,6 @@
     </v-img>
 </template>
 
-<style scoped>
-
-html {
-    overflow: visible;
-    -ms-overflow-style: none;
-}
-
-</style>
 
 <script> 
 import { getCurrentUser, signOutAsync, updateUserProfileAsync } from '../backend/users';
@@ -82,11 +74,7 @@ const curr = getCurrentUser();
 export default {
   data: () => ({
     loading: false,
-    form: {
-      name: curr.displayName,
-      contactEmail: curr.email,
-      phone: curr.phoneNumber,
-    },
+    currentUser: curr,
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
@@ -108,7 +96,7 @@ export default {
       await router.push('/landing');
     },
     update: async function () {
-        updateUserProfileAsync(this.form.name, '');
+        updateUserProfileAsync(this.currentUser.displayName, '');
         Swal.fire({
             position: 'center',
             icon: 'success',
