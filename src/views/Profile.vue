@@ -34,7 +34,6 @@
                                 </v-avatar>
                             </v-card-title>
                             <v-card-text>
-                                
                                 <v-card-actions class="justify-center pa-5">
                                     <v-btn color="rgb(62,77,124)" style="color:white" small elevation="2" :loading="isSelecting"  @click="handleFileImport">
                                         foto
@@ -47,9 +46,9 @@
                                         @change="onFileChanged"
                                     >
                                 </v-card-actions>
-                                <v-text-field v-model="currentUser.displayName" outlined label="Nombre"></v-text-field>
-                                <v-text-field v-model="currentUser.phoneNumber" outlined label="Telefono"></v-text-field>
-                                <v-text-field v-model="currentUser.email" disabled outlined label="Correo Electronico"></v-text-field>
+                                <v-text-field v-model="form.name" outlined label="Nombre"></v-text-field>
+                                <v-text-field v-model="form.phone" outlined label="Telefono"></v-text-field>
+                                <v-text-field v-model="form.contactEmail" disabled outlined label="Correo Electronico"></v-text-field>
                             </v-card-text>
                             <v-card-actions class="justify-center pb-5 pt-n5">
                                 <v-btn color="rgb(62,77,124)" style="color:white" @click="update">
@@ -65,22 +64,38 @@
     </v-img>
 </template>
 
+<style scoped>
+
+html {
+    overflow: visible;
+    -ms-overflow-style: none;
+}
+
+</style>
 
 <script> 
-import { getCurrentUser, signOutAsync, updateUserProfileAsync } from '../backend/users';
-import Swal from 'sweetalert2';
+import { getAuth } from 'firebase/auth'
 import router from '../router/index';
-const curr = getCurrentUser();
+import { signOut } from "firebase/auth";
+import Swal from 'sweetalert2';
+import { updateUserProfileAsync } from '../backend/users'
+
+const auth = getAuth();
+
 export default {
   data: () => ({
     loading: false,
-    currentUser: curr,
+    form: {
+      name: auth.currentUser.displayName,
+      contactEmail: auth.currentUser.email,
+      phone: auth.currentUser.phoneNumber,
+    },
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
         {title: 'Explorar', path: '/explorar'},
         {title: 'Inventario', path:'/collection'},
-        {title: curr.email, path: ''},
+        {title: auth.currentUser.email, path: ''},
     ],
     isSelecting: false,
     selectedFile: null
@@ -92,11 +107,12 @@ export default {
 
   methods: {
     logout: async function () {
-      signOutAsync();
+      const auth = getAuth();
+      await signOut(auth);
       await router.push('/landing');
     },
-    update: async function () {
-        updateUserProfileAsync(this.currentUser.displayName, '');
+    update: function () {
+        updateUserProfileAsync(this.form.name, '');
         Swal.fire({
             position: 'center',
             icon: 'success',
