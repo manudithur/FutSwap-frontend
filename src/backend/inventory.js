@@ -1,111 +1,118 @@
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch, deleteDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, getDoc, writeBatch } from 'firebase/firestore';
 import { validateAlbum, validateFiguCode, validateUserID } from "@/backend/validation";
 
-export async function ensureInventoryExists(album, uid) {
+// https://firebase.google.com/docs/firestore/manage-data/transactions
+const FirestoreWritebatchLimit = 500;
+
+/**
+ * Gets the status of a figurita in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @param {string} figuCode
+ * @returns {{figuCode: string, status: number}}
+ */
+export async function getInventoryFiguAsync(album, uid, figuCode) {
     album = validateAlbum(album);
     uid = validateUserID(uid);
+    figuCode = validateFiguCode(figuCode);
 
     const db = getFirestore();
-    const albumPath = 'inventories/' + album;
-    const albumDoc = doc(db, albumPath);
-    const albumDocSnapshot = await getDoc(albumDoc);
-    if (!albumDocSnapshot.exists())
-        throw 'Unexistant album: ' + album;
+    const c = doc(db, 'inventories/' + album + '/' + uid, figuCode);
+    const docSnapshot = await getDoc(c);
 
-    // "You cannot create empty collection, you have to create document inside."
-    // https://stackoverflow.com/questions/47871288/how-to-create-collection-in-cloud-firestore-from-javascript
-    // Solution: All inventories are initialized with one faltante and one ofertada.
-
-    const faltantesPath = albumPath + '/fal-' + uid;
-    const ofertadasPath = albumPath + '/oft-' + uid;
-
-    const batch = writeBatch(db);
-    let commitNeeded = false;
-
-    const faltantesSnapshot = await getDocs(collection(db, faltantesPath));
-    if (faltantesSnapshot.size === 0) {
-        batch.set(doc(db, faltantesPath, 'arg01'), {}, {merge: true});
-        commitNeeded = true;
-    }
-
-    const ofertadasSnapshot = await getDocs(collection(db, ofertadasPath));
-    if (ofertadasSnapshot.size === 0) {
-        batch.set(doc(db, ofertadasPath, 'arg02'), {count: 1}, {merge: true});
-        commitNeeded = true;
-    }
-
-    if (commitNeeded)
-        await batch.commit();
+    return {
+        figuCode: docSnapshot.id,
+        status: docSnapshot.exists() ? docSnapshot.data().status : 0
+    };
 }
 
-export async function getInventoryFaltantesAsync(album, uid) {
+/**
+ * Gets the status of all the figuritas in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {{ figuCode: string, status: number }[]}
+ */
+export async function getInventoryAllAsync(album, uid) {
     album = validateAlbum(album);
     uid = validateUserID(uid);
 
     const db = getFirestore();
-    const c = collection(db, 'inventories/' + album + '/fal-' + uid);
+    const c = collection(db, 'inventories/' + album + '/' + uid);
     const colSnapshot = await getDocs(c);
 
     let figus = [];
-    colSnapshot.forEach((d) => figus.push(d.id));
-
+    colSnapshot.forEach((d) => figus.push({ figuCode: d.id, status: d.data().status }));
     return figus;
 }
 
-export async function getInventoryOfertadasAsync(album, uid) {
+/**
+ * Sets the status of a single figurita in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @param {string} figuCode
+ * @param {number} status
+ * @returns {Promise<void>}
+ */
+export function setInventoryFiguAsync(album, uid, figuCode, status) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+    figuCode = validateFiguCode(figuCode);
+    status = parseInt(status);
+
+    const db = getFirestore();
+    const d = doc(db, 'inventories/' + album + '/' + uid, figuCode);
+
+    if (status === 0)
+        return deleteDoc(d);
+
+    return setDoc(d, { status: status });
+}
+
+/**
+ * Sets the status of multiple figuritas in a user's inventory at the same time.
+ * @param {string} album
+ * @param {string} uid
+ * @param {{figuCode: string, status: number}[]} figuritas
+ * @returns {Promise<void>}
+ */
+export function updateInventoryAsync(album, uid, figuritas) {
     album = validateAlbum(album);
     uid = validateUserID(uid);
 
     const db = getFirestore();
-    const c = collection(db, 'inventories/' + album + '/oft-' + uid);
-    const colSnapshot = await getDocs(c);
+    let batch = null;
+    let batchCount = 0;
 
-    let figus = [];
-    colSnapshot.forEach((d) => {
-        let figu = d.data();
-        figu.figuCode = d.id;
-        figus.push(figu);
+    let batchCommits = [];
+
+    figuritas.forEach((f) => {
+        let figuCode = validateFiguCode(f.figuCode);
+        let status = parseInt(f.status);
+        const d = doc(db, 'inventories/' + album + '/' + uid, figuCode);
+
+        if (batch == null) {
+            batch = writeBatch(db);
+            batchCount = 0;
+        }
+
+        if (status === 0) {
+            batch.delete(d);
+        } else {
+            batch.set(d, {status: status});
+        }
+
+        batchCount++;
+        if (batchCount >= FirestoreWritebatchLimit) {
+            batchCommits.push(batch.commit());
+            batch = null;
+        }
     });
 
-    return figus;
-}
+    if (batch != null)
+        batchCommits.push(batch.commit());
 
-export function removeInventoryFaltanteAsync(album, uid, figuCode) {
-    album = validateAlbum(album);
-    uid = validateUserID(uid);
-    figuCode = validateFiguCode(figuCode);
+    return Promise.all(batchCommits);
 
-    const db = getFirestore();
-    const d = doc(db, 'inventories/' + album + '/fal-' + uid, figuCode);
-    return deleteDoc(d);
-}
-
-export function addInventoryFaltanteAsync(album, uid, figuCode) {
-    album = validateAlbum(album);
-    uid = validateUserID(uid);
-    figuCode = validateFiguCode(figuCode);
-
-    const db = getFirestore();
-    const d = doc(db, 'inventories/' + album + '/fal-' + uid, figuCode);
-    return setDoc(d, {}, { merge: true });
-}
-
-export function removeInventoryOfertadaAsync(album, uid, figuCode) {
-    album = validateAlbum(album);
-    uid = validateUserID(uid);
-    figuCode = validateFiguCode(figuCode);
-
-    const db = getFirestore();
-    const d = doc(db, 'inventories/' + album + '/oft-' + uid, figuCode);
-    return deleteDoc(d);
-}
-
-export function addInventoryOfertadaAsync(album, uid, figuCode, count) {
-    album = validateAlbum(album);
-    uid = validateUserID(uid);
-    figuCode = validateFiguCode(figuCode);
-
-    const db = getFirestore();
-    const d = doc(db, 'inventories/' + album + '/oft-' + uid, figuCode);
-    return setDoc(d, { count: count }, { merge: true });
+    // Note: write batches cannot be reused after commit:
+    // https://stackoverflow.com/questions/66143646/run-multiple-firestore-batch-commit
 }
