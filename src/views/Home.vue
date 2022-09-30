@@ -30,7 +30,7 @@
                           <a @click="resetPass" class="text-decoration-underline text-center">Olvidaste tu
                             contraseña?</a>
                           <div class="text-center mt-10">
-                            <v-btn rounded color="rgb(62,77,124)" dark @click="submitLogin">INGRESAR</v-btn>
+                            <v-btn color="rgb(62,77,124)" dark @click="submitLogin">INGRESAR</v-btn>
                           </div>
                         </v-card-text>
                       </v-col>
@@ -39,7 +39,7 @@
                           <h1 class="text-center display-1 font-weight-mid">¿Sos nuevo?</h1>
                           <h5 class="text-center">Registrate ya y empeza a swapear!</h5>
                           <div class="text-center pa-5">
-                            <v-btn rounded outlined dark @click="step++" class="">REGISTRAR</v-btn>
+                            <v-btn outlined dark @click="step++" class="">REGISTRAR</v-btn>
                           </div>
                         </v-card-text>
                       </v-col>
@@ -63,14 +63,14 @@
                           </v-form>
                         </v-card-text>
                         <div class="text-center mt-n5 pa-5">
-                          <v-btn rounded color="rgb(62,77,124)" dark @click="submitNewUser">Crear Cuenta</v-btn>
+                          <v-btn color="rgb(62,77,124)" dark @click="submitNewUser">Crear Cuenta</v-btn>
                         </div>
                       </v-col>
                       <v-col cols="14" md="5" style="background-color: rgb(62,77,124)">
                         <v-card-text class="white--text mt-auto">
                           <h1 class="text-center display-1">¿Ya sos parte de FutSwap?</h1>
                           <div class="text-center pa-5">
-                            <v-btn rounded outlined dark @click="step--" class="mb-5">Ingresar Nuevamente</v-btn>
+                            <v-btn outlined dark @click="step--" class="mb-5">Ingresar Nuevamente</v-btn>
                           </div>
                         </v-card-text>
                       </v-col>

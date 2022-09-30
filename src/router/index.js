@@ -8,6 +8,7 @@ import ResetPass from '../views/ResetPass.vue'
 import Profile from '../views/Profile.vue'
 import Collection from '../views/Collection.vue'
 import Trading from '../views/Trading.vue'
+import ReviewOffer from '../views/reviewOffer.vue'
 
 import mdiVue from 'mdi-vue/v2'
 import * as mdijs from '@mdi/js'
@@ -57,6 +58,11 @@ const routes = [
     path: '/trading',
     name: 'trading',
     component: Trading
+  },
+  {
+    path: '/reviewOffer',
+    name: 'Review Offer',
+    component: ReviewOffer
   }
 ]
 

@@ -128,6 +128,7 @@ export default {
         {title: 'Explorar', path: '/explorar'},
         {title: 'Inventario', path:'/collection'},
         {title: auth.currentUser.email, path: '/profile'},
+        {title: 'review', path:'/reviewOffer'}
     ],
     products: [
       {
