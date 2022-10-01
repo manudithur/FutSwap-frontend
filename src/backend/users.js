@@ -3,6 +3,9 @@ import {
     signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, updateProfile
 } from "firebase/auth";
 
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { validateUserID } from "@/backend/validation";
+
 /**
  * Registers a new user with an email and password and sends a verification email.
  * This also leaves the user signed in.
@@ -111,13 +114,32 @@ export function updateUserProfileAsync(displayName, photoURL) {
     return updateProfile(auth.currentUser, params);
 }
 
-/**
- * Updates the currently signed-in user's phone number. NOT IMPLEMENTED YET
- * @returns {Promise<unknown>}
- */
-/*export function updateUserPhoneAsync() {
-    // TODO
-    // const auth = getAuth();
-    // https://stackoverflow.com/questions/56841486/how-do-i-update-a-firebaseusers-phone-number-in-firebase-auth}
-    return new Promise(resolve => setTimeout(resolve, 1000));
-}*/
+export async function getUserPublicProfileAsync(uid) {
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + uid + '-public');
+    const snapshot = await getDoc(d);
+    return snapshot.exists() ? snapshot.data() : {};
+}
+
+export async function getUserPrivateProfileAsync() {
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    const snapshot = await getDoc(d);
+    return snapshot.exists() ? snapshot.data() : {};
+}
+
+export function updateUserPublicProfileAsync(uid, data, merge = true) {
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + uid + '-public');
+    return setDoc(d, data, { merge: merge });
+}
+
+export function updateUserPrivateProfileAsync(data, merge = true) {
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    return setDoc(d, data, { merge: merge });
+}

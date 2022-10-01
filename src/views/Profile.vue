@@ -73,29 +73,28 @@ html {
 
 </style>
 
-<script> 
-import { getAuth } from 'firebase/auth'
+<script>
+import { getAuth } from 'firebase/auth';
 import router from '../router/index';
-import { signOut } from "firebase/auth";
 import Swal from 'sweetalert2';
-import { updateUserProfileAsync } from '../backend/users'
-
-const auth = getAuth();
+import {
+  getCurrentUser, updateUserProfileAsync, updateUserPublicProfileAsync, getUserPublicProfileAsync, signOutAsync
+} from '../backend/users'
 
 export default {
   data: () => ({
     loading: false,
     form: {
-      name: auth.currentUser.displayName,
-      contactEmail: auth.currentUser.email,
-      phone: auth.currentUser.phoneNumber,
+      name: 'cargando...',
+      contactEmail: 'cargando...',
+      phone: 'cargando...',
     },
     step: 1,
     appTitle: 'FutSwap',
     menuItems: [
         {title: 'Explorar', path: '/explorar'},
         {title: 'Inventario', path:'/collection'},
-        {title: auth.currentUser.email, path: ''},
+        {title: getAuth().currentUser.email, path: ''},
     ],
     isSelecting: false,
     selectedFile: null
@@ -105,15 +104,24 @@ export default {
     source: String
   },
 
+  mounted () {
+    const currentUser = getCurrentUser();
+    this.form.name = currentUser.displayName;
+    this.form.contactEmail = currentUser.email;
+    getUserPublicProfileAsync(currentUser.uid).then(profileData => {
+      this.form.phone = profileData.phone;
+    });
+  },
+
   methods: {
     logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
+      await signOutAsync();
       await router.push('/landing');
     },
-    update: function () {
-        updateUserProfileAsync(this.form.name, '');
-        Swal.fire({
+    update: async function () {
+        await updateUserProfileAsync(this.form.name, '');
+        await updateUserPublicProfileAsync(getCurrentUser().uid, { phone: this.form.phone });
+        await Swal.fire({
             position: 'center',
             icon: 'success',
             title: 'Cambios guardados',
