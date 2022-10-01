@@ -114,6 +114,11 @@ export function updateUserProfileAsync(displayName, photoURL) {
     return updateProfile(auth.currentUser, params);
 }
 
+/**
+ * Get a users' public profile data.
+ * @param {String} uid The user's ID
+ * @returns {Promise<Object>}
+ */
 export async function getUserPublicProfileAsync(uid) {
     uid = validateUserID(uid);
 
@@ -123,6 +128,10 @@ export async function getUserPublicProfileAsync(uid) {
     return snapshot.exists() ? snapshot.data() : {};
 }
 
+/**
+ * Gets the current user's private profile data.
+ * @returns {Promise<Object>}
+ */
 export async function getUserPrivateProfileAsync() {
     const db = getFirestore();
     const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
@@ -130,14 +139,26 @@ export async function getUserPrivateProfileAsync() {
     return snapshot.exists() ? snapshot.data() : {};
 }
 
-export function updateUserPublicProfileAsync(uid, data, merge = true) {
-    uid = validateUserID(uid);
-
+/**
+ * Updates the current user's public profile.
+ * @param {Object} data
+ * @param {Boolean} merge If true, the passed profile data will be merged with the existing data on the database.
+ * If false, the passed profile data will fully overwrite existing data on the database.
+ * @returns {Promise<void>}
+ */
+export function updateUserPublicProfileAsync(data, merge = true) {
     const db = getFirestore();
-    const d = doc(db, 'profiles/' + uid + '-public');
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-public');
     return setDoc(d, data, { merge: merge });
 }
 
+/**
+ * Updates the current user's private profile.
+ * @param {Object} data
+ * @param {Boolean} merge If true, the passed profile data will be merged with the existing data on the database.
+ * If false, the passed profile data will fully overwrite existing data on the database.
+ * @returns {Promise<void>}
+ */
 export function updateUserPrivateProfileAsync(data, merge = true) {
     const db = getFirestore();
     const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
