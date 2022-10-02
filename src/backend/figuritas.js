@@ -13,7 +13,7 @@ import { validateAlbum, validateFiguCode } from "@/backend/validation";
  * Gets a figu's data from its album and figuCode.
  * @param {string} album The album's name. For example, 'qatar2022'.
  * @param {string} figuCode The figu's code. For example, 'arg05'.
- * @returns {FiguData}
+ * @returns {Promise<FiguData>}
  */
 export async function getFiguDataAsync(album, figuCode) {
     album = validateAlbum(album);
@@ -33,7 +33,7 @@ export async function getFiguDataAsync(album, figuCode) {
 /**
  * Gets the data of all the figus in an album.
  * @param album The album's name. For example, 'qatar2022'.
- * @returns {FiguData[]}
+ * @returns {Promise<FiguData[]>}
  */
 export async function getAllFigusDataAsync(album) {
     album = validateAlbum(album);

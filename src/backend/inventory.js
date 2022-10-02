@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, getDoc, writeBatch } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, getDoc, writeBatch, query, limit } from 'firebase/firestore';
 import { validateAlbum, validateFiguCode, validateUserID } from "@/backend/validation";
 
 // https://firebase.google.com/docs/firestore/manage-data/transactions
@@ -9,7 +9,7 @@ const FirestoreWritebatchLimit = 500;
  * @param {string} album
  * @param {string} uid
  * @param {string} figuCode
- * @returns {{figuCode: string, status: number}}
+ * @returns {Promise<{figuCode: string, status: number}>}
  */
 export async function getInventoryFiguAsync(album, uid, figuCode) {
     album = validateAlbum(album);
@@ -30,7 +30,7 @@ export async function getInventoryFiguAsync(album, uid, figuCode) {
  * Gets the status of all the figuritas in a user's inventory.
  * @param {string} album
  * @param {string} uid
- * @returns {{ figuCode: string, status: number }[]}
+ * @returns {Promise<{ figuCode: string, status: number }[]>}
  */
 export async function getInventoryAllAsync(album, uid) {
     album = validateAlbum(album);
@@ -115,4 +115,31 @@ export function updateInventoryAsync(album, uid, figuritas) {
 
     // Note: write batches cannot be reused after commit:
     // https://stackoverflow.com/questions/66143646/run-multiple-firestore-batch-commit
+}
+
+/**
+ * Deletes a user's inventory for a given album.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<void>}
+ */
+export async function deleteInventoryAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    let colSnapshot = undefined;
+
+    while (!(colSnapshot = await getDocs(query(c, limit(500)))).empty) {
+        const batch = writeBatch(db);
+        let batchCount = 0;
+        colSnapshot.forEach((d) => {
+            if (batchCount < 500) {
+                batch.delete(d.ref);
+                batchCount++;
+            }
+        });
+        await batch.commit();
+    }
 }

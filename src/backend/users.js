@@ -11,7 +11,7 @@ import { validateUserID } from "@/backend/validation";
  * This also leaves the user signed in.
  * @param {string} email
  * @param {string} password
- * @returns {UserCredential}
+ * @returns {Promise<UserCredential>}
  */
 export async function registerWithEmailAsync(email, password) {
     const auth = getAuth();
@@ -33,7 +33,7 @@ export function resendVerificationEmailAsync() {
  * Signs in a user with email and password.
  * @param {string} email
  * @param {string} password
- * @returns {UserCredential}
+ * @returns {Promise<UserCredential>}
  */
 export function signInWithEmailAsync(email, password) {
     const auth = getAuth();
