@@ -3,6 +3,9 @@ import {
     signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, updateProfile
 } from "firebase/auth";
 
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { validateUserID } from "@/backend/validation";
+
 /**
  * Registers a new user with an email and password and sends a verification email.
  * This also leaves the user signed in.
@@ -112,12 +115,52 @@ export function updateUserProfileAsync(displayName, photoURL) {
 }
 
 /**
- * Updates the currently signed-in user's phone number. NOT IMPLEMENTED YET
- * @returns {Promise<unknown>}
+ * Get a users' public profile data.
+ * @param {String} uid The user's ID
+ * @returns {Promise<Object>}
  */
-/*export function updateUserPhoneAsync() {
-    // TODO
-    // const auth = getAuth();
-    // https://stackoverflow.com/questions/56841486/how-do-i-update-a-firebaseusers-phone-number-in-firebase-auth}
-    return new Promise(resolve => setTimeout(resolve, 1000));
-}*/
+export async function getUserPublicProfileAsync(uid) {
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + uid + '-public');
+    const snapshot = await getDoc(d);
+    return snapshot.exists() ? snapshot.data() : {};
+}
+
+/**
+ * Gets the current user's private profile data.
+ * @returns {Promise<Object>}
+ */
+export async function getUserPrivateProfileAsync() {
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    const snapshot = await getDoc(d);
+    return snapshot.exists() ? snapshot.data() : {};
+}
+
+/**
+ * Updates the current user's public profile.
+ * @param {Object} data
+ * @param {Boolean} merge If true, the passed profile data will be merged with the existing data on the database.
+ * If false, the passed profile data will fully overwrite existing data on the database.
+ * @returns {Promise<void>}
+ */
+export function updateUserPublicProfileAsync(data, merge = true) {
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-public');
+    return setDoc(d, data, { merge: merge });
+}
+
+/**
+ * Updates the current user's private profile.
+ * @param {Object} data
+ * @param {Boolean} merge If true, the passed profile data will be merged with the existing data on the database.
+ * If false, the passed profile data will fully overwrite existing data on the database.
+ * @returns {Promise<void>}
+ */
+export function updateUserPrivateProfileAsync(data, merge = true) {
+    const db = getFirestore();
+    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    return setDoc(d, data, { merge: merge });
+}
