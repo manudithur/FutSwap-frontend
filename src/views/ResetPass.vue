@@ -8,9 +8,8 @@
         </router-link>
       </v-toolbar-title>
     </v-app-bar>
-    <v-app id="inspire" class="transparent mt-n11">
-      <v-content>
-        <v-container class="fill-height mt-n7" fluid style="max-width:1500px;">
+    <v-app id="inspire" class="transparent">
+      <v-content class="align-center">
           <v-row class="justify-center mt-n7" justify="center">
             <v-col class="justify-center mt-n7" cols="10" sm="6" md="6">
               <v-card class="justify-center">
@@ -28,7 +27,6 @@
               </v-card>
             </v-col>
           </v-row>
-        </v-container>
       </v-content>
     </v-app>
   </v-img>
