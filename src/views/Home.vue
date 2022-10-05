@@ -60,6 +60,7 @@
                               prepend-icon="phone" type="text" color="rgb(230,191,63)" />
                             <v-text-field id="password" outlined v-model="RPass" label="Contraseña" name="password"
                               prepend-icon="lock" type="password" color="rgb(230,191,63)" />
+                            <v-file-input v-model="RImg" outlined label="Foto de perfil"/>
                           </v-form>
                         </v-card-text>
                         <div class="text-center mt-n5 pa-5">

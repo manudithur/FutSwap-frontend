@@ -1,27 +1,6 @@
 <template>
     <v-img src="../assets/fondo.png">
-      <v-app-bar app height="85%">
-        <v-toolbar-title>
-          <router-link to="/explorar" style="text-decoration: none;">
-            <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-            </v-img>
-          </router-link>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
-            {{ item.title }}
-            <v-icon dark>
-              {{item.logo}}
-            </v-icon>
-          </v-btn>
-          <v-btn flat @click="logout">
-              <v-icon rightdark>
-                  logout
-              </v-icon>
-          </v-btn>
-        </v-toolbar-items>
-      </v-app-bar>
+      <NavBar/>
       <v-app id="TradingSpace" class="transparent">
         <div class="container pt-10">
           <v-card>
@@ -142,91 +121,91 @@
   import router from '../router/index';
   import { getCurrentUser, signOutAsync } from '../backend/users';
   import Swal from 'sweetalert2';
+import NavBar from '../components/NavBar.vue';
   
   export default {
     data: () => ({
-      step: 1,
-      appTitle: 'FutSwap',
-      menuItems: [
-        { title: 'Explorar', path: '/explorar' },
-        { title: 'Inventario', path: '/collection'},
-        { title: getCurrentUser().email, path: '/profile' },
-      ],
-      tradeitems: [
-        {
-          name: 'ARG 5',
-          img: require("../assets/figus/arg05.jpg"),
-          status: 1
-        },
-        {
-          name: 'ARG 10',
-          img: require("../assets/figus/arg10.jpg"),
-          status: 0
-        },
-        {
-          name: 'FRA 6',
-          img: require("../assets/figus/fra06.jpg"),
-          status: 1
-        },
-        {
-          name: 'JPN 3',
-          img: require("../assets/figus/jpn03.jpg"),
-          status: 1
-        }
-      ],
-      yourinventory: [
-        {
-          name: 'BEL 6',
-          img: require("../assets/figus/bel06.jpg"),
-          status: 0
-        },
-        {
-          name: 'ARG 1',
-          img: require("../assets/figus/arg01.jpg"),
-          status: 1
-        },
-        {
-          name: 'GER 6',
-          img: require("../assets/figus/ger06.jpg"),
-          status: 0
-        },
-        {
-          name: 'POR 3',
-          img: require("../assets/figus/por03.jpg"),
-          status: 0
-        }
-      ]
+        step: 1,
+        appTitle: "FutSwap",
+        menuItems: [
+            { title: "Explorar", path: "/explorar" },
+            { title: "Inventario", path: "/collection" },
+            { title: getCurrentUser().email, path: "/profile" },
+        ],
+        tradeitems: [
+            {
+                name: "ARG 5",
+                img: require("../assets/figus/arg05.jpg"),
+                status: 1
+            },
+            {
+                name: "ARG 10",
+                img: require("../assets/figus/arg10.jpg"),
+                status: 0
+            },
+            {
+                name: "FRA 6",
+                img: require("../assets/figus/fra06.jpg"),
+                status: 1
+            },
+            {
+                name: "JPN 3",
+                img: require("../assets/figus/jpn03.jpg"),
+                status: 1
+            }
+        ],
+        yourinventory: [
+            {
+                name: "BEL 6",
+                img: require("../assets/figus/bel06.jpg"),
+                status: 0
+            },
+            {
+                name: "ARG 1",
+                img: require("../assets/figus/arg01.jpg"),
+                status: 1
+            },
+            {
+                name: "GER 6",
+                img: require("../assets/figus/ger06.jpg"),
+                status: 0
+            },
+            {
+                name: "POR 3",
+                img: require("../assets/figus/por03.jpg"),
+                status: 0
+            }
+        ]
     }),
-  
     props: {
-      source: String
+        source: String
     },
-  
     methods: {
-      logout: async function () {
-        signOutAsync();
-        await router.push('/landing');
-      },
-      aceptar: async function(){
-        await Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'OFERTA ACEPTADA',
-            showConfirmButton: false,
-            timer: 2000
-        });
-        await router.push('/explorar');
-      },
-      rechazar: async function(){
-        await Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: 'OFERTA RECHAZADA',
-            showConfirmButton: false,
-            timer: 2000
-        });
-        await router.push('/explorar');
-      }
-    }
-  };
+        logout: async function () {
+            signOutAsync();
+            await router.push("/landing");
+        },
+        aceptar: async function () {
+            await Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "OFERTA ACEPTADA",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            await router.push("/explorar");
+        },
+        rechazar: async function () {
+            await Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "OFERTA RECHAZADA",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            await router.push("/explorar");
+        }
+    },
+    components: { NavBar }
+};
   </script>

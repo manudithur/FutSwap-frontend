@@ -1,27 +1,6 @@
 <template>
     <v-img src="../assets/fondo.png">
-        <v-app-bar app height="85%">
-            <v-toolbar-title>
-                <router-link to="/explorar" style="text-decoration: none;">
-                    <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-                    </v-img>
-                </router-link>
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-                <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
-                    {{ item.title }}
-                    <v-icon dark>
-                        {{item.logo}}
-                    </v-icon>
-                </v-btn>
-                <v-btn flat @click="logout"> 
-                    <v-icon rightdark>
-                        logout
-                    </v-icon>
-                </v-btn>
-            </v-toolbar-items>
-        </v-app-bar>
+        <NavBar/>
         <v-app id="inspire" class="transparent" style="overflow-y: scroll;">
             <div class="container">
                 <v-row class="pt-2 pl-7 pr-7">
@@ -118,79 +97,80 @@
 import { getAuth } from 'firebase/auth'
 import router from '../router/index';
 import { signOut } from "firebase/auth";
+import NavBar from '../components/NavBar.vue';
 const auth = getAuth();
 
 export default {
-  data: () => ({
-    step: 1,
-    appTitle: 'FutSwap',
-    menuItems: [
-        {title: 'Explorar', path: '/explorar'},
-        {title: 'Inventario', path:'/collection'},
-        {title: auth.currentUser.email, path: '/profile'},
-        {title: 'review', path:'/reviewOffer'}
-    ],
-    products: [
-      {
-        distance: '0,7',
-        name: 'Nestor',
-        description: '7 figuritas',
-        id: '1',
-        img: require("../assets/persona1.jpeg"),
-        rating: '5'
-      },
-      {
-        distance: '0,2',
-        name: 'Cristian',
-        description: '2 figuritas',
-        id: '2',
-        img: require("../assets/persona2.jpg"),
-        rating: '2'
-      },
-      {
-        distance: '0,7',
-        name: 'Miguel',
-        description: '7 figuritas',
-        id: '3',
-        img: require("../assets/persona3.jpg"),
-        rating: '3.5'
-      },
-      {
-        distance: '6',
-        name: 'Jony',
-        description: '10 figuritas',
-        id: '4',
-        img: require("../assets/persona4.jpg"),
-        rating: '5'
-      },
-      {
-        distance: '100',
-        name: 'Esequiel',
-        description: '200 figuritas',
-        id: '5',
-        img: require("../assets/persona5.webp"),
-        rating: '1.5'
-      },
-      {
-        distance: '250',
-        name: 'Ricardo',
-        description: '2 figuritas',
-        id: '6  ',
-        img: require("../assets/persona6.webp"),
-        rating: '0.5'
-      }]
-  }),
-
-  props: {
-    source: String
-  },
-
-  methods: {
-    logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
-      await router.push('/landing');
+    data: () => ({
+        step: 1,
+        appTitle: "FutSwap",
+        menuItems: [
+            { title: "Explorar", path: "/explorar" },
+            { title: "Inventario", path: "/collection" },
+            { title: auth.currentUser.email, path: "/profile" },
+            { title: "review", path: "/reviewOffer" }
+        ],
+        products: [
+            {
+                distance: "0,7",
+                name: "Nestor",
+                description: "7 figuritas",
+                id: "1",
+                img: require("../assets/persona1.jpeg"),
+                rating: "5"
+            },
+            {
+                distance: "0,2",
+                name: "Cristian",
+                description: "2 figuritas",
+                id: "2",
+                img: require("../assets/persona2.jpg"),
+                rating: "2"
+            },
+            {
+                distance: "0,7",
+                name: "Miguel",
+                description: "7 figuritas",
+                id: "3",
+                img: require("../assets/persona3.jpg"),
+                rating: "3.5"
+            },
+            {
+                distance: "6",
+                name: "Jony",
+                description: "10 figuritas",
+                id: "4",
+                img: require("../assets/persona4.jpg"),
+                rating: "5"
+            },
+            {
+                distance: "100",
+                name: "Esequiel",
+                description: "200 figuritas",
+                id: "5",
+                img: require("../assets/persona5.webp"),
+                rating: "1.5"
+            },
+            {
+                distance: "250",
+                name: "Ricardo",
+                description: "2 figuritas",
+                id: "6  ",
+                img: require("../assets/persona6.webp"),
+                rating: "0.5"
+            }
+        ]
+    }),
+    props: {
+        source: String
     },
-  }
+    methods: {
+        logout: async function () {
+            const auth = getAuth();
+            await signOut(auth);
+            await router.push("/landing");
+        },
+    },
+    components: { NavBar }
 };
 </script>
