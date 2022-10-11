@@ -23,6 +23,7 @@
 <script>
 import { getAuth } from 'firebase/auth'
 import { signOutAsync } from '../backend/users';
+import router from '../router';
 const auth = getAuth();
 
 export default {
@@ -40,6 +41,7 @@ export default {
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
             { title: 'Inventario', path: '/collection' },
+            {title: 'Swaps', path:'/swaps'},
             { title: auth.currentUser.email, path: '/profile' },
         ],
         isSelecting: false,
@@ -48,6 +50,7 @@ export default {
     methods: {
         logout: async function() {
             signOutAsync();
+            router.push('/landing');
         }
     }
 }
