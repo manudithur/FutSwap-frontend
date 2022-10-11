@@ -32,6 +32,7 @@ export default {
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
             { title: 'Inventario', path: '/collection' },
+            { title: 'Swaps', path: '/swaps' },
         ],
     }),
     methods: {
