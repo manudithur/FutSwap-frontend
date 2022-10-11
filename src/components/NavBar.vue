@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar app height="85%">
+    <v-app-bar app height="85%" v-if="!loading">
         <v-toolbar-title>
             <router-link to="/explorar" style="text-decoration: none;">
                 <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
@@ -11,6 +11,7 @@
             <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
                 {{ item.title }}
             </v-btn>
+            <v-btn flat to="/profile">{{email}}</v-btn>
             <v-btn flat @click="logout">
                 <v-icon rightdark>
                     logout
@@ -21,37 +22,38 @@
 </template>
 
 <script>
-import { getAuth } from 'firebase/auth'
-import { signOutAsync } from '../backend/users';
-import router from '../router';
-const auth = getAuth();
+import { getCurrentUser, signOutAsync } from '../backend/users';
 
 export default {
     name: 'NavBar',
     data: () => ({
-        loading: false,
-        progress: 25,
-        form: {
-            name: auth.currentUser.displayName,
-            contactEmail: auth.currentUser.email,
-            phone: auth.currentUser.phoneNumber,
-        },
-        step: 1,
-        appTitle: 'FutSwap',
+        loading: true,
+        email: null,
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
             { title: 'Inventario', path: '/collection' },
-            {title: 'Swaps', path:'/swaps'},
-            { title: auth.currentUser.email, path: '/profile' },
         ],
-        isSelecting: false,
-        selectedFile: null
     }),
     methods: {
         logout: async function() {
             signOutAsync();
-            router.push('/landing');
+        },
+        load: async function(){
+            this.loading = true
+            try {
+                const user = await getCurrentUser();
+                this.email = user.email;
+            } finally {
+                // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
+                this.loading = false;
+            }
+        },
+        getEmail: async function(){
+            return await getCurrentUser().email
         }
-    }
+    },
+    mounted() {
+        this.load();
+    },
 }
 </script>
