@@ -38,6 +38,7 @@ export default {
     methods: {
         logout: async function() {
             signOutAsync();
+            router.push('/landing');
         },
         load: async function(){
             this.loading = true
