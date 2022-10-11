@@ -1,27 +1,6 @@
 <template>
     <v-img src="../assets/fondo.png">
-      <v-app-bar app height="85%">
-        <v-toolbar-title>
-          <router-link to="/explorar" style="text-decoration: none;">
-            <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-            </v-img>
-          </router-link>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items>
-          <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
-            {{ item.title }}
-            <v-icon dark>
-              {{item.logo}}
-            </v-icon>
-          </v-btn>
-          <v-btn flat @click="logout">
-              <v-icon rightdark>
-                  logout
-              </v-icon>
-          </v-btn>
-        </v-toolbar-items>
-      </v-app-bar>
+      <NavBar/>
       <v-app id="PostTradingSpace" class="transparent">
       <div class="container pt-10">
         <v-card>
@@ -138,63 +117,63 @@
 <script>
 import router from '../router/index';
 import { getCurrentUser, signOutAsync } from '../backend/users';
+import NavBar from '../components/NavBar.vue';
 
 export default {
-  data: () => ({
-    step: 1,
-    appTitle: 'FutSwap',
-    menuItems: [
-      { title: 'Explorar', path: '/explorar' },
-      { title: 'Inventario', path: '/collection'},
-      { title: getCurrentUser().email, path: '/profile' },
-    ],
-    tradeitems: [
-      {
-        name: 'ARG 5',
-        img: require("../assets/figus/arg05.jpg")
-      },
-      {
-        name: 'ARG 10',
-        img: require("../assets/figus/arg10.jpg")
-      },
-      {
-        name: 'FRA 6',
-        img: require("../assets/figus/fra06.jpg")
-      },
-      {
-        name: 'JPN 3',
-        img: require("../assets/figus/jpn03.jpg")
-      }
-    ],
-    yourinventory: [
-      {
-        name: 'BEL 6',
-        img: require("../assets/figus/bel06.jpg")
-      },
-      {
-        name: 'ARG 1',
-        img: require("../assets/figus/arg01.jpg")
-      },
-      {
-        name: 'GER 6',
-        img: require("../assets/figus/ger06.jpg")
-      },
-      {
-        name: 'POR 3',
-        img: require("../assets/figus/por03.jpg")
-      }
-    ]
-  }),
-
-  props: {
-    source: String
-  },
-
-  methods: {
-    logout: async function () {
-      signOutAsync();
-      await router.push('/landing');
+    data: () => ({
+        step: 1,
+        appTitle: "FutSwap",
+        menuItems: [
+            { title: "Explorar", path: "/explorar" },
+            { title: "Inventario", path: "/collection" },
+            { title: getCurrentUser().email, path: "/profile" },
+        ],
+        tradeitems: [
+            {
+                name: "ARG 5",
+                img: require("../assets/figus/arg05.jpg")
+            },
+            {
+                name: "ARG 10",
+                img: require("../assets/figus/arg10.jpg")
+            },
+            {
+                name: "FRA 6",
+                img: require("../assets/figus/fra06.jpg")
+            },
+            {
+                name: "JPN 3",
+                img: require("../assets/figus/jpn03.jpg")
+            }
+        ],
+        yourinventory: [
+            {
+                name: "BEL 6",
+                img: require("../assets/figus/bel06.jpg")
+            },
+            {
+                name: "ARG 1",
+                img: require("../assets/figus/arg01.jpg")
+            },
+            {
+                name: "GER 6",
+                img: require("../assets/figus/ger06.jpg")
+            },
+            {
+                name: "POR 3",
+                img: require("../assets/figus/por03.jpg")
+            }
+        ]
+    }),
+    props: {
+        source: String
     },
-  }
+    methods: {
+        logout: async function () {
+            signOutAsync();
+            await router.push("/landing");
+        },
+    },
+    components: { NavBar }
 };
 </script>
