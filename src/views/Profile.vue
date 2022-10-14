@@ -30,13 +30,8 @@
                 :loading="isSelecting"
                 @click="handleFileImport"
               >
-                <input
-                  ref="uploader"
-                  class="d-none"
-                  type="file"
-                  @change="onFileChanged"
-                />
-                <v-img src="../assets/juanfer.jpg" />
+                <input ref="uploader" class="d-none" type="file" accept="image/jpeg" @change="onFileChanged"/>
+                <v-img v-if="profilePictureUrl" :src="profilePictureUrl" />
               </v-avatar>
             </v-card-title>
             <p class="pt-5 pb-0 mb-0">RATING:</p>
@@ -112,9 +107,7 @@ html {
 </style>
 
 <script>
-import { getAuth } from "firebase/auth";
 import router from "../router/index";
-import { signOut } from "firebase/auth";
 import Swal from "sweetalert2";
 import {
   getCurrentUser,
@@ -123,6 +116,9 @@ import {
   updateUserPrivateProfileAsync,
   updateUserProfileAsync,
   updateUserPublicProfileAsync,
+  getUserProfilePictureAsync,
+  uploadProfilePicture,
+  signOutAsync,
 } from "../backend/users";
 import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
@@ -136,7 +132,12 @@ export default {
     phone: null,
     address: null,
     isSelecting: false,
-    selectedFile: null,
+
+    isLoadingProfileUrl: false,
+    profilePictureUrl: null,
+
+    isUploadingProfilePicture: false,
+    profileUploadFile: null,
   }),
   props: {
     source: String,
@@ -144,11 +145,12 @@ export default {
   mounted() {
     // Empiezo a buscar el dato a la API. Esta tarea queda corriendo en el fondo.
     this.loadData();
+    this.loadProfilePicture();
   },
   methods: {
     async loadData() {
       try {
-        const user = await getCurrentUser();
+        const user = getCurrentUser();
         this.name = user.displayName;
         this.email = user.email;
         const publicData = await getUserPublicProfileAsync(user.uid);
@@ -160,11 +162,41 @@ export default {
         this.isLoading = false;
       }
     },
+
+    async loadProfilePicture() {
+      this.isLoadingProfileUrl = true;
+      try {
+        this.profilePictureUrl = await getUserProfilePictureAsync(getCurrentUser().uid);
+      } finally {
+        this.isLoadingProfileUrl = false;
+      }
+    },
+
+    async onFileChanged(e) {
+      if (this.isUploadingProfilePicture) {
+        alert('Por favor espere a que termine de subir el archivo anterior');
+        return;
+      }
+
+      this.isUploadingProfilePicture = true;
+      this.isLoadingProfileUrl = true;
+      this.profileUploadFile = e.target.files[0];
+      try {
+        this.profilePictureUrl = await uploadProfilePicture(this.profileUploadFile);
+      } catch(e) {
+        console.log(e);
+        alert('No se pudo subir su foto de perfil 💀');
+      } finally {
+        this.isUploadingProfilePicture = false;
+        this.isLoadingProfileUrl = false;
+      }
+    },
+
     logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
+      await signOutAsync();
       await router.push("/landing");
     },
+
     update: async function () {
       try {
         await updateUserProfileAsync(this.name, "");
@@ -202,10 +234,6 @@ export default {
       );
       // Trigger click on the FileInput
       this.$refs.uploader.click();
-    },
-    onFileChanged(e) {
-      this.selectedFile = e.target.files[0];
-      alert(this.selectedFile.name);
     },
   },
   components: { NavBar, FooterBar },

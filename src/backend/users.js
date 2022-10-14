@@ -2,6 +2,7 @@ import {
     getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser,
     signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, updateProfile
 } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { validateUserID } from "@/backend/validation";
@@ -163,4 +164,39 @@ export function updateUserPrivateProfileAsync(data, merge = true) {
     const db = getFirestore();
     const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
     return setDoc(d, data, { merge: merge });
+}
+
+/**
+ * Gets a user's profile picture. If the user has no profile picture, returns a link to
+ * a default profile picture.
+ * @param {string} uid
+ * @returns {Promise<string>} The URL to the profile picture.
+ */
+export async function getUserProfilePictureAsync(uid) {
+    uid = validateUserID(uid);
+
+    try {
+        const storage = getStorage();
+        const imageRef = ref(storage, 'profiles/' + uid + '.jpg');
+        const url = await getDownloadURL(imageRef);
+
+        if (typeof url !== 'string' || url.length === 0)
+            throw 'Upsie 💀';
+        return url;
+    } catch (e) {
+        return require('../assets/empty-profile.jpg');
+    }
+}
+
+/**
+ * Uploads a profile picture for the current user.
+ * @param {string} filePath The path to the file on disk to upload
+ * @returns {Promise<string>} The URL to the profile picture.
+ */
+export async function uploadProfilePicture(filePath) {
+    const storage = getStorage();
+    const imageRef = ref(storage, 'profiles/' + getCurrentUser().uid + '.jpg');
+
+    const uploadResult = await uploadBytes(imageRef, filePath);
+    return await getDownloadURL(uploadResult.ref);
 }
