@@ -7,10 +7,9 @@ Silver: #666666 -->
 
 
 <template>
-    <div class="bg">
-        <NavBar/>
-        <v-app id="inspire" class="transparent">
-            <v-main class="py-4">
+        <v-app class="transparent">
+            <NavBar/>
+            <v-main class="content py-4">
                 <v-container class="elevation-1 pt-0" style="background-color: white; border-radius: 4px;">
                     <v-row>
                         <v-card width="100%">
@@ -66,31 +65,6 @@ Silver: #666666 -->
                                                     <v-img :src="j.url" style="filter:grayscale(100%) brightness(80%) sepia(300%) contrast(60%) hue-rotate(50deg) saturate(500%)"></v-img>
                                                 </v-card>
                                             </v-col>
-                                            <!--
-                                            <v-card class="overflow-hidden">
-                                                <v-row>
-                                                    <v-col cols="5" class="pa-0">
-                                                        <v-img :src="j.url"></v-img>
-                                                    </v-col>
-                                                    <v-col cols="7" class="pr-6 d-flex flex-column">
-                                                        <h2 class="pt-4 text-center text-uppercase" style="color:#666666">Tus
-                                                            Figuritas</h2>
-
-                                                        <button @click="{j.count}++">+</button>
-                                                        <div class="text-center ma-auto" style="color:#333333; font-size: 8rem;">
-                                                            {{j.count}}</div>
-
-                                                        <v-divider class="mt-auto"></v-divider>
-
-                                                        <v-card-actions class="pa-4 justify-center">
-                                                            <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Buy</v-btn>
-                                                            <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Swap</v-btn>
-                                                            <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Sell</v-btn>
-                                                        </v-card-actions>
-                                                    </v-col>
-                                                </v-row>
-                                            </v-card>
-                                            -->
                                         </template>
                                         <v-col :key="index" class="col-md-12">
                                             <v-divider v-if="index < teams.length - 1"></v-divider>
@@ -153,17 +127,12 @@ Silver: #666666 -->
                     </v-row>
                 </v-container>
             </v-main>
+            <FooterBar/>
         </v-app>
-    </div>
+        
 </template>
 
 <style>
-.bg {
-    background-image: url("../assets/fondo.png");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-}
 
 .h1 {
     color: white;
@@ -197,21 +166,12 @@ Silver: #666666 -->
 </style>
   
 <script>
-import { getAuth } from 'firebase/auth';
 import Swal from 'sweetalert2';
 import NavBar from '../components/NavBar.vue';
-const auth = getAuth();
+import FooterBar from '../components/FooterBar.vue';
+
 export default {
     data: () => ({
-        step: 1,
-        appTitle: "FutSwap",
-        sidebar: false,
-        menuItems: [
-            {title: 'Explorar', path: '/explorar'},
-            {title: 'Inventario', path:'/collection'},
-            {title: 'Swaps', path:'/swaps'},
-            {title: auth.currentUser.email, path: '/profile'},
-        ],
         sections: ['Argentina', 'Netherlands', 'Spain', 'Portugal'],
         filter: [],
         teams: [
@@ -327,6 +287,6 @@ export default {
     props: {
         url: String
     },
-    components: { NavBar }
+    components: { NavBar, FooterBar }
 };
 </script>

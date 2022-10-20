@@ -14,7 +14,7 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-app id="inspire" class="transparent">
+    <v-app class="content transparent">
     </v-app>
   </v-img>
 </template>

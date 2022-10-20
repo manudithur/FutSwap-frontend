@@ -98,12 +98,6 @@ html {
   overflow: visible;
   -ms-overflow-style: none;
 }
-
-.content {
-  background: url("../assets/fondo.png") no-repeat center;
-  background-size: cover;
-  height: 100%;
-}
 </style>
 
 <script>

@@ -11,7 +11,7 @@
             <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
                 {{ item.title }}
             </v-btn>
-            <v-btn flat to="/profile">{{email}}</v-btn>
+            <v-btn v-if="!loading" flat to="/profile"><v-icon>mdi-account</v-icon></v-btn>
             <v-btn flat @click="logout">
                 <v-icon rightdark>
                     logout
@@ -22,40 +22,17 @@
 </template>
 
 <script>
-import { getCurrentUser, signOutAsync } from '../backend/users';
+
 
 export default {
     name: 'NavBar',
     data: () => ({
-        loading: true,
-        email: null,
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
             { title: 'Inventario', path: '/collection' },
             { title: 'Swaps', path: '/swaps' },
         ],
     }),
-    methods: {
-        logout: async function() {
-            signOutAsync();
-            router.push('/landing');
-        },
-        load: async function(){
-            this.loading = true
-            try {
-                const user = await getCurrentUser();
-                this.email = user.email;
-            } finally {
-                // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
-                this.loading = false;
-            }
-        },
-        getEmail: async function(){
-            return await getCurrentUser().email
-        }
-    },
-    mounted() {
-        this.load();
-    },
+
 }
 </script>

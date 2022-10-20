@@ -6,6 +6,14 @@
   </v-app>
 </template>
 
+<style>
+  .content{
+  background: url("./assets/fondo.png") no-repeat center;
+  background-size: cover;
+  height: 100%;
+  }
+</style>
+
 <script>
 
 export default {

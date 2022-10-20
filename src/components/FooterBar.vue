@@ -7,7 +7,7 @@
             </v-col>
             <v-col cols="2">
               <h3 class="pb-2">SOPORTE</h3>
-              <p>ayuda@fut-swap.com</p>
+              <a href="mailto:ayuda@fut-swap.com">ayuda@fut-swap.com</a>
             </v-col>
             <v-col cols="2">
               <h3 class="pb-2">CONOCENOS</h3>

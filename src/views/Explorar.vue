@@ -6,10 +6,11 @@ Gold: #E6BF3F
 Silver: #666666 -->
 
 <template>
-    <div class="bg">
-        <NavBar/>
+
+        
         <v-app id="inspire" class="transparent">
-            <v-main class="py-4">
+            <NavBar/>
+            <v-main class="content py-4">
                 <v-container class="elevation-1 pt-0" style="background-color: white; border-radius: 4px;">
                     <v-row>
                         <v-card width="100%">
@@ -70,17 +71,11 @@ Silver: #666666 -->
                     </v-row>
                 </v-container>
             </v-main>
+            <FooterBar/>
         </v-app>
-    </div>
 </template>
 
 <style scoped>
-.bg {
-    background-image: url("../assets/fondo.png");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-}
 .fig {
     font-size:1.6rem;
     color:#3E4D7C;
@@ -133,22 +128,11 @@ subtitle-1 {
 </style>
 
 <script>
-import { getAuth } from 'firebase/auth'
-import router from '../router/index';
-import { signOut } from "firebase/auth";
 import NavBar from '../components/NavBar.vue';
-const auth = getAuth();
+import FooterBar from '../components/FooterBar.vue';
 
 export default {
     data: () => ({
-        step: 1,
-        appTitle: "FutSwap",
-        menuItems: [
-            { title: "Explorar", path: "/explorar" },
-            { title: "Inventario", path: "/collection" },
-            { title: "Swaps", path: "/swaps" },
-            { title: auth.currentUser.email, path: "/profile" },
-        ],
         products: [
             {
                 distance: "0,7",
@@ -221,21 +205,6 @@ export default {
     props: {
         source: String
     },
-    methods: {
-        logout: async function () {
-            const auth = getAuth();
-            await signOut(auth);
-            await router.push("/landing");
-        },
-        methods: {
-            logout: async function () {
-                const auth = getAuth();
-                await signOut(auth);
-                await router.push("/landing");
-            },
-        },
-        components: { NavBar }
-    },
-    components: { NavBar }
+    components: { NavBar, FooterBar }
 }
 </script>
