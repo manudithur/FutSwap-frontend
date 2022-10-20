@@ -177,11 +177,12 @@
 <script>
 import { getAuth } from 'firebase/auth';
 import Swal from 'sweetalert2';
+import NavBar from '../components/NavBar.vue';
 const auth = getAuth();
 export default {
     data: () => ({
         step: 1,
-        appTitle: 'FutSwap',
+        appTitle: "FutSwap",
         sidebar: false,
         menuItems: [
             {title: 'Explorar', path: '/explorar'},
@@ -282,20 +283,20 @@ export default {
         ],
     }),
     methods: {
-        increase: function(j) {
-            if(j.status != 1)
+        increase: function (j) {
+            if (j.status != 1)
                 j.status++;
         },
-        decrease: function(e, j){
-            if(j.status != -1)
+        decrease: function (e, j) {
+            if (j.status != -1)
                 j.status--;
             e.preventDefault();
         },
-        about: function(){
+        about: function () {
             Swal.fire({
-                title: 'Con click izq y click derecho vas cambiando entre las posibles opciones',
+                title: "Con click izq y click derecho vas cambiando entre las posibles opciones",
                 imageUrl: require("../assets/collectionUse.png"),
-                imageAlt: 'Custom image',
+                imageAlt: "Custom image",
                 width: 900,
                 confirmButtonColor: '#3e4d7c'
             })
@@ -304,5 +305,6 @@ export default {
     props: {
         url: String
     },
+    components: { NavBar }
 };
 </script>

@@ -115,8 +115,8 @@
 }
 
 html {
-    overflow: visible;
-    -ms-overflow-style: none;
+  overflow: visible;
+  -ms-overflow-style: none;
 }
 
 .content {
@@ -137,70 +137,136 @@ html {
 }
 </style>
 
-<script> 
-import { getAuth } from 'firebase/auth'
-import router from '../router/index';
-import { signOut } from "firebase/auth";
-import Swal from 'sweetalert2';
-import { updateUserProfileAsync } from '../backend/users'
-
-const auth = getAuth();
+<script>
+import router from "../router/index";
+import Swal from "sweetalert2";
+import {
+  getCurrentUser,
+  getUserPrivateProfileAsync,
+  getUserPublicProfileAsync,
+  updateUserPrivateProfileAsync,
+  updateUserProfileAsync,
+  updateUserPublicProfileAsync,
+  getUserProfilePictureAsync,
+  uploadProfilePicture,
+  signOutAsync,
+} from "../backend/users";
+import NavBar from "../components/NavBar.vue";
+import FooterBar from "../components/FooterBar.vue";
 
 export default {
   data: () => ({
-    loading: false,
-    form: {
-      name: auth.currentUser.displayName,
-      contactEmail: auth.currentUser.email,
-      phone: auth.currentUser.phoneNumber,
-    },
-    step: 1,
-    appTitle: 'FutSwap',
-    menuItems: [
-        {title: 'Explorar', path: '/explorar'},
-        {title: 'Inventario', path:'/collection'},
-        {title: auth.currentUser.email, path: ''},
-    ],
+    progress: 25,
+    isLoading: true,
+    name: null,
+    email: null,
+    phone: null,
+    address: null,
     isSelecting: false,
-    selectedFile: null
+
+    isLoadingProfileUrl: false,
+    profilePictureUrl: null,
+
+    isUploadingProfilePicture: false,
+    profileUploadFile: null,
   }),
-
   props: {
-    source: String
+    source: String,
   },
-
+  mounted() {
+    // Empiezo a buscar el dato a la API. Esta tarea queda corriendo en el fondo.
+    this.loadData();
+    this.loadProfilePicture();
+  },
   methods: {
-    logout: async function () {
-      const auth = getAuth();
-      await signOut(auth);
-      await router.push('/landing');
+    async loadData() {
+      try {
+        const user = getCurrentUser();
+        this.name = user.displayName;
+        this.email = user.email;
+        const publicData = await getUserPublicProfileAsync(user.uid);
+        this.phone = publicData.phone;
+        const privateData = await getUserPrivateProfileAsync();
+        this.address = privateData.address;
+      } finally {
+        // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
+        this.isLoading = false;
+      }
     },
-    update: function () {
-        updateUserProfileAsync(this.form.name, '');
-        Swal.fire({
+
+    async loadProfilePicture() {
+      this.isLoadingProfileUrl = true;
+      try {
+        this.profilePictureUrl = await getUserProfilePictureAsync(getCurrentUser().uid);
+      } finally {
+        this.isLoadingProfileUrl = false;
+      }
+    },
+
+    async onFileChanged(e) {
+      if (this.isUploadingProfilePicture) {
+        alert('Por favor espere a que termine de subir el archivo anterior');
+        return;
+      }
+
+      this.isUploadingProfilePicture = true;
+      this.isLoadingProfileUrl = true;
+      this.profileUploadFile = e.target.files[0];
+      try {
+        this.profilePictureUrl = await uploadProfilePicture(this.profileUploadFile);
+      } catch(e) {
+        console.log(e);
+        alert('No se pudo subir su foto de perfil 💀');
+      } finally {
+        this.isUploadingProfilePicture = false;
+        this.isLoadingProfileUrl = false;
+      }
+    },
+
+    logout: async function () {
+      await signOutAsync();
+      await router.push("/landing");
+    },
+
+    update: async function () {
+      try {
+        await updateUserProfileAsync(this.name, "");
+        await updateUserPublicProfileAsync({phone: this.phone}, true);
+        await updateUserPrivateProfileAsync({address: this.address}, true)
+      } catch (e) {
+        // Si hubo algun error...
+        const errorMessage =
+          "Error al actualizar perfil. Reintentar. Si persiste el error contactar soporte";
+        await Swal.fire({
+          position: "center",
+          icon: "error",
+          title: errorMessage,
+          showConfirmButton: true,
+        });
+      } finally {
+        // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
+        await Swal.fire({
             position: 'center',
             icon: 'success',
-            title: 'Cambios guardados',
-            showConfirmButton: false,
-            timer: 1500
+            title: "Cambios guardados",
+            showConfirmButton: true,
         });
+      }
     },
     handleFileImport() {
-                this.isSelecting = true;
-
-                // After obtaining the focus when closing the FilePicker, return the button state to normal
-                window.addEventListener('focus', () => {
-                    this.isSelecting = false
-                }, { once: true });
-                
-                // Trigger click on the FileInput
-                this.$refs.uploader.click();
-            },
-            onFileChanged(e) {
-                this.selectedFile = e.target.files[0];
-
-                alert(this.selectedFile.name);
-            },
-  }
+      this.isSelecting = true;
+      // After obtaining the focus when closing the FilePicker, return the button state to normal
+      window.addEventListener(
+        "focus",
+        () => {
+          this.isSelecting = false;
+        },
+        { once: true }
+      );
+      // Trigger click on the FileInput
+      this.$refs.uploader.click();
+    },
+  },
+  components: { NavBar, FooterBar },
 };
 </script>

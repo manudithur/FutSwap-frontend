@@ -155,6 +155,7 @@
 import { getAuth } from 'firebase/auth'
 import router from '../router/index';
 import { signOut } from "firebase/auth";
+import NavBar from '../components/NavBar.vue';
 const auth = getAuth();
 
 export default {
@@ -254,6 +255,8 @@ export default {
                 await router.push("/landing");
             },
         },
+        components: { NavBar }
     },
+    components: { NavBar }
 }
 </script>

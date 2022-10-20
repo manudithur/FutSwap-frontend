@@ -168,202 +168,137 @@ subtitle-1 {
 import { getAuth } from 'firebase/auth'
 import router from '../router/index';
 import { signOut } from "firebase/auth";
+import NavBar from '../components/NavBar.vue';
 const auth = getAuth();
 
 export default {
     data: () => ({
         step: 1,
-        appTitle: 'FutSwap',
+        appTitle: "FutSwap",
         menuItems: [
-            {title: 'Explorar', path: '/explorar'},
-            {title: 'Inventario', path:'/collection'},
-            {title: 'Swaps', path:'/swaps'},
-            {title: auth.currentUser.email, path: '/profile'},
+            { title: "Explorar", path: "/explorar" },
+            { title: "Inventario", path: "/collection" },
+            { title: "Swaps", path: "/swaps" },
+            { title: auth.currentUser.email, path: "/profile" },
         ],
         dialog: false,
         dialogReport: false,
         headers: [
-            { text: 'Vendedor', align: 'start', sortable: false, value: 'name', },
-            { text: 'Fecha (AAAA/MM/DD) ', value: 'date' },
-            { text: 'Estado', value: 'status' },
-            { text: 'Recibo', value: 'recibo', sortable: false },
-            { text: 'Doy', value: 'doy', sortable: false },
-            { text: 'Acciones', value: 'actions', sortable: false },
+            { text: "Vendedor", align: "start", sortable: false, value: "name", },
+            { text: "Fecha (AAAA/MM/DD) ", value: "date" },
+            { text: "Estado", value: "status" },
+            { text: "Recibo", value: "recibo", sortable: false },
+            { text: "Doy", value: "doy", sortable: false },
+            { text: "Acciones", value: "actions", sortable: false },
         ],
-        statuses: ['En curso', 'Terminado'],
+        statuses: ["En curso", "Terminado"],
         swaps: [],
         editedIndex: -1,
         editedItem: {
-            name: '',
+            name: "",
             date: 0,
             status: 0,
             recibo: 0,
             doy: 0,
         },
         defaultItem: {
-            name: '',
+            name: "",
             date: 0,
             status: 0,
             recibo: 0,
             doy: 0,
         },
     }),
-
     computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Quieres actualizar el estado de este swap?'
-      },
-    },  
-
+        formTitle() {
+            return this.editedIndex === -1 ? "New Item" : "Quieres actualizar el estado de este swap?";
+        },
+    },
     props: {
         source: String
     },
-
     watch: {
-        dialog (val) {
-            val || this.close()
+        dialog(val) {
+            val || this.close();
         },
-        dialogReport (val) {
-            val || this.closeReport()
+        dialogReport(val) {
+            val || this.closeReport();
         },
     },
-
-    created () {
-        this.initialize()
+    created() {
+        this.initialize();
     },
-
     methods: {
         logout: async function () {
-        const auth = getAuth();
-        await signOut(auth);
-        await router.push('/landing');
+            const auth = getAuth();
+            await signOut(auth);
+            await router.push("/landing");
         },
-
-        getColor (status) {
-            if (status == 'Cancelado') return 'error'
-            else if (status == 'Pendiente') return 'warning'
-            else if (status == 'En curso') return 'info'
-            else if (status == 'Terminado') return 'success'
-            else return '#9ea7ad'
+        getColor(status) {
+            if (status == "Cancelado")
+                return "error";
+            else if (status == "Pendiente")
+                return "warning";
+            else if (status == "En curso")
+                return "info";
+            else if (status == "Terminado")
+                return "success";
+            else
+                return "#9ea7ad";
         },
-        
-        initialize () {
+        initialize() {
             this.swaps = [
-            { name: 'Nestor',
-                img: require("../assets/persona1.jpeg"),
-                date: '2022/10/08',
-                status: 'En curso',
-                recibo: 5,
-                doy: 3, },
-            { name: 'Cristian',
-                img: require("../assets/persona2.jpg"),
-                date: '2022/10/07',
-                status: 'Cancelado',
-                recibo: 1,
-                doy: 2, },
-            { name: 'Miguel',
-                img: require("../assets/persona3.jpg"),
-                date: '2022/10/06',
-                status: 'En curso',
-                recibo: 13,
-                doy: 6, },
-            { name: 'Jony',
-                img: require("../assets/persona4.jpg"),
-                date: '2022/10/05',
-                status: 'Terminado',
-                recibo: 29,
-                doy: 11, },
-            { name: 'Esequiel',
-                img: require("../assets/persona5.webp"),
-                date: '2022/10/04',
-                status: 'Pendiente',
-                recibo: 100,
-                doy: 39, },
-            { name: 'Ricardo',
-                img: require("../assets/persona6.webp"),
-                date: '2022/10/03',
-                status: 'Pendiente',
-                recibo: 94,
-                doy: 25, },
-                { name: 'Nestor',
-                img: require("../assets/persona1.jpeg"),
-                date: '2022/10/02',
-                status: 'En curso',
-                recibo: 5,
-                doy: 3, },
-            { name: 'Cristian',
-                img: require("../assets/persona2.jpg"),
-                date: '2022/10/01',
-                status: 'Cancelado',
-                recibo: 1,
-                doy: 2, },
-            { name: 'Miguel',
-                img: require("../assets/persona3.jpg"),
-                date: '2022/09/30',
-                status: 'En curso',
-                recibo: 13,
-                doy: 6, },
-            { name: 'Jony',
-                img: require("../assets/persona4.jpg"),
-                date: '2022/09/29',
-                status: 'Terminado',
-                recibo: 29,
-                doy: 11, },
-            { name: 'Esequiel',
-                img: require("../assets/persona5.webp"),
-                date: '2022/09/28',
-                status: 'Pendiente',
-                recibo: 100,
-                doy: 39, },
-            { name: 'Ricardo',
-                img: require("../assets/persona6.webp"),
-                date: '2022/09/27',
-                status: 'Pendiente',
-                recibo: 94,
-                doy: 25, },
-            ]
+                { name: "Nestor", img: require("../assets/persona1.jpeg"), date: "2022/10/08", status: "En curso", recibo: 5, doy: 3, },
+                { name: "Cristian", img: require("../assets/persona2.jpg"), date: "2022/10/07", status: "Cancelado", recibo: 1, doy: 2, },
+                { name: "Miguel", img: require("../assets/persona3.jpg"), date: "2022/10/06", status: "En curso", recibo: 13, doy: 6, },
+                { name: "Jony", img: require("../assets/persona4.jpg"), date: "2022/10/05", status: "Terminado", recibo: 29, doy: 11, },
+                { name: "Esequiel", img: require("../assets/persona5.webp"), date: "2022/10/04", status: "Pendiente", recibo: 100, doy: 39, },
+                { name: "Ricardo", img: require("../assets/persona6.webp"), date: "2022/10/03", status: "Pendiente", recibo: 94, doy: 25, },
+                { name: "Nestor", img: require("../assets/persona1.jpeg"), date: "2022/10/02", status: "En curso", recibo: 5, doy: 3, },
+                { name: "Cristian", img: require("../assets/persona2.jpg"), date: "2022/10/01", status: "Cancelado", recibo: 1, doy: 2, },
+                { name: "Miguel", img: require("../assets/persona3.jpg"), date: "2022/09/30", status: "En curso", recibo: 13, doy: 6, },
+                { name: "Jony", img: require("../assets/persona4.jpg"), date: "2022/09/29", status: "Terminado", recibo: 29, doy: 11, },
+                { name: "Esequiel", img: require("../assets/persona5.webp"), date: "2022/09/28", status: "Pendiente", recibo: 100, doy: 39, },
+                { name: "Ricardo", img: require("../assets/persona6.webp"), date: "2022/09/27", status: "Pendiente", recibo: 94, doy: 25, },
+            ];
         },
-
-        editItem (item) {
-            this.editedIndex = this.swaps.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
+        editItem(item) {
+            this.editedIndex = this.swaps.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialog = true;
         },
-
-        reportItem (item) {
-            this.editedIndex = this.swaps.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialogReport = true
+        reportItem(item) {
+            this.editedIndex = this.swaps.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialogReport = true;
         },
-
-        ReportConfirm () {
-            this.closeReport()
+        ReportConfirm() {
+            this.closeReport();
         },
-
-        close () {
-            this.dialog = false
+        close() {
+            this.dialog = false;
             this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
-            })
+                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedIndex = -1;
+            });
         },
-
-        closeReport () {
-            this.dialogReport = false
+        closeReport() {
+            this.dialogReport = false;
             this.$nextTick(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
-            })
+                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedIndex = -1;
+            });
         },
-
-        save () {
+        save() {
             if (this.editedIndex > -1) {
-            Object.assign(this.swaps[this.editedIndex], this.editedItem)
-            } else {
-            this.swaps.push(this.editedItem)
+                Object.assign(this.swaps[this.editedIndex], this.editedItem);
             }
-            this.close()
+            else {
+                this.swaps.push(this.editedItem);
+            }
+            this.close();
         },
-  }
+    },
+    components: { NavBar }
 };
 </script>
