@@ -1,12 +1,11 @@
 <template>
   <v-img src="../assets/fondo.png">
-    <v-app-bar app height="85%">
-      <v-toolbar-title>
-        <router-link to="/landing" style="text-decoration: none;">
-          <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-          </v-img>
-        </router-link>
-      </v-toolbar-title>
+    <v-app-bar app height="72px" class="white" elevate-on-scroll v-if="!loading">
+        <v-toolbar-title>
+            <router-link to="/explorar" style="text-decoration: none;">
+                <v-img lazy-src="" max-height="56" max-width="108" src="../assets/FutSwap.png"></v-img>
+            </router-link>
+        </v-toolbar-title>
     </v-app-bar>
     <v-app id="inspire" class="transparent mt-n11">
       <v-content>
