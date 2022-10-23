@@ -231,7 +231,7 @@ export default {
   }),
  computed: {
         isDisabled() {
-        return this.categoryName.length > 0;
+        return this.password.length > 0;
     }
   },
   props: {
