@@ -26,13 +26,9 @@
                                     <v-list-item>
                                         <v-list-item-content>
                                             <v-list-item-subtitle>Distancia de búsqueda</v-list-item-subtitle>
-                                            <v-list-item-action class="ma-0">
+                                            <v-list-item-action class="ma-0 mt-7 mb-0">
                                                 <v-col class="col-md-12">
-                                                    <v-slider class="align-center" v-model="radius" :max="250" dense color="var(--gold)" track-color="var(--lightblue)">
-                                                        <template v-slot:append>
-                                                            <v-text-field v-model="radius" color="var(--gold)" flat dense rounded outlined hide-details hide-spin-buttons class="ma-0 pa-0" type="number" suffix="km" style="width: 100px; max-height: 100%;"></v-text-field>
-                                                        </template>
-                                                    </v-slider>
+                                                    <v-slider class="align-center" v-model="radius" :max="250"  thumb-label="always" thumb-color="blue" dense color="var(--gold)" track-color="var(--lightblue)"/>
                                                 </v-col>
                                             </v-list-item-action>
                                         </v-list-item-content>
@@ -49,20 +45,6 @@
                 </v-row>
             </v-container>
             <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
-                <!-- <v-row>
-                    <v-card width="100%">
-                        <v-img
-                        class="align-center"
-                        style="border-radius: 4px 4px 0 0;"
-                        :aspect-ratio="5"
-                        src="../assets/banner.webp"
-                        gradient="to top right, rgba(62,77,124,0.3), rgba(62,77,124,0.6)">
-                            <v-card-title class="justify-center text-uppercase">
-                                <h1 class="h1">Explorar swaps</h1>
-                            </v-card-title>
-                        </v-img>
-                    </v-card>
-                </v-row> -->
                 <v-row class="pa-4">
                     <template v-for="swap in swaps">
                         <v-col class="col-lg-3 col-md-3 col-sm-6" :key="swap.distance" v-if="swap.distance < radiusbtn">

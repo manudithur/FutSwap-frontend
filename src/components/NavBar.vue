@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import signOutAsync from '../backend/users'
 import router from '../router/index'
+import {getAuth, signOut } from 'firebase/auth'
 
 export default {
     name: 'NavBar',
@@ -35,7 +35,8 @@ export default {
     }),
     methods:{
         logout: async function() {
-            signOutAsync();
+            const auth = getAuth();
+            signOut(auth);
             router.push('/landing');
         },
     }
