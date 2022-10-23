@@ -233,7 +233,7 @@ export default {
   }),
  computed: {
         isDisabled() {
-        return this.password.length > 0;
+        return this.password.length > 0 || pattern.test(this.email);
     }
   },
   props: {
