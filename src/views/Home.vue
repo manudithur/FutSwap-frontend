@@ -34,6 +34,7 @@
                             label="Email"
                             outlined
                             v-model="LEmail"
+                            :rules="[rules.required, rules.email]"
                             name="Email"
                             prepend-icon="email"
                             type="text"
@@ -44,6 +45,7 @@
                             label="Contraseña"
                             outlined
                             v-model="LPassword"
+                            :rules="[rules.required, rules.counter, rules.passwordregex]"
                             name="password"
                             prepend-icon="lock"
                             type="password"
@@ -120,7 +122,7 @@
                             required
                           />
                           <v-text-field
-                            id="password"
+                            id="Cellphone"
                             outlined
                             v-model="RPhone"
                             :rules="[rules.required, rules.cellphone]"
