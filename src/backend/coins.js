@@ -1,5 +1,6 @@
-import { getFirestore } from 'firebase/firestore';
-import { validateUserID } from '@/backend/validation';
+import {getFirestore} from 'firebase/firestore';
+import {validateUserID} from '@/backend/validation';
+import firebase from "firebase/compat";
 
 /* Get the amount of coins of a user
  * @param {string} uid
@@ -9,21 +10,21 @@ export async function getUserCoinsAsync(uid) {
     uid = validateUserID(uid);
     const db = getFirestore();
     const c = await db.collection('coins').doc(uid).get();
-    return c.exists() ? c.data().amount : 0;
+    return c.exists ? c.data().amount : 0;
 }
 
-/* Add coins to the total amount of coins of a user
- * @param {string} uid
+/* Realize checkout of futcoins, should use the string returned to call to mercadopago.checkout
+ * and render the checkout page.
  * @param {number} coins
+ * @returns {Promise<string>}
  */
-export async function addUserCoinsAsync(uid, coins) {
-    uid = validateUserID(uid);
-    coins = parseInt(coins);
-    const db = getFirestore();
-    const c = await db.collection('coins').doc(uid);
-    if (c.exists()) {
-        await c.update({amount: c.data().amount + coins});
-    } else {
-        await c.set({amount: coins});
+export async function checkoutFutcoinsAsync(quantity) {
+    const create_preference = firebase.functions().httpsCallable('create_preference');
+    try {
+        const result = await create_preference({quantity: quantity});
+        return result.data.id;
+    } catch (e) {
+        console.log(e);
     }
 }
+
