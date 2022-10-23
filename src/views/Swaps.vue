@@ -1,127 +1,105 @@
-<!-- COLORS
-Light Blue: #B2D8FF
-Indigo Blue: #5779B2
-Dark Blue: #3E4D7C
-Gold: #E6BF3F
-Silver: #666666 -->
-
 <template>
-  <v-app id="inspire" class="transparent">
-    <NavBar />
-    <v-main class="content align-center py-4">
-      <v-container
-        class="elevation-1 pt-0 align-center"
-        style="background-color: white; border-radius: 4px"
-      >
-        <v-row>
-          <v-card width="100%">
-            <v-img
-              class="align-center"
-              style="border-radius: 4px 4px 0 0"
-              :aspect-ratio="5"
-              src="../assets/banner4.jpg"
-              gradient="to top right, rgba(62,77,124,0.3), rgba(62,77,124,0.6)"
-            >
-              <v-card-title class="justify-center text-uppercase">
-                <h1 class="h1">Mis Swaps</h1>
-              </v-card-title>
-            </v-img>
-          </v-card>
-        </v-row>
-        <v-row class="pa-4 pt-8">
-          <v-data-table
-            style="width: 100%"
-            :headers="headers"
-            :items="swaps"
-            sort-by="date"
-            sort-desc
-          >
-            <template v-slot:top>
-              <v-dialog v-model="dialog" max-width="500px">
-                <v-card>
-                  <v-card-title>
-                    <span class="text-h6">{{ formTitle }}</span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col class="col-md-12">
-                          <v-select
-                            v-model="editedItem.status"
-                            :items="statuses"
-                            label="Estado"
-                          ></v-select>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="#3E4D7C" text @click="close"> Cancel </v-btn>
-                    <v-btn color="#3E4D7C" text @click="save"> Save </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-              <v-dialog v-model="dialogReport" max-width="500px">
-                <v-card>
-                  <v-card-title class="text-h6 justify-center"
-                    >Seguro que quieres denunciar a este usuario?</v-card-title
-                  >
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="#3E4D7C" text @click="closeReport"
-                      >Cancelar</v-btn
-                    >
-                    <v-btn color="#3E4D7C" text @click="ReportConfirm"
-                      >OK</v-btn
-                    >
-                    <v-spacer></v-spacer>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </template>
-            <template v-slot:item.name="{ item }">
-              <v-row class="d-flex align-center">
-                <img class="mx-4 avtr" :src="item.img" />
-                {{ item.name }}
-              </v-row>
-            </template>
-            <template v-slot:item.status="{ item }">
-              <v-chip :color="getColor(item.status)" dark>
-                {{ item.status }}
-              </v-chip>
-            </template>
-            <template v-slot:item.actions="{ item }">
-              <v-row>
-                <v-col class="col-md-3">
-                  <v-icon
-                    small
-                    class="mx-1"
-                    v-if="item.status == 'En curso'"
-                    @click="editItem(item)"
-                  >
-                    mdi-check-bold
-                  </v-icon>
-                </v-col>
-                <v-col class="col-md-3">
-                  <v-icon small class="mx-1" @click="reportItem(item)">
-                    mdi-alert
-                  </v-icon>
-                </v-col>
-              </v-row>
-            </template>
-            <template v-slot:no-data>
-              <v-btn color="primary" @click="initialize"> Reset </v-btn>
-            </template>
-          </v-data-table>
-        </v-row>
-      </v-container>
-    </v-main>
-    <FooterBar />
-  </v-app>
+    <v-app>
+        <NavBar/>
+        <v-main class="bg">
+            <v-container class="mb-8">
+                <h1 class="text-h3 text-uppercase white--text font-weight-black"
+                style="text-shadow: 0px 1px 4px #3E4D7C">Mis Swaps</h1>
+            </v-container>
+            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
+                <!-- <v-row>
+                    <v-card width="100%">
+                        <v-img class="align-center" style="border-radius: 4px 4px 0 0;" :aspect-ratio="5" src="../assets/banner4.jpg"
+                            gradient="to top right, rgba(62,77,124,0.3), rgba(62,77,124,0.6)">
+                            <v-card-title class="justify-center text-uppercase">
+                                <h1 class="h1">Mis Swaps</h1>
+                            </v-card-title>
+                        </v-img>
+                    </v-card>
+                </v-row> -->
+                <v-row class="pa-4">
+                    <v-data-table style="width: 100%;" :headers="headers" :items="swaps" sort-by="date" sort-desc>
+                        <template v-slot:top>
+                        <v-dialog v-model="dialog" max-width="500px">
+                            <v-card>
+                                <v-card-title>
+                                    <span class="text-h6">{{ formTitle }}</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-container>
+                                        <v-row>
+                                            <v-col class="col-md-12">
+                                                <v-select
+                                                v-model="editedItem.status"
+                                                :items="statuses"
+                                                label="Estado"
+                                                ></v-select>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </v-card-text>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="var(--darkblue)" text @click="close">
+                                        Cancelar
+                                    </v-btn>
+                                    <v-btn color="var(--gold)" text @click="save">
+                                        Aplicar
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="dialogReport" max-width="500px">
+                            <v-card>
+                                <v-card-title class="text-h6 justify-center">Seguro que quieres denunciar a este usuario?</v-card-title>
+                                <v-card-actions class="justify-center">
+                                    <v-btn color="var(--darkblue)" text @click="closeReport">Cancelar</v-btn>
+                                    <v-btn color="var(--gold)" text @click="ReportConfirm">Denunciar</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        </template>
+                        <template v-slot:item.name="{ item }">
+                            <v-row class="d-flex align-center">
+                                <img class="mx-4 avtr" :src="item.img">
+                                {{ item.name }}
+                            </v-row>
+                        </template>
+                        <template v-slot:item.status="{ item }">
+                            <v-chip :color="getColor(item.status)" dark>
+                                {{ item.status }}
+                            </v-chip>
+                        </template>
+                        <template v-slot:item.actions="{ item }">
+                            <v-row>
+                                <v-col class="col-md-3">
+                                    <v-icon small class="mx-1" v-if="item.status == 'En curso'" @click="editItem(item)">
+                                        mdi-check-bold
+                                    </v-icon>
+                                </v-col>
+                                <v-col class="col-md-3">
+                                    <v-icon small class="mx-1" @click="reportItem(item)">
+                                        mdi-alert
+                                    </v-icon>
+                                </v-col>
+                            </v-row>
+                        </template>
+                    </v-data-table>
+                </v-row>
+            </v-container>
+        </v-main>
+        <FooterBar/>
+    </v-app>
 </template>
 
-<style scoped>
+<style>
+:root {
+  --darkblue: #3E4D7C;
+  --indigo: #5779B2;
+  --lightblue: #B2D8FF;
+  --gold: #E6BF3F;
+}
+
 .bg {
   background-image: url("../assets/fondo.png");
   background-repeat: no-repeat;

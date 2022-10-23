@@ -23,21 +23,34 @@
             class="text-center justify-center align-center white mx-3 mb-3 pa-3"
           >
             <v-card-title class="justify-center">
-              <v-avatar
-                circle
-                size="150"
-                class="pt-5"
-                :loading="isSelecting"
-                @click="handleFileImport"
+              <v-badge
+                avatar
+                bordered
+                bottom
+                content=""
+                color="var(--darkblue)"
+                icon=""
+                overlap
+                offset-x="32"
+                offset-y="32"
               >
-                <input ref="uploader" class="d-none" type="file" accept="image/jpeg" @change="onFileChanged"/>
-                <v-img v-if="profilePictureUrl" :src="profilePictureUrl" />
-              </v-avatar>
+                <template v-slot:badge>
+                  <v-icon size="20" style="z-index: 1; height:26px !important; width: 26px !important;" @click="handleFileImport">mdi-tray-arrow-up</v-icon>
+                </template>
+                <v-avatar
+                  circle
+                  size="150"
+                  :loading="isSelecting"
+                >
+                  <input ref="uploader" class="d-none" type="file" accept="image/jpeg" @change="onFileChanged"/>
+                  <v-img v-if="profilePictureUrl" :src="profilePictureUrl" />
+                </v-avatar>
+              </v-badge>
             </v-card-title>
             <p class="pt-5 pb-0 mb-0">RATING:</p>
             <v-rating
-              background-color="warning lighten-1"
-              color="warning"
+              background-color="var(--gold)"
+              color="var(--gold)"
               empty-icon="mdi-star-outline"
               full-icon="mdi-star"
               half-icon="mdi-star-half-full"
@@ -93,10 +106,34 @@
   </v-app>
 </template>
 
-<style scoped>
+<style>
+:root {
+  --darkblue: #3E4D7C;
+  --indigo: #5779B2;
+  --lightblue: #B2D8FF;
+  --gold: #E6BF3F;
+}
+
 html {
   overflow: visible;
   -ms-overflow-style: none;
+}
+
+.content {
+  background: url("../assets/fondo.png") no-repeat center;
+  background-size: cover;
+  height: 100%;
+}
+
+.v-badge__badge {
+  height: 32px !important;
+  width: 32px !important;
+  border-radius: 50% !important;
+  padding: 4px !important;
+}
+
+.v-badge__badge::after {
+  border-width: 3px !important;
 }
 </style>
 

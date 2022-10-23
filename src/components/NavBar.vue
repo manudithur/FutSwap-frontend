@@ -1,14 +1,13 @@
 <template>
-    <v-app-bar app height="85%" v-if="!loading">
+    <v-app-bar app height="72px" class="white" elevate-on-scroll v-if="!loading">
         <v-toolbar-title>
             <router-link to="/explorar" style="text-decoration: none;">
-                <v-img lazy-src="" max-height="100" max-width="130" src="../assets/FutSwap.png">
-                </v-img>
+                <v-img lazy-src="" max-height="56" max-width="108" src="../assets/FutSwap.png"></v-img>
             </router-link>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-            <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path">
+            <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path" text>
                 {{ item.title }}
             </v-btn>
             <v-btn v-if="!loading" flat to="/profile"><v-icon>mdi-account</v-icon></v-btn>
@@ -22,7 +21,8 @@
 </template>
 
 <script>
-
+import signOutAsync from '../backend/users'
+import router from '../router/index'
 
 export default {
     name: 'NavBar',
@@ -33,6 +33,12 @@ export default {
             { title: 'Swaps', path: '/swaps' },
         ],
     }),
+    methods:{
+        logout: async function() {
+            signOutAsync();
+            router.push('/landing');
+        },
+    }
 
 }
 </script>
