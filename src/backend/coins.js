@@ -1,6 +1,6 @@
 import {getFirestore} from 'firebase/firestore';
 import {validateUserID} from '@/backend/validation';
-import firebase from "firebase/compat";
+import {getFunctions, httpsCallable} from 'firebase/functions';
 
 /* Get the amount of coins of a user
  * @param {string} uid
@@ -19,7 +19,8 @@ export async function getUserCoinsAsync(uid) {
  * @returns {Promise<string>}
  */
 export async function checkoutFutcoinsAsync(quantity) {
-    const create_preference = firebase.functions().httpsCallable('create_preference');
+    const functions = getFunctions();
+    const create_preference = httpsCallable(functions, 'create_preference');
     try {
         const result = await create_preference({quantity: quantity});
         return result.data.id;
