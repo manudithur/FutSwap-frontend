@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <NavBar/>
-        <v-main class="bg">
+        <v-main class="content align-center">
             <v-container class="mb-8">
                 <v-row class="ma-0 align-center">
                     <v-col class="col-lg-6 col-sm-12 pa-0">
@@ -26,17 +26,18 @@
                     </v-col>
                 </v-row>
             </v-container>
-            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
-                <!-- <v-row>
-                    <v-card width="100%">
-                        <v-img class="align-center" style="border-radius: 4px 4px 0 0;" :aspect-ratio="5" src="../assets/banner6.webp"
-                            gradient="to top right, rgba(62,77,124,0.3), rgba(62,77,124,0.6)">
-                            <v-card-title class="justify-center text-uppercase">
-                                <h1 class="h1">Mi Inventario</h1>
-                            </v-card-title>
-                        </v-img>
-                    </v-card>
-                </v-row> -->
+            <v-row
+                class="fill-height justify-center align-center pa-5 ma-0"
+                v-if="loading"
+            >
+                <v-progress-circular
+                indeterminate
+                color="primary"
+                :size="70"
+                :width="7"
+                ></v-progress-circular>
+            </v-row>
+            <v-container class="mb-8 elevation-8" v-if="!loading" style="background-color: white; border-radius: 4px;">
                 <v-row class="pa-4">
                     <v-tabs grow color="var(--darkblue)">
                         <v-tabs-slider color="var(--darkblue)"></v-tabs-slider>
@@ -60,31 +61,6 @@
                                                 <v-img :src="j.url" style="filter:grayscale(100%) brightness(80%) sepia(300%) contrast(60%) hue-rotate(50deg) saturate(500%)"></v-img>
                                             </v-card>
                                         </v-col>
-                                        <!--
-                                        <v-card class="overflow-hidden">
-                                            <v-row>
-                                                <v-col cols="5" class="pa-0">
-                                                    <v-img :src="j.url"></v-img>
-                                                </v-col>
-                                                <v-col cols="7" class="pr-6 d-flex flex-column">
-                                                    <h2 class="pt-4 text-center text-uppercase" style="color:#666666">Tus
-                                                        Figuritas</h2>
-
-                                                    <button @click="{j.count}++">+</button>
-                                                    <div class="text-center ma-auto" style="color:#333333; font-size: 8rem;">
-                                                        {{j.count}}</div>
-
-                                                    <v-divider class="mt-auto"></v-divider>
-
-                                                    <v-card-actions class="pa-4 justify-center">
-                                                        <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Buy</v-btn>
-                                                        <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Swap</v-btn>
-                                                        <v-btn class="ma-1" outlined rounded color="#3E4D7C" dark>Sell</v-btn>
-                                                    </v-card-actions>
-                                                </v-col>
-                                            </v-row>
-                                        </v-card>
-                                        -->
                                     </template>
                                     <v-col :key="index" class="col-md-12">
                                         <v-divider v-if="index < teams.length - 1"></v-divider>
@@ -179,109 +155,127 @@
 import Swal from 'sweetalert2';
 import NavBar from '../components/NavBar.vue';
 import FooterBar from '../components/FooterBar.vue';
+import { getCurrentUser } from '../backend/users';
+import { getInventoryFiguAsync, setInventoryFiguAsync } from '../backend/inventory';
 
 export default {
     data: () => ({
         sections: ['Argentina', 'Netherlands', 'Spain', 'Portugal'],
         filter: [],
+        loading: true,
         teams: [
             {id: 'Argentina', players: [
-                    { url: require("../assets/figuritas/arg01.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg02.jpg"), status: 0},
-                    { url: require("../assets/figuritas/arg03.jpg"), status: 1},
-                    { url: require("../assets/figuritas/arg04.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg05.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg06.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg07.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg08.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg09.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg10.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg11.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg12.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg13.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg14.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg15.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg16.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg17.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg18.jpg"), status: -1},
-                    { url: require("../assets/figuritas/arg19.jpg"), status: -1},
+                    { id:'arg01', url: require("../assets/figuritas/arg01.jpg"), status: -1},
+                    { id:'arg02', url: require("../assets/figuritas/arg02.jpg"), status: 0},
+                    { id:'arg03', url: require("../assets/figuritas/arg03.jpg"), status: 1},
+                    { id:'arg04', url: require("../assets/figuritas/arg04.jpg"), status: -1},
+                    { id:'arg05', url: require("../assets/figuritas/arg05.jpg"), status: -1},
+                    { id:'arg06', url: require("../assets/figuritas/arg06.jpg"), status: -1},
+                    { id:'arg07', url: require("../assets/figuritas/arg07.jpg"), status: -1},
+                    { id:'arg08', url: require("../assets/figuritas/arg08.jpg"), status: -1},
+                    { id:'arg09', url: require("../assets/figuritas/arg09.jpg"), status: -1},
+                    { id:'arg10', url: require("../assets/figuritas/arg10.jpg"), status: -1},
+                    { id:'arg11', url: require("../assets/figuritas/arg11.jpg"), status: -1},
+                    { id:'arg12', url: require("../assets/figuritas/arg12.jpg"), status: -1},
+                    { id:'arg13', url: require("../assets/figuritas/arg13.jpg"), status: -1},
+                    { id:'arg14', url: require("../assets/figuritas/arg14.jpg"), status: -1},
+                    { id:'arg15', url: require("../assets/figuritas/arg15.jpg"), status: -1},
+                    { id:'arg16', url: require("../assets/figuritas/arg16.jpg"), status: -1},
+                    { id:'arg17', url: require("../assets/figuritas/arg17.jpg"), status: -1},
+                    { id:'arg18', url: require("../assets/figuritas/arg18.jpg"), status: -1},
+                    { id:'arg19', url: require("../assets/figuritas/arg19.jpg"), status: -1},
                 ]
             },
             {id: 'Netherlands', players: [
-                    { url: require("../assets/figuritas/ned01.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned02.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned03.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned04.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned05.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned06.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned07.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned08.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned09.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned10.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned11.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned12.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned13.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned14.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned15.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned16.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned17.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned18.jpg"), status: -1},
-                    { url: require("../assets/figuritas/ned19.jpg"), status: -1},
+                    { id:'ned01', url: require("../assets/figuritas/ned01.jpg"), status: -1},
+                    { id:'ned02', url: require("../assets/figuritas/ned02.jpg"), status: -1},
+                    { id:'ned03', url: require("../assets/figuritas/ned03.jpg"), status: -1},
+                    { id:'ned04', url: require("../assets/figuritas/ned04.jpg"), status: -1},
+                    { id:'ned05', url: require("../assets/figuritas/ned05.jpg"), status: -1},
+                    { id:'ned06', url: require("../assets/figuritas/ned06.jpg"), status: -1},
+                    { id:'ned07', url: require("../assets/figuritas/ned07.jpg"), status: -1},
+                    { id:'ned08', url: require("../assets/figuritas/ned08.jpg"), status: -1},
+                    { id:'ned09', url: require("../assets/figuritas/ned09.jpg"), status: -1},
+                    { id:'ned10', url: require("../assets/figuritas/ned10.jpg"), status: -1},
+                    { id:'ned11', url: require("../assets/figuritas/ned11.jpg"), status: -1},
+                    { id:'ned12', url: require("../assets/figuritas/ned12.jpg"), status: -1},
+                    { id:'ned13', url: require("../assets/figuritas/ned13.jpg"), status: -1},
+                    { id:'ned14', url: require("../assets/figuritas/ned14.jpg"), status: -1},
+                    { id:'ned15', url: require("../assets/figuritas/ned15.jpg"), status: -1},
+                    { id:'ned16', url: require("../assets/figuritas/ned16.jpg"), status: -1},
+                    { id:'ned17', url: require("../assets/figuritas/ned17.jpg"), status: -1},
+                    { id:'ned18', url: require("../assets/figuritas/ned18.jpg"), status: -1},
+                    { id:'ned19', url: require("../assets/figuritas/ned19.jpg"), status: -1},
                 ]},
             {id: 'Spain', players: [
-                    { url: require("../assets/figuritas/esp01.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp02.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp03.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp04.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp05.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp06.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp07.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp08.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp09.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp10.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp11.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp12.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp13.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp14.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp15.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp16.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp17.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp18.jpg"), status: -1},
-                    { url: require("../assets/figuritas/esp19.jpg"), status: -1},
+                    { id:'esp01', url: require("../assets/figuritas/esp01.jpg"), status: -1},
+                    { id:'esp02', url: require("../assets/figuritas/esp02.jpg"), status: -1},
+                    { id:'esp03', url: require("../assets/figuritas/esp03.jpg"), status: -1},
+                    { id:'esp04', url: require("../assets/figuritas/esp04.jpg"), status: -1},
+                    { id:'esp05', url: require("../assets/figuritas/esp05.jpg"), status: -1},
+                    { id:'esp06', url: require("../assets/figuritas/esp06.jpg"), status: -1},
+                    { id:'esp07', url: require("../assets/figuritas/esp07.jpg"), status: -1},
+                    { id:'esp08', url: require("../assets/figuritas/esp08.jpg"), status: -1},
+                    { id:'esp09', url: require("../assets/figuritas/esp09.jpg"), status: -1},
+                    { id:'esp10', url: require("../assets/figuritas/esp10.jpg"), status: -1},
+                    { id:'esp11', url: require("../assets/figuritas/esp11.jpg"), status: -1},
+                    { id:'esp12', url: require("../assets/figuritas/esp12.jpg"), status: -1},
+                    { id:'esp13', url: require("../assets/figuritas/esp13.jpg"), status: -1},
+                    { id:'esp14', url: require("../assets/figuritas/esp14.jpg"), status: -1},
+                    { id:'esp15', url: require("../assets/figuritas/esp15.jpg"), status: -1},
+                    { id:'esp16', url: require("../assets/figuritas/esp16.jpg"), status: -1},
+                    { id:'esp17', url: require("../assets/figuritas/esp17.jpg"), status: -1},
+                    { id:'esp18', url: require("../assets/figuritas/esp18.jpg"), status: -1},
+                    { id:'esp19', url: require("../assets/figuritas/esp19.jpg"), status: -1},
                 ]
             },
             {id: 'Portugal', players: [
-                    { url: require("../assets/figuritas/por01.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por02.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por03.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por04.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por05.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por06.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por07.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por08.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por09.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por10.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por11.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por12.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por13.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por14.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por15.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por16.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por17.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por18.jpg"), status: -1},
-                    { url: require("../assets/figuritas/por19.jpg"), status: -1},
+                    { id:'por01', url: require("../assets/figuritas/por01.jpg"), status: -1},
+                    { id:'por02', url: require("../assets/figuritas/por02.jpg"), status: -1},
+                    { id:'por03', url: require("../assets/figuritas/por03.jpg"), status: -1},
+                    { id:'por04', url: require("../assets/figuritas/por04.jpg"), status: -1},
+                    { id:'por05', url: require("../assets/figuritas/por05.jpg"), status: -1},
+                    { id:'por06', url: require("../assets/figuritas/por06.jpg"), status: -1},
+                    { id:'por07', url: require("../assets/figuritas/por07.jpg"), status: -1},
+                    { id:'por08', url: require("../assets/figuritas/por08.jpg"), status: -1},
+                    { id:'por09', url: require("../assets/figuritas/por09.jpg"), status: -1},
+                    { id:'por10', url: require("../assets/figuritas/por10.jpg"), status: -1},
+                    { id:'por11', url: require("../assets/figuritas/por11.jpg"), status: -1},
+                    { id:'por12', url: require("../assets/figuritas/por12.jpg"), status: -1},
+                    { id:'por13', url: require("../assets/figuritas/por13.jpg"), status: -1},
+                    { id:'por14', url: require("../assets/figuritas/por14.jpg"), status: -1},
+                    { id:'por15', url: require("../assets/figuritas/por15.jpg"), status: -1},
+                    { id:'por16', url: require("../assets/figuritas/por16.jpg"), status: -1},
+                    { id:'por17', url: require("../assets/figuritas/por17.jpg"), status: -1},
+                    { id:'por18', url: require("../assets/figuritas/por18.jpg"), status: -1},
+                    { id:'por19', url: require("../assets/figuritas/por19.jpg"), status: -1},
                 ]
             },
         ],
     }),
+
+    created(){
+        this.load();
+    },
+    mounted(){
+        this.load();
+    },
+
     methods: {
-        increase: function (j) {
-            if (j.status != 1)
+        increase: async function (j) {
+            if (j.status != 1){
                 j.status++;
+                const user = await getCurrentUser();
+                await setInventoryFiguAsync('qatar2022', user.uid, j.id, j.status);
+            }
+                
         },
-        decrease: function (e, j) {
-            if (j.status != -1)
+        decrease: async function (e, j) {
+            if (j.status != -1){
                 j.status--;
+                const user = await getCurrentUser();
+                await setInventoryFiguAsync('qatar2022', user.uid, j.id, j.status);
+            }
             e.preventDefault();
         },
         about: function () {
@@ -293,6 +287,18 @@ export default {
                 confirmButtonColor: '#3e4d7c'
             })
         },
+        test: function(){
+            alert(this.teams[1].players[1].status);
+        },
+        load: async function(){
+            const user = await getCurrentUser();
+            for(const team in this.teams){
+                for(const player in this.teams[team].players){
+                    this.teams[team].players[player].status = await (await getInventoryFiguAsync('qatar2022', user.uid, this.teams[team].players[player].id)).status;
+                }
+            }
+            this.loading = false;
+        }
     },
     props: {
         url: String
