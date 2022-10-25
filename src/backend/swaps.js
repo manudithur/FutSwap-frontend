@@ -64,7 +64,11 @@ export async function getUserSentActiveSwapsAsync(album, uidSender) {
     const snapshot = await getDocs(senderQuery);
 
     let activeSwaps = [];
-    snapshot.forEach((d) => activeSwaps.push(d.id));
+    snapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
@@ -84,7 +88,11 @@ export async function getUserReceivedActiveSwapsAsync(album, uidReceiver) {
     const snapshot = await getDocs(receiverQuery);
 
     let activeSwaps = [];
-    snapshot.forEach((d) => activeSwaps.push(d.id));
+    snapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
@@ -108,8 +116,16 @@ export async function getUserAllActiveSwapsAsync(album, uid) {
     const receiverSnapshot = await receiverSnapshotPromise;
 
     let activeSwaps = [];
-    senderSnapshot.forEach((d) => activeSwaps.push(d.id));
-    receiverSnapshot.forEach((d) => activeSwaps.push(d.id));
+    senderSnapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
+    receiverSnapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
@@ -130,7 +146,11 @@ export async function getUserSentInactiveSwapsAsync(album, uidSender) {
     const snapshot = await getDocs(senderQuery);
 
     let activeSwaps = [];
-    snapshot.forEach((d) => activeSwaps.push(d.id));
+    snapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
@@ -150,7 +170,11 @@ export async function getUserReceivedInactiveSwapsAsync(album, uidReceiver) {
     const snapshot = await getDocs(receiverQuery);
 
     let activeSwaps = [];
-    snapshot.forEach((d) => activeSwaps.push(d.id));
+    snapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
@@ -174,8 +198,16 @@ export async function getUserAllInactiveSwapsAsync(album, uid) {
     const receiverSnapshot = await receiverSnapshotPromise;
 
     let activeSwaps = [];
-    senderSnapshot.forEach((d) => activeSwaps.push(d.id));
-    receiverSnapshot.forEach((d) => activeSwaps.push(d.id));
+    senderSnapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
+    receiverSnapshot.forEach((d) => {
+        let s = d.data();
+        s.id = d.id;
+        activeSwaps.push(s);
+    });
     return activeSwaps;
 }
 
