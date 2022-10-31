@@ -47,10 +47,10 @@
                         <v-tab>Repetidos</v-tab>
                         <v-tab-item class="pt-4">
                             <template v-for="(n, index) in teams">
-                                <v-row :key="n" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
+                                <v-row :key="index" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
                                     <v-col class="col-md-12 pa-0"><v-subheader>{{ n.id }}</v-subheader></v-col>
                                     <template v-for="j in n.players">
-                                        <v-col :key="j.status" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
+                                        <v-col :key="j.figuCode" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
                                             <v-card class="grow" :elevation="8" v-if="j.status == -1">
                                                 <v-img :src="j.url" style="filter: grayscale(100%)"></v-img>
                                             </v-card>
@@ -70,10 +70,10 @@
                         </v-tab-item>
                         <v-tab-item>
                             <template v-for="(n, index) in teams">
-                                <v-row :key="n" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
+                                <v-row :key="index" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
                                     <v-col class="col-md-12 pa-0"><v-subheader>{{ n.id }}</v-subheader></v-col>
                                     <template v-for="j in n.players">
-                                        <v-col :key="j.status" v-if="j.status < 0" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
+                                        <v-col :key="j.figuCode" v-if="j.status < 0" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
                                             <v-card class="grow" :elevation="8">
                                                 <v-img :src="j.url" style="filter: grayscale(100%)"></v-img>
                                             </v-card>
@@ -87,10 +87,10 @@
                         </v-tab-item>
                         <v-tab-item>
                             <template v-for="(n, index) in teams">
-                                <v-row :key="n" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
+                                <v-row :key="index" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
                                     <v-col class="col-md-12 pa-0"><v-subheader>{{ n.id }}</v-subheader></v-col>
                                     <template v-for="j in n.players">
-                                        <v-col :key="j.status" v-if="j.status < 1 && j.status > -1" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
+                                        <v-col :key="j.figuCode" v-if="j.status < 1 && j.status > -1" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
                                             <v-card class="grow" :elevation="8">
                                                 <v-img :src="j.url"></v-img>
                                             </v-card>
@@ -104,10 +104,10 @@
                         </v-tab-item>
                         <v-tab-item>
                             <template v-for="(n, index) in teams">
-                                <v-row :key="n" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
+                                <v-row :key="index" class="pa-4" v-if="filter.includes(n.id) || filter.length == 0">
                                     <v-col class="col-md-12 pa-0"><v-subheader>{{ n.id }}</v-subheader></v-col>
                                     <template v-for="j in n.players">
-                                        <v-col :key="j.status" v-if="j.status > 0" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
+                                        <v-col :key="j.figuCode" v-if="j.status > 0" class="col-md-2 col-sm-3" @click="increase(j)"  @contextmenu="decrease($event, j)">
                                             <v-card class="grow" :elevation="8">
                                                 <v-img :src="j.url" style="filter:grayscale(100%) brightness(80%) sepia(300%) contrast(60%) hue-rotate(50deg) saturate(500%)"></v-img>
                                             </v-card>
@@ -228,7 +228,7 @@ export default {
               try {
                 url = require("../assets/figuritas/" + figu.figuCode + ".jpg");
               } catch(e) {
-                console.log('No se pudo cargar img 💀', figu.figuCode, e);
+                // console.log('No se pudo cargar img 💀', figu.figuCode, e);
               }
 
               teamObj.players.push({
