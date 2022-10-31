@@ -1,4 +1,4 @@
-import {getAuth, getFirestore} from "@/backend/fireGetters";
+import {getAuth, getFirestore, getStorage} from "@/backend/fireGetters";
 import {
     createUserWithEmailAndPassword,
     deleteUser,
@@ -11,7 +11,7 @@ import {
     beforeAuthStateChanged as firebaseBeforeAuthStateChanged,
     onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
-import {getDownloadURL, getStorage, ref, uploadBytes} from 'firebase/storage';
+import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {doc, getDoc, setDoc} from 'firebase/firestore';
 import {validateUserID} from "@/backend/validation";
 
