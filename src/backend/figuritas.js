@@ -43,6 +43,7 @@ export async function getAllFigusDataAsync(album) {
     const c = collection(db, 'albums/' + album + '/figus/');
     const colSnapshot = await getDocs(c);
 
+    // TODO: A cursor may be necessary? https://firebase.google.com/docs/firestore/query-data/query-cursors
     let figus = [];
     colSnapshot.forEach((d) => {
         let figu = d.data();

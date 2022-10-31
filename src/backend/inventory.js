@@ -1,5 +1,5 @@
 import {getFirestore} from "@/backend/fireGetters";
-import {collection, deleteDoc, doc, getDoc, getDocs, limit, query, where, setDoc, writeBatch} from 'firebase/firestore';
+import {collection, deleteDoc, doc, getDoc, getDocs, limit, query, where, setDoc, writeBatch, getCountFromServer} from 'firebase/firestore';
 import {validateAlbum, validateFiguCode, validateUserID} from "@/backend/validation";
 
 // https://firebase.google.com/docs/firestore/manage-data/transactions
@@ -207,4 +207,20 @@ export function getInventoryOfertadasAsync(album, uid) {
     const c = collection(db, 'inventories/' + album + '/' + uid);
     const q = query(c, where('status', '>', 0));
     return performFiguQuery(q);
+}
+/**
+ * Gets all the figuritas faltantes in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<{ figuCode: string, status: number }[]>}
+ */
+export async function countInventoryFaltantesAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const q = query(c, where('status', '<', 0));
+    const colSnapshot = await getCountFromServer(q);
+    return colSnapshot.data().count;
 }

@@ -3,7 +3,7 @@ import {connectFirestoreEmulator, getFirestore as firebaseGetFirestore} from 'fi
 import {connectStorageEmulator, getStorage as firebaseGetStorage} from 'firebase/storage';
 import {connectFunctionsEmulator, getFunctions as firebaseGetFunctions} from 'firebase/functions';
 
-const useEmulators = true;
+const useEmulators = false;
 const forceUseEmulators = true;
 const authEmulator = {host: "localhost", port: 9099};
 const firestoreEmulator = {host: "localhost", port: 8081};
