@@ -1,11 +1,19 @@
+import {getAuth, getFirestore} from "@/backend/fireGetters";
 import {
-    getAuth, sendEmailVerification, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser,
-    signOut, sendPasswordResetEmail, verifyBeforeUpdateEmail, updateProfile
+    createUserWithEmailAndPassword,
+    deleteUser,
+    sendEmailVerification,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signOut,
+    updateProfile,
+    verifyBeforeUpdateEmail,
+    beforeAuthStateChanged as firebaseBeforeAuthStateChanged,
+    onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { validateUserID } from "@/backend/validation";
+import {getDownloadURL, getStorage, ref, uploadBytes} from 'firebase/storage';
+import {doc, getDoc, setDoc} from 'firebase/firestore';
+import {validateUserID} from "@/backend/validation";
 
 /**
  * Registers a new user with an email and password and sends a verification email.
@@ -150,7 +158,7 @@ export async function getUserPrivateProfileAsync() {
 export function updateUserPublicProfileAsync(data, merge = true) {
     const db = getFirestore();
     const d = doc(db, 'profiles/' + getCurrentUser().uid + '-public');
-    return setDoc(d, data, { merge: merge });
+    return setDoc(d, data, {merge: merge});
 }
 
 /**
@@ -163,7 +171,7 @@ export function updateUserPublicProfileAsync(data, merge = true) {
 export function updateUserPrivateProfileAsync(data, merge = true) {
     const db = getFirestore();
     const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
-    return setDoc(d, data, { merge: merge });
+    return setDoc(d, data, {merge: merge});
 }
 
 /**
@@ -199,4 +207,12 @@ export async function uploadProfilePicture(filePath) {
 
     const uploadResult = await uploadBytes(imageRef, filePath);
     return await getDownloadURL(uploadResult.ref);
+}
+
+export async function onAuthStateChanged(observer) {
+    firebaseOnAuthStateChanged(getAuth(), observer);
+}
+
+export async function beforeAuthStateChanged(observer) {
+    firebaseBeforeAuthStateChanged(getAuth(), observer);
 }

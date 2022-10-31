@@ -1,4 +1,3 @@
-
 /**
  * Validates that an album name is in the valid format. This does not verify that it exists.
  * @param {string} album

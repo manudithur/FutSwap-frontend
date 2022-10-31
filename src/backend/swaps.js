@@ -1,5 +1,6 @@
 import {validateAlbum, validateFiguCode, validateUserID} from "./validation.js";
-import {addDoc, collection, getDocs, getFirestore, query, where} from 'firebase/firestore';
+import {getFirestore} from "@/backend/fireGetters";
+import {addDoc, collection, getDocs, query, where} from 'firebase/firestore';
 import {getCurrentUser} from "./users";
 
 /**

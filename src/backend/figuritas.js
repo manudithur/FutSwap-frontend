@@ -1,5 +1,6 @@
-import { getFirestore, doc, getDoc, collection, getDocs } from 'firebase/firestore';
-import { validateAlbum, validateFiguCode } from "@/backend/validation";
+import {getFirestore} from "@/backend/fireGetters";
+import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import {validateAlbum, validateFiguCode} from "@/backend/validation";
 
 /**
  * Represents a figurita's data.
@@ -64,7 +65,7 @@ export async function fillDatabase() {
         { category: "IRN", fullName: "Irán"},
         { category: "USA", fullName: "Estados Unidos"},
         { category: "WAL", fullName: "Gales"},
-        //{ category: "ARG", fullName: "Argentina"},
+        { category: "ARG", fullName: "Argentina"},
         { category: "KSA", fullName: "Arabia Saudita"},
         { category: "MEX", fullName: "México"},
         { category: "POL", fullName: "Polonia"},

@@ -1,5 +1,6 @@
-import { getFirestore, doc, setDoc, collection, getDocs, deleteDoc, getDoc, writeBatch, query, limit } from 'firebase/firestore';
-import { validateAlbum, validateFiguCode, validateUserID } from "@/backend/validation";
+import {getFirestore} from "@/backend/fireGetters";
+import {collection, deleteDoc, doc, getDoc, getDocs, limit, query, setDoc, writeBatch} from 'firebase/firestore';
+import {validateAlbum, validateFiguCode, validateUserID} from "@/backend/validation";
 
 // https://firebase.google.com/docs/firestore/manage-data/transactions
 const FirestoreWritebatchLimit = 500;
@@ -41,7 +42,7 @@ export async function getInventoryAllAsync(album, uid) {
     const colSnapshot = await getDocs(c);
 
     let figus = [];
-    colSnapshot.forEach((d) => figus.push({ figuCode: d.id, status: d.data().status }));
+    colSnapshot.forEach((d) => figus.push({figuCode: d.id, status: d.data().status}));
     return figus;
 }
 
@@ -65,7 +66,7 @@ export function setInventoryFiguAsync(album, uid, figuCode, status) {
     if (status === 0)
         return deleteDoc(d);
 
-    return setDoc(d, { status: status });
+    return setDoc(d, {status: status});
 }
 
 /**
