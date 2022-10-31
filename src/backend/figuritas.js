@@ -5,7 +5,7 @@ import {validateAlbum, validateFiguCode} from "@/backend/validation";
 /**
  * Represents a figurita's data.
  * @typedef {Object} FiguData
- * @property {String} code The figurita's code, formed by the category's abbreviation and the number. For example, 'arg03'.
+ * @property {String} figuCode The figurita's code, formed by the category's abbreviation and the number. For example, 'arg03'.
  * @property {String} category The figurita's category, such as "Fifa World Cup", "Coca", or country's name.
  * @property {number} number The figurita's number within its category. For example, 3 for 'arg03'.
  */
@@ -27,7 +27,7 @@ export async function getFiguDataAsync(album, figuCode) {
         throw 'Unexistant album or figuCode: ' + album + '/' + figuCode;
 
     let figu = snapshot.data();
-    figu.code = figuCode;
+    figu.figuCode = figuCode;
     return figu;
 }
 
@@ -46,7 +46,7 @@ export async function getAllFigusDataAsync(album) {
     let figus = [];
     colSnapshot.forEach((d) => {
         let figu = d.data();
-        figu.code = d.id;
+        figu.figuCode = d.id;
         figus.push(figu);
     });
 

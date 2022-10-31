@@ -47,6 +47,33 @@ export async function getInventoryAllAsync(album, uid) {
 }
 
 /**
+ * Gets the status of all the figuritas in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @param {{ figuCode: string, status: number }[]} result
+ * @returns {Promise<void>}
+ */
+export async function getInventoryAllIntoAsync(album, uid, result) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const colSnapshot = await getDocs(c);
+
+    result.forEach((r) => r.status = 0);
+
+    colSnapshot.forEach((d) => {
+        const figu = result.find((e) => e.figuCode === d.id);
+        if (figu) {
+            figu.status = d.data().status;
+        } else {
+            result.push({figuCode: d.id, status: d.data().status});
+        }
+    });
+}
+
+/**
  * Sets the status of a single figurita in a user's inventory.
  * @param {string} album
  * @param {string} uid

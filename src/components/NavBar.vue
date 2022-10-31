@@ -7,11 +7,11 @@
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items>
-            <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.path" text>
+            <v-btn v-for="item in menuItems" :key="item.title" :to="item.path" text>
                 {{ item.title }}
             </v-btn>
-            <v-btn v-if="!loading" flat to="/profile"><v-icon>mdi-account</v-icon></v-btn>
-            <v-btn flat @click="logout">
+            <v-btn v-if="!loading" text to="/profile"><v-icon>mdi-account</v-icon></v-btn>
+            <v-btn text @click="logout">
                 <v-icon rightdark>
                     logout
                 </v-icon>
@@ -27,6 +27,7 @@ import {getAuth, signOut } from 'firebase/auth'
 export default {
     name: 'NavBar',
     data: () => ({
+      loading: false,
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
             { title: 'Inventario', path: '/collection' },
