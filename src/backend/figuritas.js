@@ -1,5 +1,5 @@
 import {getFirestore} from "@/backend/fireGetters";
-import {collection, doc, getDoc, getDocs} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, query, where, documentId} from 'firebase/firestore';
 import {validateAlbum, validateFiguCode} from "@/backend/validation";
 
 /**
@@ -49,6 +49,36 @@ export async function getAllFigusDataAsync(album) {
         figu.figuCode = d.id;
         figus.push(figu);
     });
+
+    return figus;
+}
+
+/**
+ * Gets the data of the specified the figus in an album.
+ * @param album The album's name. For example, 'qatar2022'.
+ * @param {string[]} figuCodes The codes of the figus to fetch. For example, ['bra11', 'arg05'].
+ * @returns {Promise<FiguData[]>}
+ */
+export async function getFiguArrayDataAsync(album, figuCodes) {
+    album = validateAlbum(album);
+    figuCodes.forEach((figuCode, index) => figuCodes[index] = validateFiguCode(figuCode));
+
+    const db = getFirestore();
+    const c = collection(db, 'albums/' + album + '/figus/');
+
+    const queryInMaxLength = 10;
+    let figus = [];
+
+    for (let i = 0; i < figuCodes.length; i += queryInMaxLength) {
+        const q = query(c, where(documentId(), 'in', figuCodes.slice(i, i + queryInMaxLength)));
+        const colSnapshot = await getDocs(q);
+
+        colSnapshot.forEach((d) => {
+            let figu = d.data();
+            figu.figuCode = d.id;
+            figus.push(figu);
+        });
+    }
 
     return figus;
 }
