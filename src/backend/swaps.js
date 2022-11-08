@@ -1,52 +1,32 @@
-import {validateAlbum, validateFiguCode, validateUserID} from "./validation.js";
-import {getFirestore} from "@/backend/fireGetters";
-import {addDoc, collection, getDocs, query, where} from 'firebase/firestore';
+import {validateAlbum, validateUserID} from "./validation.js";
+import {getFirestore, getFunctions} from "@/backend/fireGetters";
+import {collection, getDocs, query, where} from 'firebase/firestore';
+import {httpsCallable} from "firebase/functions";
 import {getCurrentUser} from "./users";
 
 /**
  * Represents a swap.
  * @typedef {Object} Swap
  * @property {string} id This swap's identification code.
- * @property {string} status This swap's status. Either "pending", "accepted", or "inactive".
+ * @property {string} status This swap's status. Either "PENDING" or "ACCEPTED".
  * @property {string} uidSender The uid of the user that sent this swap offer.
  * @property {string} uidReceiver The uid of the user that received this swap offer.
  * @property {string[]} figuCodesReceiver An array with the figuCodes of the figuritas the receiver will give.
  * @property {string[]} figuCodesSender An array with the figuCodes of the figuritas the sender will give.
+ * @property {Date} createDate The time at which this swap was created.
+ * @property {Date | undefined} acceptDate The time at which this swap was accepted.
+ * @property {number | undefined} senderRating The rating the sender gave to the receiver on this swap.
+ * @property {number | undefined} receiverRating The rating the receiver gave to the sender on this swap.
  */
 
-/**
- * Creates an active swap, sent by the current user to another user.
- * @param {string} album
- * @param {string} uidReceiver
- * @param {string[]} figuCodesSender
- * @param {string[]} figuCodesReceiver
- * @returns {Promise<Swap>} The data of the created swap
- */
-export async function createSwapAsync(album, uidReceiver, figuCodesSender, figuCodesReceiver) {
-    album = validateAlbum(album);
-    const uidSender = getCurrentUser().uid;
-    uidReceiver = validateUserID(uidReceiver);
-    if (!figuCodesSender || figuCodesSender.length === 0)
-        throw 'Debe especificar al menos un figuCodeSender';
-    if (!figuCodesReceiver || figuCodesReceiver.length === 0)
-        throw 'Debe especificar al menos un figuCodeReceiver';
-    for (let i = 0; i < figuCodesSender.length; i++)
-        figuCodesSender[i] = validateFiguCode(figuCodesSender[i]);
-    for (let i = 0; i < figuCodesReceiver.length; i++)
-        figuCodesReceiver[i] = validateFiguCode(figuCodesReceiver[i]);
-
-    let swapData = {
-        uidSender: uidSender,
-        uidReceiver: uidReceiver,
-        figuCodesSender: figuCodesSender,
-        figuCodesReceiver: figuCodesReceiver
-    };
-
-    const db = getFirestore();
-    const col = collection(db, 'swaps/active/' + album);
-    let newDocRef = await addDoc(col, swapData);
-    swapData.id = newDocRef.id;
-    return swapData;
+function convertSwapFromDb(snapshot) {
+    let swap = snapshot.data();
+    swap.id = snapshot.id;
+    if (swap.createDate)
+        swap.createDate = swap.createDate.toDate();
+    if (swap.acceptDate)
+        swap.acceptDate = swap.acceptDate.toDate();
+    return swap;
 }
 
 /**
@@ -66,9 +46,7 @@ export async function getUserSentActiveSwapsAsync(album, uidSender) {
 
     let activeSwaps = [];
     snapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        activeSwaps.push(convertSwapFromDb(d));
     });
     return activeSwaps;
 }
@@ -90,9 +68,7 @@ export async function getUserReceivedActiveSwapsAsync(album, uidReceiver) {
 
     let activeSwaps = [];
     snapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        activeSwaps.push(convertSwapFromDb(d));
     });
     return activeSwaps;
 }
@@ -118,18 +94,13 @@ export async function getUserAllActiveSwapsAsync(album, uid) {
 
     let activeSwaps = [];
     senderSnapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        activeSwaps.push(convertSwapFromDb(d));
     });
     receiverSnapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        activeSwaps.push(convertSwapFromDb(d));
     });
     return activeSwaps;
 }
-
 
 /**
  * Gets the inactive swaps sent by a user.
@@ -146,13 +117,11 @@ export async function getUserSentInactiveSwapsAsync(album, uidSender) {
     const senderQuery = query(col, where("uidSender", "==", uidSender));
     const snapshot = await getDocs(senderQuery);
 
-    let activeSwaps = [];
+    let inactiveSwaps = [];
     snapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        inactiveSwaps.push(convertSwapFromDb(d));
     });
-    return activeSwaps;
+    return inactiveSwaps;
 }
 
 /**
@@ -170,13 +139,11 @@ export async function getUserReceivedInactiveSwapsAsync(album, uidReceiver) {
     const receiverQuery = query(col, where("uidReceiver", "==", uidReceiver));
     const snapshot = await getDocs(receiverQuery);
 
-    let activeSwaps = [];
+    let inactiveSwaps = [];
     snapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        inactiveSwaps.push(convertSwapFromDb(d));
     });
-    return activeSwaps;
+    return inactiveSwaps;
 }
 
 /**
@@ -198,17 +165,98 @@ export async function getUserAllInactiveSwapsAsync(album, uid) {
     const senderSnapshot = await senderSnapshotPromise;
     const receiverSnapshot = await receiverSnapshotPromise;
 
-    let activeSwaps = [];
+    let inactiveSwaps = [];
     senderSnapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        inactiveSwaps.push(convertSwapFromDb(d));
     });
     receiverSnapshot.forEach((d) => {
-        let s = d.data();
-        s.id = d.id;
-        activeSwaps.push(s);
+        inactiveSwaps.push(convertSwapFromDb(d));
     });
-    return activeSwaps;
+    return inactiveSwaps;
 }
 
+/**
+ * Creates an active swap, sent by the current user to another user.
+ * @param {string} album
+ * @param {string} uidReceiver
+ * @param {string[]} figuCodesSender
+ * @param {string[]} figuCodesReceiver
+ * @returns {Promise<Swap>} The data of the created swap.
+ */
+export async function createSwapAsync(album, uidReceiver, figuCodesReceiver, figuCodesSender) {
+    const uidSender = getCurrentUser().uid;
+    const data = {
+        "album": album,
+        "uidSender" : uidSender,
+        "uidReceiver": uidReceiver,
+        "figuCodesReceiver" : figuCodesReceiver,
+        "figuCodesSender": figuCodesSender
+    };
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'createSwap');
+
+    const result = await functionCallable(data);
+    return result.data;
+}
+
+/**
+ * Accepts an active swap.
+ * @param {string} album
+ * @param {string} swapId
+ * @return {Promise<void>} promesas vacías :(
+ */
+export async function acceptSwapAsync(album, swapId){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+    };
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'acceptSwap');
+
+    const result = await functionCallable(data);
+    return result.data;
+}
+
+/**
+ * Rejects an active swap.
+ * @param {string} album
+ * @param {string} swapId
+ * @return {Promise<void>}
+ */
+export async function rejectSwapAsync(album, swapId){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+    };
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'rejectSwap');
+
+    const result = await functionCallable(data);
+    return result.data;
+}
+
+/**
+ * Sets the rating of a user on a swap. Either the sender or receiver of the swap must be
+ * the currently signed-in user, and the rating will apply to the other user.
+ * This will fail if the user has already rated on this swap.
+ * @param {string} album
+ * @param {string} swapId
+ * @param {int} rating The rating to give the oth
+ * @return {Promise<void>}
+ */
+export async function rateUserOnSwapAsync(album, swapId, rating){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+        "rating": rating,
+    };
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'setRating');
+
+    const result = await functionCallable(data);
+    return result.data;
+}
