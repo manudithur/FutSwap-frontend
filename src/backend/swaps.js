@@ -197,7 +197,9 @@ export async function createSwapAsync(album, uidReceiver, figuCodesReceiver, fig
     const functionCallable = httpsCallable(functions, 'createSwap');
 
     const result = await functionCallable(data);
-    return result.data;
+    let d = result.data;
+    d.createDate = new Date(d.createDate);
+    return d;
 }
 
 /**
