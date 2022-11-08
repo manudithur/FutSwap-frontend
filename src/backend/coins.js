@@ -1,8 +1,9 @@
-import {getFirestore} from 'firebase/firestore';
+import {getFirestore} from './fireGetters';
 import {validateUserID} from '@/backend/validation';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 
-/* Get the amount of coins of a user
+/**
+ * Get the amount of coins of a user
  * @param {string} uid
  * @returns {Promise<number>}
  */
@@ -13,9 +14,10 @@ export async function getUserCoinsAsync(uid) {
     return c.exists ? c.data().amount : 0;
 }
 
-/* Realize checkout of futcoins, should use the string returned to call to mercadopago.checkout
+/**
+ * Perform checkout of futcoins, should use the string returned to call to mercadopago.checkout
  * and render the checkout page.
- * @param {number} coins
+ * @param {number} quantity
  * @returns {Promise<string>}
  */
 export async function checkoutFutcoinsAsync(quantity) {
@@ -28,4 +30,3 @@ export async function checkoutFutcoinsAsync(quantity) {
         console.log(e);
     }
 }
-
