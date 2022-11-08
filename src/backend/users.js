@@ -216,3 +216,31 @@ export async function onAuthStateChanged(observer) {
 export async function beforeAuthStateChanged(observer) {
     firebaseBeforeAuthStateChanged(getAuth(), observer);
 }
+
+/**
+ * Gets the average rating of a user. Returns a number in the range [1, 10] that
+ * is the user's average rating. (1 = half a star, 5 = two and a half stars, etc.).
+ * Returns null if a user has not been rated yet.
+ * @param {String} uid The user's ID
+ * @returns {Promise<number | null>}
+ */
+export async function getUserRatingAsync(uid) {
+    const db = getFirestore();
+    const docRef = doc(db, 'reviews/' + uid);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists())
+        return null;
+
+    const docData = snapshot.data();
+    let totalSum = 0;
+    let totalCount = 0;
+    for (let i = 1; i <= 10; i++) {
+        const reviewField = 'r' + i;
+        if (docData[reviewField]) {
+            totalSum += docData[reviewField] * i;
+            totalCount += docData[reviewField];
+        }
+    }
+
+    return totalCount == 0 ? null : (totalSum / totalCount);
+}
