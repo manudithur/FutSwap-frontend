@@ -1,9 +1,18 @@
 import {getFirestore} from "@/backend/fireGetters";
-import {collection, deleteDoc, doc, getDoc, getDocs, limit, query, setDoc, writeBatch} from 'firebase/firestore';
+import {collection, deleteDoc, doc, getDoc, getDocs, limit, query, where, setDoc, writeBatch, getCountFromServer} from 'firebase/firestore';
 import {validateAlbum, validateFiguCode, validateUserID} from "@/backend/validation";
 
 // https://firebase.google.com/docs/firestore/manage-data/transactions
 const FirestoreWritebatchLimit = 500;
+
+async function performFiguQuery(q) {
+    const colSnapshot = await getDocs(q);
+
+    let figus = [];
+    colSnapshot.forEach((d) => figus.push({figuCode: d.id, status: d.data().status}));
+    return figus;
+
+}
 
 /**
  * Gets the status of a figurita in a user's inventory.
@@ -33,17 +42,13 @@ export async function getInventoryFiguAsync(album, uid, figuCode) {
  * @param {string} uid
  * @returns {Promise<{ figuCode: string, status: number }[]>}
  */
-export async function getInventoryAllAsync(album, uid) {
+export function getInventoryAllAsync(album, uid) {
     album = validateAlbum(album);
     uid = validateUserID(uid);
 
     const db = getFirestore();
     const c = collection(db, 'inventories/' + album + '/' + uid);
-    const colSnapshot = await getDocs(c);
-
-    let figus = [];
-    colSnapshot.forEach((d) => figus.push({figuCode: d.id, status: d.data().status}));
-    return figus;
+    return performFiguQuery(c);
 }
 
 /**
@@ -170,4 +175,52 @@ export async function deleteInventoryAsync(album, uid) {
         });
         await batch.commit();
     }
+}
+
+/**
+ * Gets all the figuritas faltantes in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<{ figuCode: string, status: number }[]>}
+ */
+export function getInventoryFaltantesAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const q = query(c, where('status', '<', 0));
+    return performFiguQuery(q);
+}
+
+/**
+ * Gets all the figuritas faltantes in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<{ figuCode: string, status: number }[]>}
+ */
+export function getInventoryOfertadasAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const q = query(c, where('status', '>', 0));
+    return performFiguQuery(q);
+}
+/**
+ * Gets all the figuritas faltantes in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<{ figuCode: string, status: number }[]>}
+ */
+export async function countInventoryFaltantesAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const q = query(c, where('status', '<', 0));
+    const colSnapshot = await getCountFromServer(q);
+    return colSnapshot.data().count;
 }
