@@ -1,7 +1,8 @@
-import {validateAlbum, validateFiguCode, validateUserID} from "./validation.js";
-import {getFirestore} from "@/backend/fireGetters";
-import {addDoc, collection, getDocs, query, where} from 'firebase/firestore';
-import {getCurrentUser} from "./users";
+import {validateAlbum,  validateUserID} from "./validation.js";
+import {getFirestore,  collection, getDocs, query, where} from '@firebase/firestore';
+import {getCurrentUser} from "./users.js";
+import {getFunctions} from "./fireGetters.js";
+import {httpsCallable} from 'firebase/functions';
 
 /**
  * Represents a swap.
@@ -11,43 +12,12 @@ import {getCurrentUser} from "./users";
  * @property {string} uidSender The uid of the user that sent this swap offer.
  * @property {string} uidReceiver The uid of the user that received this swap offer.
  * @property {string[]} figuCodesReceiver An array with the figuCodes of the figuritas the receiver will give.
- * @property {string[]} figuCodesSender An array with the figuCodes of the figuritas the sender will give.
+ * @property {string} status Represents in which state of the swapping process this swap is in ("PROPOSED", "ACCEPTED", "TIMED OUT: PROPOSED", "TIMED OUT: ACCEPTED")
+ * @property {int} rating Value from 0 to 10 that respresents the rating
+ * @property {int} date Value that represents the date its exact to one milisecond (its the exact amount of miliseconds since the Linux Epoch).
+ *                      To convert it to a recongnizable date use Date(date)
  */
 
-/**
- * Creates an active swap, sent by the current user to another user.
- * @param {string} album
- * @param {string} uidReceiver
- * @param {string[]} figuCodesSender
- * @param {string[]} figuCodesReceiver
- * @returns {Promise<Swap>} The data of the created swap
- */
-export async function createSwapAsync(album, uidReceiver, figuCodesSender, figuCodesReceiver) {
-    album = validateAlbum(album);
-    const uidSender = getCurrentUser().uid;
-    uidReceiver = validateUserID(uidReceiver);
-    if (!figuCodesSender || figuCodesSender.length === 0)
-        throw 'Debe especificar al menos un figuCodeSender';
-    if (!figuCodesReceiver || figuCodesReceiver.length === 0)
-        throw 'Debe especificar al menos un figuCodeReceiver';
-    for (let i = 0; i < figuCodesSender.length; i++)
-        figuCodesSender[i] = validateFiguCode(figuCodesSender[i]);
-    for (let i = 0; i < figuCodesReceiver.length; i++)
-        figuCodesReceiver[i] = validateFiguCode(figuCodesReceiver[i]);
-
-    let swapData = {
-        uidSender: uidSender,
-        uidReceiver: uidReceiver,
-        figuCodesSender: figuCodesSender,
-        figuCodesReceiver: figuCodesReceiver
-    };
-
-    const db = getFirestore();
-    const col = collection(db, 'swaps/active/' + album);
-    let newDocRef = await addDoc(col, swapData);
-    swapData.id = newDocRef.id;
-    return swapData;
-}
 
 /**
  * Gets the active swaps sent by a user.
@@ -185,6 +155,7 @@ export async function getUserReceivedInactiveSwapsAsync(album, uidReceiver) {
  * @param {string} uid
  * @returns {Promise<Swap[]>}
  */
+
 export async function getUserAllInactiveSwapsAsync(album, uid) {
     album = validateAlbum(album);
     uid = validateUserID(uid);
@@ -211,4 +182,64 @@ export async function getUserAllInactiveSwapsAsync(album, uid) {
     });
     return activeSwaps;
 }
+
+
+
+export async function createActiveSwap(album, uidReceiver, figuCodesReceiver, figuCodesSender){
+    const uidSender = getCurrentUser().uid;
+    const data = {
+        "album": album,
+        "uidSender" : uidSender,
+        "uidReceiver": uidReceiver,
+        "figuCodesReceiver" : figuCodesReceiver,
+        "figuCodesSender": figuCodesSender
+    }
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'createActiveSwap');
+
+    await functionCallable(data);
+}
+
+
+export async function acceptSwap(album, swapId){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+    }
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'acceptSwap');
+
+    await functionCallable(data);
+}
+
+
+export async function rejectSwap(album, swapId){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+    }
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'rejectSwap');
+
+    await functionCallable(data);
+}
+
+
+export async function modifyRating(album, swapId, rating){
+    const data = {
+        "album": album,
+        "swapId": swapId,
+        "rating": rating,
+    }
+
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'modifyRating');
+
+    await functionCallable(data);
+}
+
+
 
