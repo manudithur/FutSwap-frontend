@@ -183,7 +183,13 @@ export async function getUserAllInactiveSwapsAsync(album, uid) {
     return activeSwaps;
 }
 
-
+/**
+ * Creates an active swap
+ * @param {string} album
+ * @param {string} uidReceiver
+ * @param {string[]} figuCodesSender
+ * @param {string[]} figuCodesReceiver
+ */
 
 export async function createActiveSwap(album, uidReceiver, figuCodesReceiver, figuCodesSender){
     const uidSender = getCurrentUser().uid;
@@ -201,6 +207,11 @@ export async function createActiveSwap(album, uidReceiver, figuCodesReceiver, fi
     await functionCallable(data);
 }
 
+/**
+ * Accepts an active swap
+ * @param {string} album
+ * @param {string} swapId
+ */
 
 export async function acceptSwap(album, swapId){
     const data = {
@@ -214,7 +225,11 @@ export async function acceptSwap(album, swapId){
     await functionCallable(data);
 }
 
-
+/**
+ * Rejects an active swap
+ * @param {string} album
+ * @param {string} swapId
+ */
 export async function rejectSwap(album, swapId){
     const data = {
         "album": album,
@@ -227,7 +242,12 @@ export async function rejectSwap(album, swapId){
     await functionCallable(data);
 }
 
-
+/**
+ * Modifes a rating
+ * @param {string} album
+ * @param {string} swapId
+ * @param {int} rating
+ */
 export async function modifyRating(album, swapId, rating){
     const data = {
         "album": album,
