@@ -132,7 +132,7 @@ export async function getUserPublicProfileAsync(uid) {
     uid = validateUserID(uid);
 
     const db = getFirestore();
-    const d = doc(db, 'profiles/' + uid + '-public');
+    const d = doc(db, 'profiles-public/' + uid);
     const snapshot = await getDoc(d);
     return snapshot.exists() ? snapshot.data() : {};
 }
@@ -143,7 +143,7 @@ export async function getUserPublicProfileAsync(uid) {
  */
 export async function getUserPrivateProfileAsync() {
     const db = getFirestore();
-    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    const d = doc(db, 'profiles-private/' + getCurrentUser().uid);
     const snapshot = await getDoc(d);
     return snapshot.exists() ? snapshot.data() : {};
 }
@@ -157,7 +157,7 @@ export async function getUserPrivateProfileAsync() {
  */
 export function updateUserPublicProfileAsync(data, merge = true) {
     const db = getFirestore();
-    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-public');
+    const d = doc(db, 'profiles-public/' + getCurrentUser().uid);
     return setDoc(d, data, {merge: merge});
 }
 
@@ -170,7 +170,7 @@ export function updateUserPublicProfileAsync(data, merge = true) {
  */
 export function updateUserPrivateProfileAsync(data, merge = true) {
     const db = getFirestore();
-    const d = doc(db, 'profiles/' + getCurrentUser().uid + '-private');
+    const d = doc(db, 'profiles-private/' + getCurrentUser().uid);
     return setDoc(d, data, {merge: merge});
 }
 
