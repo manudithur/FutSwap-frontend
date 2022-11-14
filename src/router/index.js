@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Landing from '../views/Landing.vue'
 import About from '../views/About.vue'
 import Explorar from '../views/Explorar.vue'
+import Market from '../views/Market.vue'
+import newPost from '../views/newPost.vue'
 import ResetPass from '../views/ResetPass.vue'
 import Profile from '../views/Profile.vue'
 import Collection from '../views/Collection.vue'
@@ -39,6 +41,16 @@ const routes = [
     path: '/explorar',
     name: 'explorar',
     component: Explorar
+  },
+  {
+    path: '/market',
+    name: 'market',
+    component: Market
+  },
+  {
+    path: '/market/newPost',
+    name: 'newPost',
+    component: newPost
   },
   {
     path: '/resetPass',

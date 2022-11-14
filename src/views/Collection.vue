@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <NavBar/>
-        <v-main class="content align-center">
+        <v-main class="bg">
             <v-container class="mb-8">
                 <v-row class="ma-0 align-center">
                     <v-col class="col-lg-6 col-sm-12 pa-0">
