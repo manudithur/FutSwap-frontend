@@ -63,45 +63,38 @@
             <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
                 <v-row class="pa-4">
                     <template v-for="swap in swaps">
-                        <v-col class="col-lg-3 col-md-3 col-sm-6" :key="swap.distance" v-if="swap.distance < radiusbtn">
-                            <v-card class="grow" elevation="8">
-                                <v-img class="profile-pic" :src=swap.img :alt="swap.parati"></v-img>
-                                <figcaption class="text-center pa-4">
-                                    <h1 class="text-h5 pb-1">{{swap.name}}</h1>
-                                    <span class="text-caption faded pb-1"><v-icon class="faded" size="20">mdi-map-marker-outline</v-icon> a {{swap.distance}} km de distancia</span>
-                                    <v-divider class="ma-2"></v-divider>
-                                    <v-rating :value="swap.rating" half-increments color="var(--gold)" background-color="var(--gold)" size="20" dense readonly></v-rating>
-                                    <span class="text-caption faded">{{swap.past}} Swaps ● {{swap.rate}} Calificaciones</span>
-                                    <v-divider class="ma-2 pb-1"></v-divider>
-                                    <v-row class="px-4 pb-1">
-                                        <v-col class="col-md-6">
-                                            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{swap.parati}}<v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon></h1>
-                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--darkblue);">Para ti</h1>
-                                        </v-col>
-                                        <v-col class="col-md-6">
-                                            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{swap.busc}}<v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon></h1>
-                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--darkblue);">Buscando</h1>
-                                        </v-col>
-                                    </v-row>
-                                </figcaption>
-                                <!-- <figcaption class="info-wrap">
-                                    <p class="desc"> {{swap.parati}} </p>
-                                    <div class="rating-wrap">
-                                        <div class="label-rating">13 Calificaciones</div>
-                                        <div class="label-rating">50 Swaps </div>
-                                    </div>
-                                    <div class="rating-wrap">
-                                        <div class="label-rating">{{swap.distance}} km</div>
-                                    </div>
-                                </figcaption> -->
-                                <div class="justify-center text-center pb-6">
-                                    <router-link to="/trading" style="text-decoration:none">
-                                        <v-btn rounded color="#3E4D7C"
-                                            class="mr-0 btn-custom-md white--text">
-                                            Swap
-                                        </v-btn>
-                                    </router-link>
-                                </div>
+                        <v-col class="col-lg-3 col-md-2 col-sm-3" :key="swap.distance" v-if="swap.distance < radiusbtn">
+                            <v-card class="pa-2 grow" elevation="8">
+                                <v-img :src=swap.sell style="border-radius: 4px;"></v-img>
+                                <v-row no-gutters class="pt-2 align-center">
+                                    <v-col class="col-lg-3 text-center">
+                                        <v-avatar circle size="30">
+                                            <v-img :src=swap.pfp />
+                                        </v-avatar>
+                                    </v-col>
+                                    <v-col class="col-lg-9">
+                                        <h3 class="text-overline" style="font-size: 10px;">{{ swap.name }}</h3>
+                                    </v-col>
+                                    <v-col class="col-lg-4">
+                                        <v-rating value="4.5" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="align-center">
+                                    <v-col class="col-lg-12 text-right">
+                                        <h2 class="text-h5 text-center text-uppercase font-weight-black" style="color:var(--indigo)">{{ player.name }}</h2>
+                                        <h3 class="text-subtitle-1 text-center font-weight-bold text-uppercase" style="color:var(--darkblue)">Equipo</h3>
+                                    </v-col>
+                                    <v-col class="col-lg-12 text-right">
+                                        <router-link to="/trading" style="text-decoration:none">
+                                            <v-btn rounded color="#3E4D7C"
+                                                class="mr-0 btn-custom-md white--text">
+                                                Swap
+                                            </v-btn>
+                                        </router-link>  
+                                    </v-col>
+                                </v-row>
+
+                                                                  
                             </v-card>
                         </v-col>
                     </template>
@@ -125,15 +118,6 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
-}
-
-.profile-pic {
-    height: 180px;
-    border-radius: 4px 4px 0 0;
-    max-height: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    object-fit: cover;
 }
 
 .faded {
@@ -167,7 +151,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "1",
-                img: require("../assets/persona1.jpeg"),
+                pfp: require("../assets/persona1.jpeg"),
+                sell: require("../assets/figuritas/arg19.jpg"),
                 rating: "5"
             },
             {
@@ -178,7 +163,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "2",
-                img: require("../assets/persona2.jpg"),
+                pfp: require("../assets/persona2.jpg"),
+                sell: require("../assets/figuritas/por17.jpg"),
                 rating: "2"
             },
             {
@@ -189,7 +175,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "3",
-                img: require("../assets/persona3.jpg"),
+                pfp: require("../assets/persona3.jpg"),
+                sell: require("../assets/figuritas/arg06.jpg"),
                 rating: "3.5"
             },
             {
@@ -200,7 +187,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "4",
-                img: require("../assets/persona4.jpg"),
+                pfp: require("../assets/persona4.jpg"),
+                sell: require("../assets/figuritas/por02.jpg"),
                 rating: "5"
             },
             {
@@ -211,7 +199,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "5",
-                img: require("../assets/persona5.webp"),
+                pfp: require("../assets/persona5.webp"),
+                sell: require("../assets/figuritas/arg10.jpg"),
                 rating: "1.5"
             },
             {
@@ -222,7 +211,8 @@ export default {
                 past: "50",
                 rate: "17",
                 id: "6  ",
-                img: require("../assets/persona6.webp"),
+                pfp: require("../assets/persona6.webp"),
+                sell: require("../assets/figuritas/por11.jpg"),
                 rating: "0.5"
             }
         ],
