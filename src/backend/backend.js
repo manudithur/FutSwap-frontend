@@ -1,5 +1,5 @@
 import {getFirestore, getFunctions} from "@/backend/fireGetters";
-import {collection, query, where, getDocs, orderBy, limit} from 'firebase/firestore';
+import {collection, query, where, getDocs, orderBy, limit, doc} from 'firebase/firestore';
 import {validateUserID} from "@/backend/validation";
 
 /*
@@ -145,5 +145,60 @@ export async function buyMarketPost(postId) {
     const buyPost = functions.httpsCallable('buyMarketPost');
     buyPost({
         postId: postId
+    })
+}
+
+/**
+ * Marks a market post as confirmed, either by the buyer or seller, depending on the uid.
+ * If uid is neither, throws error
+ * @param {string} uid
+ * @param {string} postId
+ * @returns {Promise<void>}
+ */
+export async function markMarketPostAsReceived(uid, postId) {
+    const db = getFirestore()
+
+    const docRef = doc(db, 'market-pending', postId);
+    const post = await docRef.get();
+
+    if (!post.exists())
+        throw new Error('Post does not exist');
+
+    if (post.data().buyer !== uid) {
+        if (post.data().seller !== uid) {
+            throw new Error("Not authorized")
+        }
+        await docRef.update({
+            buyerConfirmed: true
+        })
+    } else {
+        await docRef.update({
+            vendorConfirmed: true
+        })
+    }
+}
+
+/**
+ * Marks a market post as in revision, either by the buyer or seller, depending on the uid.
+ * If uid is neither, throws error
+ * @param {string} uid
+ * @param {string} postId
+ * @returns {Promise<void>}
+ */
+export async function markMarketPostAsInRevision(uid, postId) {
+    const db = getFirestore()
+
+    const docRef = doc(db, 'market-pending', postId);
+    const post = await docRef.get();
+
+    if (!post.exists) {
+        throw new Error("Post does not exist")
+    }
+
+    if (post.data().buyer !== uid && post.data().seller !== uid)
+        throw new Error("Not authorized");
+
+    await docRef.update({
+        inRevision: true
     })
 }
