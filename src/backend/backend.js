@@ -132,3 +132,18 @@ export async function updateMarketPost(postID, price, figus, amounts) {
         amounts: amounts
     })
 }
+
+/**
+ * Buys a market post. In case of invalid data, throws an error
+ * like this https://medium.com/geekculture/how-to-pass-errors-nicely-to-front-end-with-firebase-cloud-functions-6f224072eae4
+ * @param {string} postId
+ * @return {Promise<void>}
+ */
+export async function buyMarketPost(postId) {
+    const functions = getFunctions();
+
+    const buyPost = functions.httpsCallable('buyMarketPost');
+    buyPost({
+        postId: postId
+    })
+}
