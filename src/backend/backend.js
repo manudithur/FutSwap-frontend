@@ -180,7 +180,7 @@ export async function markMarketPostAsReceived(uid, postId) {
 
 /**
  * Marks a market post as in revision.
- * If uid is neither, throws error
+ * Throws error if not found or if uid is not buyer or seller
  * @param {string} postId
  * @returns {Promise<void>}
  */
