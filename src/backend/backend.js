@@ -179,26 +179,13 @@ export async function markMarketPostAsReceived(uid, postId) {
 }
 
 /**
- * Marks a market post as in revision, either by the buyer or seller, depending on the uid.
+ * Marks a market post as in revision.
  * If uid is neither, throws error
- * @param {string} uid
  * @param {string} postId
  * @returns {Promise<void>}
  */
-export async function markMarketPostAsInRevision(uid, postId) {
-    const db = getFirestore()
-
-    const docRef = doc(db, 'market-pending', postId);
-    const post = await docRef.get();
-
-    if (!post.exists) {
-        throw new Error("Post does not exist")
-    }
-
-    if (post.data().buyer !== uid && post.data().seller !== uid)
-        throw new Error("Not authorized");
-
-    await docRef.update({
-        inRevision: true
-    })
+export async function markMarketPostAsInRevision( postId) {
+    const functions = getFunctions();
+    const markPost = functions.httpsCallable('setMarketPostInRevision');
+    markPost({postId: postId});
 }
