@@ -2,17 +2,43 @@ import {getFirestore, getFunctions} from "@/backend/fireGetters";
 import {collection, query, where, getDocs, orderBy, limit, doc} from 'firebase/firestore';
 import {validateUserID} from "@/backend/validation";
 
+/**
+ * Represents an active market post.
+ * @typedef {Object} ActiveMarketPost
+ * @property postId string
+ * @property figus: string[],
+ * @property price: number,
+ * @property bought: timestamp,
+ * @property created: timestamp,
+ * @property closed: timestamp,
+ * @property seller: string
+ */
+
+/**
+ * Represents an inactive market post.
+ * @typedef {Object} InactiveMarketPost
+ * @property postId string
+ * @property figus: string[],
+ * @property price: number,
+ * @property bought: timestamp,
+ * @property created: timestamp,
+ * @property closed: timestamp,
+ * @property seller: string
+ * @property buyer: (string | undefined),
+ * @property comment: (string | undefined),
+ */
+
 /*
- * Gets active market posts, limited by limitNum, ordered by creation date. If limitNum is null, it gets all the posts
+ * Gets active market posts, limited by limitNum, ordered by creation date. If limitNum is null, it gets all the posts.
  * @param {string} uid
  * @param {number} limitNum
- * @returns {Promise<{ figus: string[], price: number, bought: timestamp, created: timestamp, closed: timestamp, seller: string }[]>}
+ * @returns {Promise<ActiveMarketPost[]>}
  */
 export async function getActiveMarketPosts(uid, limitNum) {
     validateUserID(uid);
 
     const db = getFirestore();
-    var q;
+    let q;
 
     if (limitNum == null)
         q = query(collection(db, 'market-active'), where('seller', '!=', uid), orderBy('created', 'desc'));
@@ -21,9 +47,11 @@ export async function getActiveMarketPosts(uid, limitNum) {
 
 
     const querySnapshot = await getDocs(q);
-    var array = [];
+    let array = [];
     querySnapshot.forEach((doc) => {
-        array.push(doc.data());
+        let data = doc.data();
+        data.postId = doc.id;
+        array.push(data);
     });
     return array;
 }
@@ -31,25 +59,19 @@ export async function getActiveMarketPosts(uid, limitNum) {
 /*
  * Gets all inactive market posts sold by uid, ordered by creation date.
  * @param {string} uid
- * @returns {Promise<{
- *              figus: string[],
- *              price: number,
- *              bought: timestamp,
- *              created: timestamp,
- *              closed: timestamp,
- *              buyer: string,
- *              comment: string,
- *              seller: string[]}>}
+ * @returns {Promise<InactiveMarketPost[]>}
  */
-export async function getInactiveSoldBy(uid) {
+export async function getInactiveMarketPostsSoldBy(uid) {
     validateUserID(uid);
     const db = getFirestore();
     const q = query(collection(db, 'market-closed'), where('seller', '==', uid), orderBy('closed', 'desc'));
 
     const querySnapshot = await getDocs(q);
-    var array = [];
+    let array = [];
     querySnapshot.forEach((doc) => {
-        array.push(doc.data());
+        let data = doc.data();
+        data.postId = doc.id;
+        array.push(data);
     })
     return array;
 }
@@ -57,25 +79,19 @@ export async function getInactiveSoldBy(uid) {
 /*
  * Gets all inactive market posts bought by uid, ordered by creation date.
  * @param {string} uid
- * @returns {Promise<{
- *              figus: string[],
- *              price: number,
- *              bought: timestamp,
- *              created: timestamp,
- *              closed: timestamp,
- *              buyer: string,
- *              comment: string,
- *              seller: string }[]>}
+ * @returns {Promise<InactiveMarketPost[]>}
  */
-export async function getInactiveBoughtBy(uid) {
+export async function getInactiveMarketPostsBoughtBy(uid) {
     validateUserID(uid);
     const db = getFirestore();
     const q = query(collection(db, 'market-closed'), where('buyer', '==', uid), orderBy('closed', 'desc'));
 
     const querySnapshot = await getDocs(q);
-    var array = [];
+    let array = [];
     querySnapshot.forEach((doc) => {
-        array.push(doc.data());
+        let data = doc.data();
+        data.postId = doc.id;
+        array.push(data);
     });
     return array;
 }
@@ -96,17 +112,16 @@ export async function deleteMarketPost(postID) {
 
 /**
  * Creates market post with price, figus and amount. If amount for a figu is not present, assumes 1
- * Returns postId of new post
  * @param {number} price
  * @param {string[]} figus
  * @param {number[]} amounts
- * @returns {Promise<string>}
+ * @returns {Promise<string>} Returns postId of new post
  */
 export async function createMarketPost(price, figus, amounts) {
     const functions = getFunctions();
 
     const createPost = functions.httpsCallable('createMarketPost');
-    createPost({
+    return createPost({
         price: price,
         figus: figus,
         amounts: amounts
@@ -114,7 +129,7 @@ export async function createMarketPost(price, figus, amounts) {
 }
 
 /**
- * Modifies an existing market post. If amount for a figu is not present, assumes 1
+ * Modifies an existing market post. If amount for a figu is not present, assumes 1.
  * @param {string} postID
  * @param {number} price
  * @param {string[]} figus
@@ -134,7 +149,7 @@ export async function updateMarketPost(postID, price, figus, amounts) {
 }
 
 /**
- * Buys a market post. In case of invalid data, throws an error
+ * Buys a market post. In case of invalid data, throws an error.
  * like this https://medium.com/geekculture/how-to-pass-errors-nicely-to-front-end-with-firebase-cloud-functions-6f224072eae4
  * @param {string} postId
  * @return {Promise<void>}
@@ -150,7 +165,7 @@ export async function buyMarketPost(postId) {
 
 /**
  * Marks a market post as confirmed, either by the buyer or seller, depending on the uid.
- * If uid is neither, throws error
+ * If uid is neither, throws error.
  * @param {string} uid
  * @param {string} postId
  * @returns {Promise<void>}
@@ -180,7 +195,7 @@ export async function markMarketPostAsReceived(uid, postId) {
 
 /**
  * Marks a market post as in revision.
- * Throws error if not found or if uid is not buyer or seller
+ * Throws error if not found or if uid is not buyer or seller.
  * @param {string} postId
  * @returns {Promise<void>}
  */
