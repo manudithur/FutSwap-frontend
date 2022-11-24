@@ -60,11 +60,11 @@
                                     <v-row class="px-4 pb-1">
                                         <v-col class="col-md-6">
                                             <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{swap.parati}}<v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon></h1>
-                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--darkblue);">Para ti</h1>
+                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--indigo);">Para ti</h1>
                                         </v-col>
                                         <v-col class="col-md-6">
                                             <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{swap.busc}}<v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon></h1>
-                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--darkblue);">Buscando</h1>
+                                            <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--indigo);">Buscando</h1>
                                         </v-col>
                                     </v-row>
                                 </figcaption>
