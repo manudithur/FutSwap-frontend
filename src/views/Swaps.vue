@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <NavBar/>
-        <v-main class="bg">
+        <v-main class="bg fill-height">
             <v-container class="mb-8">
                 <h1 class="text-h3 text-uppercase white--text font-weight-black"
                 style="text-shadow: 0px 1px 4px #3E4D7C">Mis Swaps</h1>

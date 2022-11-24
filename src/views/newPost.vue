@@ -1,8 +1,8 @@
 <template>
     <v-app>
         <NavBar />
-        <v-main class="bg">
-            <v-container class="mb-8 pa-0">
+        <v-main class="bg fill-height">
+            <v-container class="mb-8 pa-0 fill-height">
                 <v-row class="ma-0 align-start">
                     <v-col class="mr-2 elevation-8 pa-4" cols="4" style="background-color: white; border-radius: 4px;">
                         <h1 class="text-overline" style="color:#999;">Market</h1>
