@@ -6,10 +6,9 @@ import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut,
-    updateProfile,
     verifyBeforeUpdateEmail,
     beforeAuthStateChanged as firebaseBeforeAuthStateChanged,
-    onAuthStateChanged as firebaseOnAuthStateChanged,
+    onAuthStateChanged as firebaseOnAuthStateChanged
 } from "firebase/auth";
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {doc, getDoc, setDoc} from 'firebase/firestore';
@@ -20,12 +19,27 @@ import {validateUserID} from "@/backend/validation";
  * This also leaves the user signed in.
  * @param {string} email
  * @param {string} password
+ * @param {string} displayName
  * @returns {Promise<UserCredential>}
  */
-export async function registerWithEmailAsync(email, password) {
+export async function registerWithEmailAsync(email, password, displayName) {
+    if (!displayName || displayName.length < 3) {
+        const emailNoAt = email.substring(0, email.indexOf('@'));
+        let name = "";
+        let seenSpace = true;
+        for (let i = 0; i < emailNoAt.length; i++) {
+            const c = emailNoAt.charAt(i);
+            name = name + (seenSpace ? c.toUpperCase() : c);
+            seenSpace = c === ' ';
+        }
+        displayName = name;
+    }
+
     const auth = getAuth();
     const user = await createUserWithEmailAndPassword(auth, email, password);
     await resendVerificationEmailAsync();
+
+    await updateUserPublicProfileAsync({displayName: displayName}, true)
     return user;
 }
 
@@ -82,6 +96,7 @@ export function deleteUserAsync() {
  */
 export function getCurrentUser() {
     const auth = getAuth();
+
     return auth.currentUser;
 }
 
@@ -102,25 +117,6 @@ export function deleteCurrentUserAsync() {
 export function updateUserEmailAsync(newEmail) {
     const auth = getAuth();
     return verifyBeforeUpdateEmail(auth.currentUser, newEmail);
-}
-
-/**
- * Updates the currently signed-in user's. For any of the parameters, pass undefined to
- * not update that parameter, or pass null to delete the current value.
- * @param {string?} displayName
- * @param {string?} photoURL
- * @returns {Promise<void>}
- */
-export function updateUserProfileAsync(displayName, photoURL) {
-    const auth = getAuth();
-
-    let params = {};
-    if (displayName !== undefined)
-        params.displayName = displayName;
-    if (photoURL !== undefined)
-        params.photoURL = photoURL;
-
-    return updateProfile(auth.currentUser, params);
 }
 
 /**

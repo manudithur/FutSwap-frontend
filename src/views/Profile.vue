@@ -145,7 +145,6 @@ import {
   getUserPrivateProfileAsync,
   getUserPublicProfileAsync,
   updateUserPrivateProfileAsync,
-  updateUserProfileAsync,
   updateUserPublicProfileAsync,
   getUserProfilePictureAsync,
   uploadProfilePicture,
@@ -182,12 +181,18 @@ export default {
     async loadData() {
       try {
         const user = getCurrentUser();
-        this.name = user.displayName;
         this.email = user.email;
         const publicData = await getUserPublicProfileAsync(user.uid);
+        this.name = publicData.displayName;
         this.phone = publicData.phone;
         const privateData = await getUserPrivateProfileAsync();
         this.address = privateData.address;
+
+        // ~~PROVISORIO~~ PARA HACER AUTOMÁTICO EL PASAJE DE user.displayName A publicProfile.displayName
+        if (!publicData.displayName || publicData.displayName == '') {
+          this.name = user.displayName;
+          await updateUserPublicProfileAsync({displayName: user.displayName}, true);
+        }
       } finally {
         // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
         this.isLoading = false;
@@ -230,10 +235,16 @@ export default {
 
     update: async function () {
       try {
-        await updateUserProfileAsync(this.name, "");
-        await updateUserPublicProfileAsync({phone: this.phone}, true);
-        await updateUserPrivateProfileAsync({address: this.address}, true)
+        await updateUserPublicProfileAsync({displayName: this.name, phone: this.phone ? this.phone : ""}, true);
+        await updateUserPrivateProfileAsync({address: this.address ? this.address : ""}, true);
+        await Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: "Cambios guardados",
+          showConfirmButton: true,
+        });
       } catch (e) {
+        console.log(e);
         // Si hubo algun error...
         const errorMessage =
           "Error al actualizar perfil. Reintentar. Si persiste el error contactar soporte";
@@ -242,14 +253,6 @@ export default {
           icon: "error",
           title: errorMessage,
           showConfirmButton: true,
-        });
-      } finally {
-        // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
-        await Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: "Cambios guardados",
-            showConfirmButton: true,
         });
       }
     },

@@ -164,10 +164,11 @@
 </style>
   
 <script>
-    import {
-    getCurrentUser,
-    getUserProfilePictureAsync,
-    } from "../backend/users";
+import {
+  getCurrentUser,
+  getUserProfilePictureAsync,
+  getUserPublicProfileAsync,
+} from "../backend/users";
     import NavBar from "../components/NavBar.vue";
     import FooterBar from "../components/FooterBar.vue";
     
@@ -252,8 +253,8 @@
 
             async loadData() {
                 try {
-                    const user = getCurrentUser();
-                    this.name = user.displayName;
+                    const publicProfile = await getUserPublicProfileAsync(getCurrentUser().uid);
+                    this.name = publicProfile.displayName;
                 } finally {
                     // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
                     this.isLoading = false;

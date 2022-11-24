@@ -186,7 +186,6 @@ import {
   deleteUserAsync,
   registerWithEmailAsync,
   signOutAsync,
-  updateUserProfileAsync,
   signInWithEmailAsync,
   getCurrentUser,
 } from "../backend/users";
@@ -233,10 +232,9 @@ export default {
     submitNewUser: async function () {
       const email = this.REmail;
       const password = this.RPass;
-      await registerWithEmailAsync(email, password);
       try {
         const curruser = getCurrentUser();
-        updateUserProfileAsync(this.RName, "");
+        await registerWithEmailAsync(email, password, this.RName);
         const string =
           "Se envio a: " +
           curruser.email +
