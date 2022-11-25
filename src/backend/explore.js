@@ -10,6 +10,7 @@ import {httpsCallable} from "firebase/functions";
  * @property {number} searchingCount The amount of figus the receiver is looking for
  * @property {string[]} figuCodesReceiver An array with the figuCodes of ALL the figuritas the receiver could give.
  * @property {string[]} figuCodesSender An array with the figuCodes of ALL the figuritas the sender could give.
+ * @property {number | undefined} distance The distance between the sender and receiver's locations, in km.
  */
 
 /**
