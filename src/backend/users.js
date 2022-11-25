@@ -218,14 +218,14 @@ export async function beforeAuthStateChanged(observer) {
  * is the user's average rating. (1 = half a star, 5 = two and a half stars, etc.).
  * Returns null if a user has not been rated yet.
  * @param {String} uid The user's ID
- * @returns {Promise<number | null>}
+ * @returns {Promise<{average: number, total: number} | null>}
  */
 export async function getUserRatingAsync(uid) {
     const db = getFirestore();
     const docRef = doc(db, 'reviews/' + uid);
     const snapshot = await getDoc(docRef);
     if (!snapshot.exists())
-        return null;
+        return {average: 0, total: 0};
 
     const docData = snapshot.data();
     let totalSum = 0;
@@ -238,5 +238,8 @@ export async function getUserRatingAsync(uid) {
         }
     }
 
-    return totalCount == 0 ? null : (totalSum / totalCount);
+    return {
+        total: totalCount,
+        average: totalCount == 0 ? null : (totalSum / totalCount)
+    };
 }
