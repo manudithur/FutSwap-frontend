@@ -43,7 +43,7 @@
       </v-container>
       <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
         <v-row class="pa-4">
-          <swap-offer-view v-for="(swap, k) in swaps" :key="k" :swap="swap"/>
+          <swap-offer-view v-for="(swap, k) in swaps" :key="k" :swap="swap" @swap-clicked="onSwapClicked"/>
         </v-row>
         <v-row width="100%" class="flex justify-center align-center pb-4">
           <v-progress-circular v-if="isLoadingSwaps" :indeterminate="true"/>
@@ -133,6 +133,11 @@ export default {
         this.isLoadingSwaps = false;
       }
     },
+
+    onSwapClicked(swap) {
+      this.$store.commit('explore/setExploreSwap', swap);
+      this.$router.push('/trading')
+    }
   },
 }
 </script>

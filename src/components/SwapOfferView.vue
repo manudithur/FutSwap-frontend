@@ -45,11 +45,9 @@
         </v-row>
       </figcaption>
       <div class="justify-center text-center pb-6">
-        <router-link to="/trading" style="text-decoration:none">
-          <v-btn rounded color="#3E4D7C" class="mr-0 btn-custom-md white--text">
+          <v-btn rounded color="#3E4D7C" class="mr-0 btn-custom-md white--text" @click="$emit('swap-clicked', swap)">
             Swap
           </v-btn>
-        </router-link>
       </div>
     </v-card>
   </v-col>
