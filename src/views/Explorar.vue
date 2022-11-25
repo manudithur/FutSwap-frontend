@@ -47,7 +47,7 @@
       <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
         <v-row v-if="!isLoadingSwaps" class="pa-4">
           <template v-if="swaps.length == 0">
-            <div width="100%" style="display: flex; flex-direction: column" class="flex justify-center align-center pb-4">
+            <div v-if="!loadSwapsError" style="display: flex; flex-direction: column" class="flex justify-center align-center pb-4">
               <h2>Pero qué poronga!</h2>
               <span>No pudimos encontrar ningún swap para vos :/</span>
               <span>Y si probas con otros filtros? 👉👈🥺</span>
