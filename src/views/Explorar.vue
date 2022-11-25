@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <NavBar/>
+
     <v-main class="bg">
       <v-container class="mb-8">
         <v-row class="ma-0 align-center">
@@ -11,7 +12,7 @@
           <v-col class="col-lg-1 col-sm-2 pa-0 text-center">
             <v-menu v-model="menu" :close-on-content-click="false" :nudge-width="200" offset-y left>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn x-large icon style="color: white" @click="about" v-bind="attrs" v-on="on">
+                <v-btn x-large icon style="color: white" v-bind="attrs" v-on="on">
                   <v-icon size="38" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-filter-cog-outline</v-icon>
                 </v-btn>
               </template>
@@ -43,6 +44,10 @@
       <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
         <v-row class="pa-4">
           <swap-offer-view v-for="(swap, k) in swaps" :key="k" :swap="swap"/>
+        </v-row>
+        <v-row width="100%" class="flex justify-center align-center pb-4">
+          <v-progress-circular v-if="isLoadingSwaps" :indeterminate="true"/>
+          <h3 v-if="loadSwapsError">{{loadSwapsError}}</h3>
         </v-row>
       </v-container>
     </v-main>
@@ -92,83 +97,42 @@
 import NavBar from '../components/NavBar.vue';
 import FooterBar from '../components/FooterBar.vue';
 import SwapOfferView from "@/components/SwapOfferView";
+import {getSwapOffers} from "@/backend/explore";
 
 export default {
+  components: {SwapOfferView, NavBar, FooterBar},
+
   data: () => ({
+    menu: false,
     radius: 234,
     radiusbtn: 234,
-    swaps: [
-      {
-        distance: 0.7,
-        name: "Nestor",
-        parati: "7",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "1",
-        img: require("../assets/persona1.jpeg"),
-        rating: "5"
-      },
-      {
-        distance: 0.2,
-        name: "Cristian",
-        parati: "2",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "2",
-        img: require("../assets/persona2.jpg"),
-        rating: "2"
-      },
-      {
-        distance: 0.7,
-        name: "Miguel",
-        parati: "7",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "3",
-        img: require("../assets/persona3.jpg"),
-        rating: "3.5"
-      },
-      {
-        distance: 6,
-        name: "Jony",
-        parati: "10",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "4",
-        img: require("../assets/persona4.jpg"),
-        rating: "5"
-      },
-      {
-        distance: 67,
-        name: "Esequiel",
-        parati: "200",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "5",
-        img: require("../assets/persona5.webp"),
-        rating: "1.5"
-      },
-      {
-        distance: 233,
-        name: "Ricardo",
-        parati: "2",
-        busc: "5",
-        past: "50",
-        rate: "17",
-        id: "6  ",
-        img: require("../assets/persona6.webp"),
-        rating: "0.5"
-      }
-    ]
+    swaps: [],
+    isLoadingSwaps: false,
+    loadSwapsError: null,
+    maxDistance: 25,
+    excludeUnlocatedUsers: true,
   }),
-  props: {
-    source: String
+
+  mounted() {
+    this.loadMoreSwaps();
   },
-  components: {SwapOfferView, NavBar, FooterBar}
+
+  methods: {
+    async loadMoreSwaps() {
+      if (this.isLoadingSwaps === true)
+        return;
+
+      try {
+        this.isLoadingSwaps = true;
+        this.swaps = await getSwapOffers("qatar2022", this.maxDistance, this.excludeUnlocatedUsers);
+        this.loadSwapsError = null;
+      } catch(e) {
+        console.log('No swaps? 💀', e);
+        this.loadSwapsError = "¡Ups! No pudimos cargarte unos swaps 💀... ¡Macri de mierda!";
+      } finally {
+        this.isLoadingSwaps = false;
+      }
+    },
+  },
 }
 </script>

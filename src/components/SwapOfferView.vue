@@ -1,25 +1,41 @@
 <template>
   <v-col class="col-lg-3 col-md-3 col-sm-6" :key="swap.distance" v-if="swap.distance < radiusbtn">
     <v-card class="grow" elevation="8">
-      <v-img class="profile-pic" :src=swap.img :alt="swap.parati"></v-img>
+      <div class="profile-pic-container">
+        <p v-if="loadingProfilePic">carganduu...</p>
+        <v-img v-else-if="imageSrc" class="profile-pic" :src="imageSrc"/>
+        <p v-else>Fuck</p>
+      </div>
       <figcaption class="text-center pa-4">
-        <h1 class="text-h5 pb-1">{{ swap.name }}</h1>
-        <span class="text-caption faded pb-1"><v-icon class="faded"
-                                                      size="20">mdi-map-marker-outline</v-icon> a {{ swap.distance }} km de distancia</span>
+        <v-progress-circular v-if="loadingName"/>
+        <h1 v-else-if="name" class="text-h5 pb-1">{{ name }}</h1>
+        <h1 v-else class="text-h5 pb-1">Pelotudo sin nombre</h1>
+        <span class="text-caption faded pb-1">
+          <v-icon class="faded" size="20">mdi-map-marker-outline</v-icon>
+          <template v-if="swap.distance">a {{ swap.distance }} km de distancia</template>
+          <template v-else>No localizado</template>
+        </span>
         <v-divider class="ma-2"></v-divider>
-        <v-rating :value="swap.rating" half-increments color="var(--gold)" background-color="var(--gold)" size="20"
-                  dense readonly></v-rating>
-        <span class="text-caption faded">{{ swap.past }} Swaps ● {{ swap.rate }} Calificaciones</span>
-        <v-divider class="ma-2 pb-1"></v-divider>
+        <div>
+          <v-progress-circular v-if="loadingRating" :indeterminate="true"/>
+          <template v-else-if="rating">
+            <v-rating :value="rating.average ? rating.average : 0" half-increments color="var(--gold)"
+                      background-color="var(--gold)" size="20" dense readonly/>
+            <span v-if="rating.total > 0" class="text-caption faded">{{ rating.total }} Calificaciones</span>
+            <span v-else class="text-caption faded">Este usuario aún no ha sido calificado</span>
+          </template>
+          <span v-else class="text-caption faded">No se pudieron traer las calificaciones de este usuario</span>
+          <v-divider class="ma-2 pb-1"></v-divider>
+        </div>
         <v-row class="px-4 pb-1">
           <v-col class="col-md-6">
-            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{ swap.parati }}
+            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{ swap.forYouCount }}
               <v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon>
             </h1>
             <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--indigo);">Para ti</h1>
           </v-col>
           <v-col class="col-md-6">
-            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{ swap.busc }}
+            <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{ swap.searchingCount }}
               <v-icon class="pb-1" style="color: var(--darkblue);">mdi-cards</v-icon>
             </h1>
             <h1 class="text-subtitle-2 font-weight-bold" style="color: var(--indigo);">Buscando</h1>
@@ -38,6 +54,20 @@
 </template>
 
 <script>
+import {getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync,} from "@/backend/users";
+
+/**
+ * Represents a swap offer.
+ * @typedef {Object} SwapOffer
+ * @property {string} uidSender The uid of the user that would send this swap offer.
+ * @property {string} uidReceiver The uid of the user that would receive this swap offer.
+ * @property {number} forYouCount The amount of figus the receiver has that the sender is looking for.
+ * @property {number} searchingCount The amount of figus the receiver is looking for
+ * @property {string[]} figuCodesReceiver An array with the figuCodes of ALL the figuritas the receiver could give.
+ * @property {string[]} figuCodesSender An array with the figuCodes of ALL the figuritas the sender could give.
+ * @property {number | undefined} distance The distance between the sender and receiver's locations, in km.
+ */
+
 export default {
   name: "SwapOfferView",
   props: ['swap'],
@@ -45,11 +75,49 @@ export default {
   data: () => ({
     radius: 234,
     radiusbtn: 234,
+    loadingProfilePic: true,
+    imageSrc: null,
+    loadingName: true,
+    name: null,
+    loadingRating: true,
+    rating: null
   }),
 
   mounted() {
-    console.log('my swap is ', this.swap)
-  }
+    this.loadName();
+    this.loadProfilePic();
+    this.loadRating();
+  },
+
+  methods: {
+    async loadName() {
+      this.loadingName = true;
+      try {
+        const pubProf = await getUserPublicProfileAsync(this.swap.uidReceiver);
+        this.name = pubProf.displayName;
+      } finally {
+        this.loadingName = false;
+      }
+    },
+
+    async loadProfilePic() {
+      this.loadingProfilePic = true;
+      try {
+        this.imageSrc = await getUserProfilePictureAsync(this.swap.uidReceiver);
+      } finally {
+        this.loadingProfilePic = false;
+      }
+    },
+
+    async loadRating() {
+      this.loadingRating = true;
+      try {
+        this.rating = await getUserRatingAsync(this.swap.uidReceiver);
+      } finally {
+        this.loadingRating = false;
+      }
+    },
+  },
 }
 </script>
 
@@ -62,15 +130,11 @@ export default {
   --gold: #E6BF3F;
 }
 
-.bg {
-  background-image: url("../assets/fondo.png");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
+.profile-pic-container {
+  height: 180px;
 }
 
 .profile-pic {
-  height: 180px;
   border-radius: 4px 4px 0 0;
   max-height: 100%;
   max-width: 100%;

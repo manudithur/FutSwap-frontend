@@ -32,7 +32,5 @@ export async function getSwapOffers(album, maxDistance, excludeUnlocatedUsers = 
     };
 
     const result = await functionCallable(data);
-    let d = result.data;
-    d.createDate = new Date(d.createDate);
-    return d;
+    return result.data;
 }
