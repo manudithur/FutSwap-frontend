@@ -48,6 +48,7 @@
                             prepend-icon="lock"
                             type="password"
                             color="rgb(230,191,63)"
+                            @keydown.enter="submitLogin"
                           />
                         </v-form>
                         <a
