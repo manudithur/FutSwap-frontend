@@ -1,7 +1,5 @@
-import {getFirestore} from "@/backend/fireGetters";
-import {collection, getDocs, query, where} from 'firebase/firestore';
-import {getCurrentUser} from "./users";
-import {countInventoryFaltantesAsync, getInventoryFaltantesAsync, getInventoryOfertadasAsync} from "./inventory";
+import {getFunctions} from "@/backend/fireGetters";
+import {httpsCallable} from "firebase/functions";
 
 /**
  * Represents a swap offer.
@@ -14,43 +12,26 @@ import {countInventoryFaltantesAsync, getInventoryFaltantesAsync, getInventoryOf
  * @property {string[]} figuCodesSender An array with the figuCodes of ALL the figuritas the sender could give.
  */
 
-export async function getSwapOffers(album) {
-    const currentUser = getCurrentUser();
-    const db = getFirestore();
+/**
+ * Gets possible swap offers for the active user.
+ * @param album
+ * @param maxDistance The maximum distance allowed for recipients, in kilometers. Set to null to indicate any distance.
+ * @param excludeUnlocatedUsers If a maximum is specified, this controls whether users without location are excluded
+ * (true) or included anyways (false).
+ * @return {Promise<SwapOffer[]>}
+ */
+export async function getSwapOffers(album, maxDistance, excludeUnlocatedUsers = true) {
+    const functions = getFunctions();
+    const functionCallable = httpsCallable(functions, 'getSwapOffers');
 
-    const faltantesTask = getInventoryFaltantesAsync(album, currentUser.uid);
-    const ofertadasTask = getInventoryOfertadasAsync(album, currentUser.uid);
-    const faltantes = await faltantesTask;
-    const ofertadas = await ofertadasTask;
+    const data = {
+        album: album,
+        maxDistance: maxDistance,
+        excludeUnlocatedUsers: excludeUnlocatedUsers
+    };
 
-    let receiverUids = new Map();
-
-    for (let i = 0; i < faltantes.length; i++) {
-        const c = collection(db, 'inventories-figusorted/' + album + '/' + faltantes[i].figuCode);
-        const q = query(c, where('status', '>', 0));
-        const snapshot = await getDocs(q);
-        snapshot.forEach((d) => {
-            let receiver = receiverUids.get(d.id);
-            if (!receiver) {
-                receiver = {canGiveMe: []};
-                receiverUids.set(d.id, receiver);
-            }
-
-            receiver.canGiveMe.push(faltantes[i].figuCode);
-        });
-    }
-
-    const offers = [];
-    for (const [uid, receiver] of receiverUids.entries()) {
-        offers.push({
-           uidSender: currentUser.uid,
-            uidReceiver: uid,
-            forYouCount: receiver.canGiveMe.length,
-            searchingCount: await countInventoryFaltantesAsync(album, uid),
-            figuCodesReceiver: receiver.canGiveMe,
-            figuCodesSender: ofertadas
-        });
-    }
-
-    return offers;
+    const result = await functionCallable(data);
+    let d = result.data;
+    d.createDate = new Date(d.createDate);
+    return d;
 }
