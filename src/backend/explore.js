@@ -15,14 +15,19 @@ import {httpsCallable} from "firebase/functions";
 /**
  * Gets possible swap offers for the active user.
  * @param album
+ * @param maxDistance The maximum distance allowed for recipients, in kilometers. Set to null to indicate any distance.
+ * @param excludeUnlocatedUsers If a maximum is specified, this controls whether users without location are excluded
+ * (true) or included anyways (false).
  * @return {Promise<SwapOffer[]>}
  */
-export async function getSwapOffers(album) {
+export async function getSwapOffers(album, maxDistance, excludeUnlocatedUsers = true) {
     const functions = getFunctions();
     const functionCallable = httpsCallable(functions, 'getSwapOffers');
 
     const data = {
-        album: album
+        album: album,
+        maxDistance: maxDistance,
+        excludeUnlocatedUsers: excludeUnlocatedUsers
     };
 
     const result = await functionCallable(data);

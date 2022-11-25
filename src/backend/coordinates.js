@@ -1,23 +1,23 @@
 /**
  * Represents a coordinate with latitude and longitude.
  * @typedef {Object} Coordinates
- * @property {number} lat The latitude
- * @property {number} lon The longitude
+ * @property {number} latitude
+ * @property {number} longitude
  */
 
 /**
  * Represents a coordinate with latitude and longitude, and a display name.
  * @typedef {Object} CoordinateResult
- * @property {number} lat The latitude
- * @property {number} lon The longitude
+ * @property {number} latitude
+ * @property {number} longitude
  * @property {string} display_name A human-readable name for the location
  */
 
 /**
  * Represents a coordinate with latitude and longitude.
  * @typedef {Object} MyCoordinateResult
- * @property {number} lat The latitude
- * @property {number} lon The longitude
+ * @property {number} latitude
+ * @property {number} longitude
  * @property {number} accuracy
  * @property {number} altitude
  * @property {number} altitudeAccuracy
@@ -41,7 +41,14 @@ export async function findAddressCoordinatesAsync(query, limit = 10) {
     });
 
     const response = await fetch(url);
-    return await response.json();
+    let data = await response.json();
+    data.forEach(d => {
+        d.latitude = d.lat;
+        d.longitude = d.lon;
+        d.lat = undefined;
+        d.lon = undefined;
+    });
+    return data;
 }
 
 /**
@@ -54,8 +61,8 @@ export function findMyCoordinatesAsync() {
             navigator.geolocation.getCurrentPosition(
                 function (position) {
                     resolve({
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
                         accuracy: position.coords.accuracy,
                         altitude: position.coords.altitude,
                         altitudeAccuracy: position.coords.altitudeAccuracy,
@@ -86,10 +93,10 @@ export function distanceCoordinates(coords1, coords2) {
     const r = 6371;
 
     // CONVERTS POSITIONS TO RADIANS
-    const lat1 = coords1.lat * Math.PI / 180;
-    const lon1 = coords1.lon * Math.PI / 180;
-    const lat2 = coords2.lat * Math.PI / 180;
-    const lon2 = coords2.lon * Math.PI / 180;
+    const lat1 = coords1.latitude * Math.PI / 180;
+    const lon1 = coords1.longitude * Math.PI / 180;
+    const lat2 = coords2.latitude * Math.PI / 180;
+    const lon2 = coords2.longitude * Math.PI / 180;
 
     // FORMULA
     const dlon = lon2 - lon1;
