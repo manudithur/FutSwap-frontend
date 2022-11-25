@@ -1,5 +1,5 @@
 <template>
-  <v-col class="col-lg-3 col-md-3 col-sm-6" :key="swap.distance" v-if="swap.distance < radiusbtn">
+  <v-col class="col-lg-3 col-md-3 col-sm-6">
     <v-card class="grow" elevation="8">
       <div class="profile-pic-container">
         <p v-if="loadingProfilePic">carganduu...</p>
@@ -14,7 +14,7 @@
         </div>
         <span class="text-caption faded pb-1">
           <v-icon class="faded" size="20">mdi-map-marker-outline</v-icon>
-          <template v-if="swap.distance">a {{ swap.distance }} km de distancia</template>
+          <template v-if="swap.distance">a {{ Math.floor(swap.distance * 100) / 100 }} km de distancia</template>
           <template v-else>No localizado</template>
         </span>
         <v-divider class="ma-2"/>
@@ -61,8 +61,6 @@ export default {
   props: ['swap'],
 
   data: () => ({
-    radius: 234,
-    radiusbtn: 234,
     loadingProfilePic: true,
     imageSrc: null,
     loadingName: true,

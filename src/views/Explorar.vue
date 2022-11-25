@@ -24,17 +24,20 @@
                       <v-list-item-subtitle>Distancia de búsqueda</v-list-item-subtitle>
                       <v-list-item-action class="ma-0 mt-7 mb-0">
                         <v-col class="col-md-12">
-                          <v-slider class="align-center" v-model="radius" :max="250" thumb-label="always"
+                          <v-slider class="align-center" v-model="maxDistance" :max="50" :min="1" thumb-label="always"
                                     thumb-color="blue" dense color="var(--gold)" track-color="var(--lightblue)"/>
                         </v-col>
                       </v-list-item-action>
                     </v-list-item-content>
                   </v-list-item>
+                  <v-list-item>
+
+                    <v-checkbox v-model="includeUnlocatedUsers" label="Incluir usuarios sin ubicación"/>
+                  </v-list-item>
                 </v-list>
 
                 <v-card-actions class="justify-center">
-                  <v-btn color="var(--darkblue)" text @click="menu = false">Cancelar</v-btn>
-                  <v-btn color="var(--gold)" text @click="menu = false" v-on:click="radiusbtn = radius">Aplicar</v-btn>
+                  <v-btn color="var(--gold)" text v-on:click="onReloadRequested">Aplicar</v-btn>
                 </v-card-actions>
               </v-card>
             </v-menu>
@@ -42,12 +45,19 @@
         </v-row>
       </v-container>
       <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
-        <v-row class="pa-4">
-          <swap-offer-view v-for="(swap, k) in swaps" :key="k" :swap="swap" @swap-clicked="onSwapClicked"/>
+        <v-row v-if="!isLoadingSwaps" class="pa-4">
+          <template v-if="swaps.length == 0">
+            <div width="100%" style="display: flex; flex-direction: column" class="flex justify-center align-center pb-4">
+              <h2>Pero qué poronga!</h2>
+              <span>No pudimos encontrar ningún swap para vos :/</span>
+              <span>Y si probas con otros filtros? 👉👈🥺</span>
+            </div>
+          </template>
+          <swap-offer-view v-else v-for="(swap, k) in swaps" :key="k" :swap="swap" @swap-clicked="onSwapClicked"/>
         </v-row>
-        <v-row width="100%" class="flex justify-center align-center pb-4">
+        <v-row width="100%" class="flex justify-center align-center py-4">
           <v-progress-circular v-if="isLoadingSwaps" :indeterminate="true"/>
-          <h3 v-if="loadSwapsError">{{loadSwapsError}}</h3>
+          <h3 v-if="loadSwapsError">{{ loadSwapsError }}</h3>
         </v-row>
       </v-container>
     </v-main>
@@ -104,13 +114,11 @@ export default {
 
   data: () => ({
     menu: false,
-    radius: 234,
-    radiusbtn: 234,
     swaps: [],
     isLoadingSwaps: false,
     loadSwapsError: null,
     maxDistance: 25,
-    excludeUnlocatedUsers: true,
+    includeUnlocatedUsers: false,
   }),
 
   mounted() {
@@ -124,14 +132,18 @@ export default {
 
       try {
         this.isLoadingSwaps = true;
-        this.swaps = await getSwapOffers("qatar2022", this.maxDistance, this.excludeUnlocatedUsers);
+        this.swaps = await getSwapOffers("qatar2022", this.maxDistance, !this.includeUnlocatedUsers);
         this.loadSwapsError = null;
-      } catch(e) {
+      } catch (e) {
         console.log('No swaps? 💀', e);
         this.loadSwapsError = "¡Ups! No pudimos cargarte esos swaps 💀... ¡Macri de mierda!";
       } finally {
         this.isLoadingSwaps = false;
       }
+    },
+
+    onReloadRequested() {
+      this.loadMoreSwaps();
     },
 
     onSwapClicked(swap) {
