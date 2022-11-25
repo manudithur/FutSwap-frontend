@@ -7,16 +7,18 @@
         <p v-else>Fuck</p>
       </div>
       <figcaption class="text-center pa-4">
-        <v-progress-circular v-if="loadingName"/>
-        <h1 v-else-if="name" class="text-h5 pb-1">{{ name }}</h1>
-        <h1 v-else class="text-h5 pb-1">Pelotudo sin nombre</h1>
+        <div style="height: 40px">
+          <v-progress-circular v-if="loadingName" :indeterminate="true"/>
+          <h1 v-else-if="name" class="text-h5 pb-1">{{ name }}</h1>
+          <h1 v-else class="text-h5 pb-1">Pelotudo sin nombre</h1>
+        </div>
         <span class="text-caption faded pb-1">
           <v-icon class="faded" size="20">mdi-map-marker-outline</v-icon>
           <template v-if="swap.distance">a {{ swap.distance }} km de distancia</template>
           <template v-else>No localizado</template>
         </span>
-        <v-divider class="ma-2"></v-divider>
-        <div>
+        <v-divider class="ma-2"/>
+        <div style="height: 50px">
           <v-progress-circular v-if="loadingRating" :indeterminate="true"/>
           <template v-else-if="rating">
             <v-rating :value="rating.average ? rating.average : 0" half-increments color="var(--gold)"
@@ -25,8 +27,8 @@
             <span v-else class="text-caption faded">Este usuario aún no ha sido calificado</span>
           </template>
           <span v-else class="text-caption faded">No se pudieron traer las calificaciones de este usuario</span>
-          <v-divider class="ma-2 pb-1"></v-divider>
         </div>
+        <v-divider class="ma-2 pb-1"/>
         <v-row class="px-4 pb-1">
           <v-col class="col-md-6">
             <h1 class="text-h5 font-weight-black" style="color: var(--darkblue);">{{ swap.forYouCount }}
@@ -55,18 +57,6 @@
 
 <script>
 import {getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync,} from "@/backend/users";
-
-/**
- * Represents a swap offer.
- * @typedef {Object} SwapOffer
- * @property {string} uidSender The uid of the user that would send this swap offer.
- * @property {string} uidReceiver The uid of the user that would receive this swap offer.
- * @property {number} forYouCount The amount of figus the receiver has that the sender is looking for.
- * @property {number} searchingCount The amount of figus the receiver is looking for
- * @property {string[]} figuCodesReceiver An array with the figuCodes of ALL the figuritas the receiver could give.
- * @property {string[]} figuCodesSender An array with the figuCodes of ALL the figuritas the sender could give.
- * @property {number | undefined} distance The distance between the sender and receiver's locations, in km.
- */
 
 export default {
   name: "SwapOfferView",
