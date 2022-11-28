@@ -20,13 +20,16 @@ import {validateUserID} from "@/backend/validation";
  * @param {string} email
  * @param {string} password
  * @param {string} displayName
+ * @param {string} phone
  * @returns {Promise<UserCredential>}
  */
 export async function registerWithEmailAsync(email, password, displayName, phone) {
     const functions = getFunctions();
     const registerUserCallable = httpsCallable(functions, 'registerUser');
     await registerUserCallable({email: email, password: password, displayName: displayName, phone: phone});
-    return await signInWithEmailAsync(email, password);
+    const currentUser = await signInWithEmailAsync(email, password);
+    await resendVerificationEmailAsync();
+    return currentUser;
 }
 
 /**
