@@ -1,6 +1,5 @@
-import {getAuth, getFirestore, getStorage} from "@/backend/fireGetters";
+import {getAuth, getFirestore, getStorage, getFunctions} from "@/backend/fireGetters";
 import {
-    createUserWithEmailAndPassword,
     deleteUser,
     sendEmailVerification,
     sendPasswordResetEmail,
@@ -12,6 +11,7 @@ import {
 } from "firebase/auth";
 import {getDownloadURL, ref, uploadBytes} from 'firebase/storage';
 import {doc, getDoc, setDoc} from 'firebase/firestore';
+import {httpsCallable} from "firebase/functions";
 import {validateUserID} from "@/backend/validation";
 
 /**
@@ -22,25 +22,11 @@ import {validateUserID} from "@/backend/validation";
  * @param {string} displayName
  * @returns {Promise<UserCredential>}
  */
-export async function registerWithEmailAsync(email, password, displayName) {
-    if (!displayName || displayName.length < 3) {
-        const emailNoAt = email.substring(0, email.indexOf('@'));
-        let name = "";
-        let seenSpace = true;
-        for (let i = 0; i < emailNoAt.length; i++) {
-            const c = emailNoAt.charAt(i);
-            name = name + (seenSpace ? c.toUpperCase() : c);
-            seenSpace = c === ' ';
-        }
-        displayName = name;
-    }
-
-    const auth = getAuth();
-    const user = await createUserWithEmailAndPassword(auth, email, password);
-    await resendVerificationEmailAsync();
-
-    await updateUserPublicProfileAsync({displayName: displayName}, true)
-    return user;
+export async function registerWithEmailAsync(email, password, displayName, phone) {
+    const functions = getFunctions();
+    const registerUserCallable = httpsCallable(functions, 'registerUser');
+    await registerUserCallable({email: email, password: password, displayName: displayName, phone: phone});
+    return await signInWithEmailAsync(email, password);
 }
 
 /**

@@ -184,12 +184,12 @@
 import router from "../router/index";
 import Swal from "sweetalert2";
 import {
-  deleteUserAsync,
+  //deleteUserAsync,
   registerWithEmailAsync,
   signOutAsync,
   signInWithEmailAsync,
   getCurrentUser,
-} from "../backend/users";
+} from "@/backend/users";
 import FooterBar from "../components/FooterBar.vue";
 
 export default {
@@ -234,8 +234,8 @@ export default {
       const email = this.REmail;
       const password = this.RPass;
       try {
+        await registerWithEmailAsync(email, password, this.RName, this.RPhone);
         const curruser = getCurrentUser();
-        await registerWithEmailAsync(email, password, this.RName);
         const string =
           "Se envio a: " +
           curruser.email +
@@ -270,7 +270,7 @@ export default {
             showConfirmButton: false,
           });
         } else {
-          await deleteUserAsync();
+          //await deleteUserAsync();
           await Swal.fire({
             position: "center",
             icon: "info",
