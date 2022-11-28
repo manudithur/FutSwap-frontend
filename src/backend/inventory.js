@@ -208,11 +208,12 @@ export function getInventoryOfertadasAsync(album, uid) {
     const q = query(c, where('status', '>', 0));
     return performFiguQuery(q);
 }
+
 /**
- * Gets all the figuritas faltantes in a user's inventory.
+ * Counts the figuritas faltantes in a user's inventory.
  * @param {string} album
  * @param {string} uid
- * @returns {Promise<{ figuCode: string, status: number }[]>}
+ * @returns {Promise<number>}
  */
 export async function countInventoryFaltantesAsync(album, uid) {
     album = validateAlbum(album);
@@ -221,6 +222,23 @@ export async function countInventoryFaltantesAsync(album, uid) {
     const db = getFirestore();
     const c = collection(db, 'inventories/' + album + '/' + uid);
     const q = query(c, where('status', '<', 0));
+    const colSnapshot = await getCountFromServer(q);
+    return colSnapshot.data().count;
+}
+
+/**
+ * Counts the figuritas ofertadas in a user's inventory.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<number>}
+ */
+export async function countInventoryOfertadasAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const c = collection(db, 'inventories/' + album + '/' + uid);
+    const q = query(c, where('status', '>', 0));
     const colSnapshot = await getCountFromServer(q);
     return colSnapshot.data().count;
 }
