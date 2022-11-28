@@ -221,7 +221,7 @@ export default {
         this.profilePictureUrl = await uploadProfilePicture(this.profileUploadFile);
       } catch(e) {
         console.log(e);
-        alert('No se pudo subir su foto de perfil 💀');
+        alert('No pudimos subir tu foto de perfil. Asegurate que pese menos de 5MBs!');
       } finally {
         this.isUploadingProfilePicture = false;
         this.isLoadingProfileUrl = false;

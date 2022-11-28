@@ -181,7 +181,7 @@ export async function getUserProfilePictureAsync(uid) {
 
     try {
         const storage = getStorage();
-        const imageRef = ref(storage, 'profiles/' + uid + '.jpg');
+        const imageRef = ref(storage, 'profiles/' + uid);
         const url = await getDownloadURL(imageRef);
 
         if (typeof url !== 'string' || url.length === 0)
@@ -199,7 +199,7 @@ export async function getUserProfilePictureAsync(uid) {
  */
 export async function uploadProfilePicture(filePath) {
     const storage = getStorage();
-    const imageRef = ref(storage, 'profiles/' + getCurrentUser().uid + '.jpg');
+    const imageRef = ref(storage, 'profiles/' + getCurrentUser().uid);
 
     const uploadResult = await uploadBytes(imageRef, filePath);
     return await getDownloadURL(uploadResult.ref);
