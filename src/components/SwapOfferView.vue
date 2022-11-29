@@ -21,9 +21,9 @@
         <div style="height: 50px">
           <v-progress-circular v-if="loadingRating" :indeterminate="true"/>
           <template v-else-if="rating">
-            <v-rating :value="rating.average ? rating.average : 0" half-increments color="var(--gold)"
+            <v-rating :value="rating.average ? (rating.average / 2) : 0" half-increments color="var(--gold)"
                       background-color="var(--gold)" size="20" dense readonly/>
-            <span v-if="rating.total > 0" class="text-caption faded">{{ rating.total }} Calificaciones</span>
+            <span v-if="rating.total > 0" class="text-caption faded">{{ rating.total }} {{ rating.total == 1 ? 'Calificación' : 'Calificaciones'}}</span>
             <span v-else class="text-caption faded">Este usuario aún no ha sido calificado</span>
           </template>
           <span v-else class="text-caption faded">No se pudieron traer las calificaciones de este usuario</span>
