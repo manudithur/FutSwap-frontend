@@ -1,6 +1,6 @@
 import {validateAlbum, validateUserID} from "./validation.js";
 import {getFirestore, getFunctions} from "@/backend/fireGetters";
-import {collection, getDocs, query, where} from 'firebase/firestore';
+import {collection, getDocs, query, where, getCountFromServer} from 'firebase/firestore';
 import {httpsCallable} from "firebase/functions";
 import {getCurrentUser} from "./users";
 
@@ -74,7 +74,7 @@ export async function getUserReceivedActiveSwapsAsync(album, uidReceiver) {
 }
 
 /**
- * Gets the active swaps received by a user.
+ * Gets the active swaps sent or received by a user.
  * @param {string} album
  * @param {string} uid
  * @returns {Promise<Swap[]>}
@@ -147,7 +147,7 @@ export async function getUserReceivedInactiveSwapsAsync(album, uidReceiver) {
 }
 
 /**
- * Gets the inactive swaps received by a user.
+ * Gets the inactive swaps sent or received by a user.
  * @param {string} album
  * @param {string} uid
  * @returns {Promise<Swap[]>}
@@ -173,6 +173,50 @@ export async function getUserAllInactiveSwapsAsync(album, uid) {
         inactiveSwaps.push(convertSwapFromDb(d));
     });
     return inactiveSwaps;
+}
+
+/**
+ * Counts the inactive swaps sent or received by a user.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<number>}
+ */
+export async function countUserAllInactiveSwapsAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const col = collection(db, 'swaps/inactive/' + album);
+    const senderQuery = query(col, where("uidSender", "==", uid));
+    const receiverQuery = query(col, where("uidReceiver", "==", uid));
+    const senderSnapshotPromise = getCountFromServer(receiverQuery);
+    const receiverSnapshotPromise = getCountFromServer(senderQuery);
+    const senderSnapshot = await senderSnapshotPromise;
+    const receiverSnapshot = await receiverSnapshotPromise;
+
+    return senderSnapshot.data().count + receiverSnapshot.data().count;
+}
+
+/**
+ * Counts the active swaps sent or received by a user.
+ * @param {string} album
+ * @param {string} uid
+ * @returns {Promise<number>}
+ */
+export async function countUserAllActiveSwapsAsync(album, uid) {
+    album = validateAlbum(album);
+    uid = validateUserID(uid);
+
+    const db = getFirestore();
+    const col = collection(db, 'swaps/active/' + album);
+    const senderQuery = query(col, where("uidSender", "==", uid));
+    const receiverQuery = query(col, where("uidReceiver", "==", uid));
+    const senderSnapshotPromise = getCountFromServer(receiverQuery);
+    const receiverSnapshotPromise = getCountFromServer(senderQuery);
+    const senderSnapshot = await senderSnapshotPromise;
+    const receiverSnapshot = await receiverSnapshotPromise;
+
+    return senderSnapshot.data().count + receiverSnapshot.data().count;
 }
 
 /**

@@ -26,19 +26,29 @@
               <v-progress-circular v-if="isLoadingRating" :indeterminate="true" class="mt-4"/>
               <p v-else-if="ratingError">{{ ratingError }}</p>
               <template v-else>
-              <p class="pt-5 pb-0 mb-0">CALIFICACIÓN:</p>
-              <v-rating background-color="var(--gold)" color="var(--gold)" empty-icon="mdi-star-outline"
-                        full-icon="mdi-star" half-icon="mdi-star-half-full" half-increments length="5"
-                        readonly size="20" :value="rating"/>
+                <p class="pt-5 pb-0 mb-0">CALIFICACIÓN:</p>
+                <v-rating background-color="var(--gold)" color="var(--gold)" empty-icon="mdi-star-outline"
+                          full-icon="mdi-star" half-icon="mdi-star-half-full" half-increments length="5"
+                          readonly size="20" :value="rating"/>
               </template>
             </div>
           </v-card>
-          <v-card class="text-center align-center white mx-3 mb-3 pa-3">
+          <!--<v-card class="text-center align-center white mx-3 mb-3 pa-3">
             <h1>PROGRESO</h1>
             <v-progress-linear v-model="progress" color="rgb(62,77,124)" height="25">{{ progress }}%</v-progress-linear>
-          </v-card>
+          </v-card>-->
           <v-card class="text-center align-center white ma-3 pa-3">
-            <h1>73 SWAPS</h1>
+            <h1>SWAPS</h1>
+            <v-progress-circular v-if="isLoadingSwapCount" :indeterminate="true" class="my-4"/>
+            <p v-else-if="swapCountError">{{ swapCountError }}</p>
+            <p v-else-if="inactiveSwapCount == 0 && activeSwapCount == 0">Todavía no tenés ningún swap! Ve a
+              <router-link to="/explorar">Explorar</router-link>
+              para buscarlos!
+            </p>
+            <template v-else>
+              <h2>{{ activeSwapCount }} {{activeSwapCount == 1 ? 'Activo' : 'Activos'}}</h2>
+              <h2>{{ inactiveSwapCount }} {{inactiveSwapCount == 1 ? 'Inactivo' : 'Inactivos'}}</h2>
+            </template>
           </v-card>
         </v-col>
         <v-col cols="6 ma-0">
@@ -108,7 +118,8 @@ import {
   updateUserPublicProfileAsync,
   uploadProfilePicture,
 } from "@/backend/users";
-import { findAddressCoordinatesAsync, distanceCoordinates } from "@/backend/coordinates";
+import {distanceCoordinates, findAddressCoordinatesAsync} from "@/backend/coordinates";
+import {countUserAllActiveSwapsAsync, countUserAllInactiveSwapsAsync} from "@/backend/swaps";
 import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
 
@@ -136,6 +147,11 @@ export default {
 
     isUploadingProfilePicture: false,
     profileUploadFile: null,
+
+    isLoadingSwapCount: false,
+    activeSwapCount: 0,
+    inactiveSwapCount: 0,
+    swapCountError: null,
   }),
 
   mounted() {
@@ -143,6 +159,7 @@ export default {
     this.loadData();
     this.loadProfilePicture();
     this.loadRating();
+    this.loadSwapCount();
   },
 
   methods: {
@@ -188,7 +205,7 @@ export default {
     async loadRating() {
       this.isLoadingRating = true;
       try {
-        this.rating = (await getUserRatingAsync(getCurrentUser().uid)).average;
+        this.rating = (await getUserRatingAsync(getCurrentUser().uid)).average / 2;
       } catch (e) {
         console.log("Ratings F 💀", e);
         this.rating = null;
@@ -377,6 +394,23 @@ export default {
       // Trigger click on the FileInput
       this.$refs.uploader.click();
     },
+
+    async loadSwapCount() {
+      this.isLoadingSwapCount = true;
+
+      try {
+        const a = countUserAllActiveSwapsAsync('qatar2022', getCurrentUser().uid);
+        const b = countUserAllInactiveSwapsAsync('qatar2022', getCurrentUser().uid);
+        this.activeSwapCount = await a;
+        this.inactiveSwapCount = await b;
+        this.swapCountError = null;
+      } catch (e) {
+        console.log("Loading swap count 💀", e);
+        this.swapCountError = "No se pudieron cargar tus swaps 💀";
+      } finally {
+        this.isLoadingSwapCount = false;
+      }
+    }
   },
 };
 </script>
