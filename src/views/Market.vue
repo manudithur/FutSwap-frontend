@@ -4,15 +4,18 @@
         <v-main class="bg">
             <v-container class="mb-8">
                 <v-row class="ma-0 align-center">
-                    <v-col class="col-lg-5 col-sm-12 pa-0">
+                    <v-col class="col-lg-10 col-sm-12 pa-0">
                         <h1 class="text-h3 text-uppercase white--text font-weight-black" style="text-shadow: 0px 1px 4px #3E4D7C">Market</h1>
                     </v-col>
-                    <v-col class="col-lg-5 col-sm-10 pa-0">
-                        <v-autocomplete v-model="filter" :items="sections" small-chips multiple clearable
-                                    deletable-chips solo dense hide-selected hide-no-data hide-details item-text="name"
-                                    item-value="id" placeholder="Busca una sección" color="var(--gold)"
-                                    prepend-inner-icon="mdi-magnify" rounded>
-                        </v-autocomplete>
+                    <v-col class="col-lg-1 col-sm-2 pa-0 text-center">
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn x-large icon style="color: white" to="/market/newPost" v-bind="attrs" v-on="on">
+                                    <v-icon size="40" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-pencil-plus-outline</v-icon>
+                                </v-btn>
+                            </template>
+                            <span class="text-caption text-uppercase">Crear publicación</span>
+                        </v-tooltip>
                     </v-col>
                     <v-col class="col-lg-1 col-sm-2 pa-0 text-center">
                         <v-menu
@@ -23,7 +26,7 @@
                         >
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn x-large icon style="color: white" @click="about" v-bind="attrs" v-on="on">
-                                    <v-icon size="38" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-filter-cog-outline</v-icon>
+                                    <v-icon size="40" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-filter-cog-outline</v-icon>
                                 </v-btn>
                             </template>
 
@@ -31,10 +34,20 @@
                                 <v-list>
                                     <v-list-item>
                                         <v-list-item-content>
-                                            <v-list-item-subtitle>Distancia de búsqueda</v-list-item-subtitle>
+                                            <v-list-item-subtitle>Distancia</v-list-item-subtitle>
                                             <v-list-item-action class="ma-0 mt-7 mb-0">
                                                 <v-col class="col-md-12">
-                                                    <v-slider class="align-center" v-model="radius" :max="250"  thumb-label="always" thumb-color="blue" dense color="var(--gold)" track-color="var(--lightblue)"/>
+                                                    <v-slider class="align-center" v-model="radius" :max="250"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
+                                                </v-col>
+                                            </v-list-item-action>
+                                        </v-list-item-content>
+                                    </v-list-item>
+                                    <v-list-item>
+                                        <v-list-item-content>
+                                            <v-list-item-subtitle>Precio</v-list-item-subtitle>
+                                            <v-list-item-action class="ma-0 mt-7 mb-0">
+                                                <v-col class="col-md-12">
+                                                    <v-slider class="align-center" v-model="price" :max="250"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
                                                 </v-col>
                                             </v-list-item-action>
                                         </v-list-item-content>
@@ -43,62 +56,212 @@
 
                                 <v-card-actions class="justify-center">
                                     <v-btn color="var(--darkblue)" text @click="menu = false">Cancelar</v-btn>
-                                    <v-btn color="var(--gold)" text @click="menu = false" v-on:click="radiusbtn = radius">Aplicar</v-btn>
+                                    <v-btn color="var(--gold)" text @click="menu = false" v-on:click="radiusbtn = radius; pricebtn = price">Aplicar</v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-menu>
                     </v-col>
-                    <v-col class="col-lg-1 col-sm-2 pa-0 text-center">
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn x-large icon style="color: white" to="/market/newPost" v-bind="attrs" v-on="on">
-                                    <v-icon size="38" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-pencil-plus-outline</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>Crear publicación</span>
-                        </v-tooltip>
-                    </v-col>
                 </v-row>
             </v-container>
-            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
-                <v-row class="pa-4">
-                    <template v-for="swap in swaps">
-                        <v-col class="col-lg-3 col-md-2 col-sm-3" :key="swap.distance" v-if="swap.distance < radiusbtn">
-                            <v-card class="pa-2 grow" elevation="8">
-                                <v-img :src=swap.sell style="border-radius: 4px;"></v-img>
-                                <v-row no-gutters class="pt-2 align-center">
-                                    <v-col class="col-lg-3 text-center">
-                                        <v-avatar circle size="30">
-                                            <v-img :src=swap.pfp />
-                                        </v-avatar>
-                                    </v-col>
-                                    <v-col class="col-lg-9">
-                                        <h3 class="text-overline" style="font-size: 10px;">{{ swap.name }}</h3>
-                                    </v-col>
-                                    <v-col class="col-lg-4">
-                                        <v-rating value="4.5" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
-                                    </v-col>
-                                </v-row>
-                                <v-row no-gutters class="align-center">
-                                    <v-col class="col-lg-12 text-right">
-                                        <h2 class="text-h5 text-center text-uppercase font-weight-black" style="color:var(--indigo)">{{ player.name }}</h2>
-                                        <h3 class="text-subtitle-1 text-center font-weight-bold text-uppercase" style="color:var(--darkblue)">Equipo</h3>
-                                    </v-col>
-                                    <v-col class="col-lg-12 text-right">
-                                        <router-link to="/trading" style="text-decoration:none">
-                                            <v-btn rounded color="#3E4D7C"
-                                                class="mr-0 btn-custom-md white--text">
-                                                Swap
-                                            </v-btn>
-                                        </router-link>  
-                                    </v-col>
-                                </v-row>
 
-                                                                  
-                            </v-card>
-                        </v-col>
+            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
+                <v-data-iterator
+                :items="items"
+                :items-per-page.sync="itemsPerPage"
+                :search="search"
+                :page.sync="page"
+                :sort-by="sortBy.toLowerCase()"
+                :sort-desc="sortDesc"
+                hide-default-footer
+                >
+                    <template v-slot:header>
+                        <v-toolbar class="elevation-0" style="border-radius: 4px 4px 0 0;">
+                        <template v-if="$vuetify.breakpoint.mdAndUp">
+                            <v-text-field
+                                v-model="search"
+                                clearable
+                                flat
+                                color="var(--gold)"
+                                outlined
+                                hide-details
+                                prepend-inner-icon="mdi-magnify"
+                                label="Search"
+                            ></v-text-field>
+                            <v-spacer></v-spacer>
+                            <v-select
+                            v-model="sortBy"
+                            flat
+                            outlined
+                            color="var(--gold)"
+                            hide-details
+                            :items="keys"
+                            prepend-inner-icon="mdi-magnify"
+                            label="Ordenar por"
+                            ></v-select>
+                            <v-btn-toggle rounded class="ml-4" v-model="sortDesc" mandatory>
+                                <v-btn icon color="#BBB" :value="false">
+                                    <v-icon>mdi-arrow-up</v-icon>
+                                </v-btn>
+                                <v-btn icon color="#BBB" :value="true">
+                                    <v-icon>mdi-arrow-down</v-icon>
+                                </v-btn>
+                            </v-btn-toggle>
+                        </template>
+                        </v-toolbar>
                     </template>
-                </v-row>
+
+                    <template v-slot:default="props">
+                        <v-row class="pa-4">
+                            <template v-for="item in props.items">
+                                <v-col :key="item.name" cols="12" sm="6" md="4" lg="3" v-if="item.distancia < radiusbtn && item.precio < pricebtn">
+                                    <v-dialog transition="dialog-bottom-transition" max-width="742">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-card class="pa-2 grow" elevation="8" v-bind="attrs" v-on="on">
+                                                <v-img :src=item.sell style="border-radius: 4px;"></v-img>
+                                                <v-row no-gutters class="pa-4 pb-0 align-center">
+                                                    <v-col class="col-lg-6 text-left d-flex align-center">
+                                                        <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
+                                                    </v-col>
+                                                    <v-col class="col-lg-6 text-right">
+                                                        <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row no-gutters class="pa-4 pt-0 align-center">
+                                                    <v-col class="col-lg-6">
+                                                        <h3 class="text-body-1 d-flex align-center justify-start font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
+                                                    </v-col>
+                                                    <v-col class="col-lg-6">
+                                                        <h3 class="text-body-1 d-flex align-center justify-end font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
+                                                    </v-col>
+                                                </v-row>
+                                                <v-row no-gutters class="px-4 pb-2 align-center">
+                                                    <v-col class="col-lg-12 text-center">
+                                                        <router-link to="/trading" style="text-decoration:none">
+                                                            <v-btn large block outlined rounded color="var(--indigo)">
+                                                                Swap
+                                                            </v-btn>
+                                                        </router-link>  
+                                                    </v-col>
+                                                </v-row>
+                                            </v-card>
+                                        </template>
+                                        <template v-slot:default="dialog">
+                                            <v-card>
+                                                <v-row no-gutters class="pa-0 elevation-4">
+                                                    <v-col cols="5" class="pa-2">
+                                                        <v-card class="elevation-0" style="border-radius: 4px;">
+                                                            <v-img :src="item.sell"></v-img>
+                                                        </v-card>
+                                                    </v-col>
+                                                    <v-col cols="7" class="pa-4">
+                                                        <v-row no-gutters class="pa-4 pb-0 align-center">
+                                                            <v-col class="col-lg-12 pb-2 text-left">
+                                                                <h3 class="text-subtitle-2" style="color: #999;">Equipo:</h3>
+                                                                <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333">{{ item.team }}</h2>
+                                                            </v-col>
+                                                            <v-col class="col-lg-12 text-left">
+                                                                <h3 class="text-subtitle-2" style="color: #999;">Figurita:</h3>
+                                                                <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333">{{ item.figurita }}</h2>
+                                                            </v-col>
+                                                        </v-row>
+                                                        <v-row no-gutters class="pa-4 pb-0 align-center">
+                                                            <v-col class="col-lg-6 text-left">
+                                                                <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
+                                                            </v-col>
+                                                            <v-col class="col-lg-6 text-right">
+                                                                <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
+                                                            </v-col>
+                                                        </v-row>
+                                                        <v-row no-gutters class="pa-4 pt-0 align-center">
+                                                            <v-col class="col-lg-6 text-left d-flex align-center justify-start">
+                                                                <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
+                                                            </v-col>
+                                                            <v-col class="col-lg-6 text-left d-flex align-center justify-end">
+                                                                <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
+                                                            </v-col>
+                                                        </v-row>
+                                                        <v-divider class="mx-4"></v-divider>
+                                                        <h2 class="text-overline px-4 pb-2" style="color:#BBB;">Información del vendedor</h2>
+                                                        <v-row no-gutters class="align-center px-4 pb-4">
+                                                            <v-col class="col-lg-2 pa-0 text-left">
+                                                                <v-avatar circle size="40">
+                                                                    <v-img :src=item.img />
+                                                                </v-avatar>
+                                                            </v-col>
+                                                            <v-col class="col-lg-6">
+                                                                <h3 class="text-subtitle-2">{{ item.name }}</h3>
+                                                            </v-col>
+                                                            <v-col class="col-lg-4 text-right">
+                                                                <v-rating :value=item.rating half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
+                                                            </v-col>
+                                                        </v-row>
+                                                        <v-row no-gutters class="px-4 pt-4">
+                                                            <v-btn x-large block outlined rounded color="var(--indigo)">
+                                                                Swap
+                                                            </v-btn>
+                                                        </v-row>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-card>
+                                        </template>
+                                    </v-dialog>
+                                </v-col>
+                            </template>
+                        </v-row>
+                    </template>
+
+                    <template v-slot:footer>
+                        <v-row class="px-7 pb-4 align-center justify-center">
+                            <span class="text-overline" style="color: #999;">Elementos por página:</span>
+                            <v-menu offset-y>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn text color="var(--gold)" v-bind="attrs" v-on="on">
+                                        {{ itemsPerPage }}
+                                        <v-icon>mdi-chevron-down</v-icon>
+                                    </v-btn>
+                                </template>
+                                <v-list>
+                                    <v-list-item
+                                        v-for="(number, index) in itemsPerPageArray"
+                                        :key="index"
+                                        @click="updateItemsPerPage(number)"
+                                    >
+                                        <v-list-item-title>{{ number }}</v-list-item-title>
+                                    </v-list-item>
+                                </v-list>
+                            </v-menu>
+
+                            <v-spacer></v-spacer>
+
+                            <span class="text-overline mr-4" style="color: #999;">
+                                Page {{ page }} of {{ numberOfPages }}
+                            </span>
+                            
+                            <v-btn
+                                fab
+                                small
+                                dark
+                                outlined
+                                color="var(--indigo)"
+                                class="mr-1"
+                                @click="formerPage"
+                            >
+                                <v-icon>mdi-chevron-left</v-icon>
+                            </v-btn>
+                            <v-btn
+                                fab
+                                small
+                                dark
+                                outlined
+                                color="var(--indigo)"
+                                class="ml-1"
+                                @click="nextPage"
+                            >
+                                <v-icon>mdi-chevron-right</v-icon>
+                            </v-btn>
+                        </v-row>
+                    </template>
+                </v-data-iterator>         
             </v-container>
         </v-main>
         <FooterBar/>
@@ -140,11 +303,118 @@ import FooterBar from '../components/FooterBar.vue';
 
 export default {
     data: () => ({
+        price: 250,
+        pricebtn: 250,
         radius: 234,
         radiusbtn: 234,
+        itemsPerPageArray: [4, 8, 12],
+        search: '',
+        filter: {},
+        sortDesc: false,
+        page: 1,
+        itemsPerPage: 8,
+        sortBy: 'id',
+        keys: [
+            'Figurita',
+            'Distancia',
+            'Precio',
+            'Rating'
+        ],
+        items: [
+            {
+                name: 'Nestor',
+                img: require("../assets/persona1.jpeg"),
+                distancia: 0.7,
+                oferta: 7,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 1,
+                sell: require("../assets/figuritas/arg19.jpg"),
+                figurita: "Lionel Messi",
+                team: "Argentina",
+                precio: 230,
+                rating: "5"
+            },
+            {
+                name: "Cristian",
+                img: require("../assets/persona2.jpg"),
+                distancia: 0.2,
+                oferta: 2,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 2,
+                sell: require("../assets/figuritas/por17.jpg"),
+                figurita: "Cristiano Ronaldo",
+                team: "Portugal",
+                precio: 230,
+                rating: "2"
+            },
+            {
+                name: "Miguel",
+                img: require("../assets/persona3.jpg"),
+                distancia: 6,
+                oferta: 10,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 3,
+                sell: require("../assets/figuritas/arg06.jpg"),
+                figurita: "Nicolás Otamendi",
+                team: "Argentina",
+                precio: 100,
+                rating: "3.5"
+            },
+            {
+                name: "Jony",
+                img: require("../assets/persona4.jpg"),
+                distancia: 0.7,
+                oferta: 7,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 4,
+                sell: require("../assets/figuritas/por02.jpg"),
+                figurita: "Diogo Costa",
+                team: "Portugal",
+                precio: 100,
+                rating: "5"
+            },
+            {
+                name: "Esequiel",
+                img: require("../assets/persona5.webp"),
+                distancia: 67,
+                oferta: 200,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 5,
+                sell: require("../assets/figuritas/arg10.jpg"),
+                figurita: "Ángel Di María",
+                team: "Argentina",
+                precio: 35,
+                rating: "1.5"
+            },
+            {
+                name: "Ricardo",
+                img: require("../assets/persona6.webp"),
+                distancia: 233,
+                oferta: 2,
+                busc: 5,
+                past: 50,
+                rate: 17,
+                id: 6,
+                sell: require("../assets/figuritas/por11.jpg"),
+                figurita: "Bruno Fernandes",
+                team: "Portugal",
+                precio: 35,
+                rating: "0.5"
+            },
+        ],
         swaps: [
             {
-                distance: 0.7,
+                distancia: 0.7,
                 name: "Nestor",
                 parati: "7",
                 busc: "5",
@@ -153,10 +423,13 @@ export default {
                 id: "1",
                 pfp: require("../assets/persona1.jpeg"),
                 sell: require("../assets/figuritas/arg19.jpg"),
+                figurita: "Lionel Messi",
+                team: "Argentina",
+                precio: 230,
                 rating: "5"
             },
             {
-                distance: 0.2,
+                distancia: 0.2,
                 name: "Cristian",
                 parati: "2",
                 busc: "5",
@@ -165,10 +438,13 @@ export default {
                 id: "2",
                 pfp: require("../assets/persona2.jpg"),
                 sell: require("../assets/figuritas/por17.jpg"),
+                figurita: "Cristiano Ronaldo",
+                team: "Portugal",
+                precio: 230,
                 rating: "2"
             },
             {
-                distance: 0.7,
+                distancia: 0.7,
                 name: "Miguel",
                 parati: "7",
                 busc: "5",
@@ -177,10 +453,13 @@ export default {
                 id: "3",
                 pfp: require("../assets/persona3.jpg"),
                 sell: require("../assets/figuritas/arg06.jpg"),
+                figurita: "Nicolás Otamendi",
+                team: "Argentina",
+                precio: 100,
                 rating: "3.5"
             },
             {
-                distance: 6,
+                distancia: 6,
                 name: "Jony",
                 parati: "10",
                 busc: "5",
@@ -189,10 +468,13 @@ export default {
                 id: "4",
                 pfp: require("../assets/persona4.jpg"),
                 sell: require("../assets/figuritas/por02.jpg"),
+                figurita: "Diogo Costa",
+                team: "Portugal",
+                precio: 100,
                 rating: "5"
             },
             {
-                distance: 67,
+                distancia: 67,
                 name: "Esequiel",
                 parati: "200",
                 busc: "5",
@@ -201,10 +483,13 @@ export default {
                 id: "5",
                 pfp: require("../assets/persona5.webp"),
                 sell: require("../assets/figuritas/arg10.jpg"),
+                figurita: "Ángel Di María",
+                team: "Argentina",
+                precio: 35,
                 rating: "1.5"
             },
             {
-                distance: 233,
+                distancia: 233,
                 name: "Ricardo",
                 parati: "2",
                 busc: "5",
@@ -213,6 +498,9 @@ export default {
                 id: "6  ",
                 pfp: require("../assets/persona6.webp"),
                 sell: require("../assets/figuritas/por11.jpg"),
+                figurita: "Bruno Fernandes",
+                team: "Portugal",
+                precio: 35,
                 rating: "0.5"
             }
         ],
@@ -265,6 +553,25 @@ export default {
             },
         ],
     }),
+    computed: {
+        numberOfPages () {
+            return Math.ceil(this.items.length / this.itemsPerPage)
+        },
+        filteredKeys () {
+            return this.keys.filter(key => key !== 'Distancia')
+        },
+    },
+    methods: {
+        nextPage () {
+            if (this.page + 1 <= this.numberOfPages) this.page += 1
+        },
+        formerPage () {
+            if (this.page - 1 >= 1) this.page -= 1
+        },
+        updateItemsPerPage (number) {
+            this.itemsPerPage = number
+        },
+    },
     props: {
         source: String
     },

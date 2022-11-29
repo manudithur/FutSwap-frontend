@@ -15,13 +15,13 @@
                         </v-autocomplete>
                     </v-col>
                     <v-col class="col-lg-1 col-sm-2 pa-0 text-center">
-                        <v-tooltip bottom>
+                        <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn x-large icon style="color: white" @click="about" v-bind="attrs" v-on="on">
                                     <v-icon size="38" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-help-circle-outline</v-icon>
                                 </v-btn>
                             </template>
-                            <span>Como funciona</span>
+                            <span class="text-caption text-uppercase">Como funciona</span>
                         </v-tooltip>
                     </v-col>
                 </v-row>

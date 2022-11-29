@@ -67,7 +67,7 @@
                                 </v-col>
                                 <v-col class="6">
                                     <h4 class="text-caption font-italic" style="color: #999;">Precio medio de mercado:</h4>
-                                    <v-chip small color="var(--gold)" text-color="white" v-if="player">
+                                    <v-chip small color="var(--gold)" text-color="white" class="font-weight-bold" v-if="player">
                                         25 FutCoins
                                     </v-chip>
                                 </v-col>
@@ -95,46 +95,65 @@
                     </v-col>
                     <v-col class="ml-2 elevation-8 pa-4" style="background-color: white; border-radius: 4px;">
                         <h1 class="text-overline" style="color:#999;">Vista previa</h1>
-                            <v-row no-gutters class="pa-0 elevation-4" style="border-radius: 4px;">
-                                <v-col cols="5" class="pa-0">
-                                    <v-card class="elevation-0" style="border-radius: 4px 0 0 4px;">
-                                        <v-img v-if="!player" src="../assets/figuritas/placeholder.jpg"></v-img>
-                                        <v-img v-if="player" :src="player.url"></v-img>
-                                    </v-card>
-                                </v-col>
-                                <v-col cols="7" class="pa-4">
-                                    <v-container style="height: 50%;">
-                                        <h2 class="text-h5 text-center text-uppercase font-weight-black" style="color:var(--indigo)" v-if="!player">Figurita</h2>
-                                        <h2 class="text-h5 text-center text-uppercase font-weight-black" style="color:var(--indigo)" v-if="player">{{ player.name }}</h2>
-                                        <h3 class="text-subtitle-1 text-center font-weight-bold text-uppercase" style="color:var(--darkblue)" v-if="!equipo">Equipo</h3>
-                                        <h3 class="text-subtitle-1 text-center font-weight-bold text-uppercase" style="color:var(--darkblue)" v-if="equipo">{{ teams[equipo-1].team }}</h3>
-                                        <h3 class="text-h3 text-center font-weight-black mt-8" style="color:var(--gold)" v-if="!price">FutCoins</h3>
-                                        <h3 class="text-h3 text-center font-weight-black mt-8" style="color:var(--gold)" v-if="price">{{ price }} FutCoins</h3>
-                                    </v-container>
-                                    <v-container style="height: 30%;">
-                                        <v-divider></v-divider>
-                                        <h2 class="text-overline" style="color:#999;">Información del vendedor</h2>
-                                        <v-row no-gutters class="align-center">
-                                            <v-col class="col-lg-2 pa-0 text-center">
-                                                <v-avatar circle size="50">
-                                                    <v-img src="../assets/persona.jpg" />
-                                                </v-avatar>
-                                            </v-col>
-                                            <v-col class="col-lg-6 pl-2">
-                                                <h3 class="text-subtitle-1">Nombre del utilizador</h3>
-                                            </v-col>
-                                            <v-col class="col-lg-4 text-right">
-                                                <v-rating value="4.5" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                    <v-container class="d-flex align-end justify-end" style="height: 20%;">
-                                        <v-btn x-large outlined rounded color="var(--indigo)">
-                                            Swap
-                                        </v-btn>
-                                    </v-container>
-                                </v-col>
-                            </v-row>
+                        <v-row no-gutters class="pa-0 elevation-4" style="border-radius: 4px;">
+                            <v-col cols="5" class="pa-2">
+                                <v-card class="elevation-0" style="border-radius: 4px;">
+                                    <v-img v-if="!player" src="../assets/figuritas/placeholder.jpg"></v-img>
+                                    <v-img v-if="player" :src="player.url"></v-img>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="7" class="pa-4">
+                                <v-row no-gutters class="pa-4 pb-0 align-center">
+                                    <v-col class="col-lg-12 pb-2 text-left">
+                                        <h3 class="text-subtitle-2" style="color: #999;">Equipo:</h3>
+                                        <h2 class="text-body-1 font-italic" style="color:#DDD" v-if="!equipo">Ej: Argentina</h2>
+                                        <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333" v-if="equipo">{{ teams[equipo-1].team }}</h2>
+                                    </v-col>
+                                    <v-col class="col-lg-12 text-left">
+                                        <h3 class="text-subtitle-2" style="color: #999;">Figurita:</h3>
+                                        <h2 class="text-body-1 font-italic" style="color:#DDD" v-if="!player">Ej: Lionel Messi</h2>
+                                        <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333" v-if="player">{{ player.name }}</h2>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="pa-4 pb-0 align-center">
+                                    <v-col class="col-lg-6 text-left">
+                                        <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
+                                    </v-col>
+                                    <v-col class="col-lg-6 text-right">
+                                        <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="pa-4 pt-0 align-center">
+                                    <v-col class="col-lg-6 text-left d-flex align-center justify-start">
+                                        <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-map-marker-outline</v-icon>0 KM</h3>
+                                    </v-col>
+                                    <v-col class="col-lg-6 text-left d-flex align-center justify-end">
+                                        <h3 class="text-body-1 font-weight-bold" v-if="!price" style="color:#222"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-currency-usd</v-icon>FTC</h3>
+                                        <h3 class="text-body-1 font-weight-bold" v-if="price" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-currency-usd</v-icon>{{ price }} FTC</h3>
+                                    </v-col>
+                                </v-row>
+                                <v-divider class="mx-4"></v-divider>
+                                <h2 class="text-overline px-4 pb-2" style="color:#BBB;">Información del vendedor</h2>
+                                <v-row no-gutters class="align-center px-4 pb-4">
+                                    <v-col class="col-lg-2 pa-0 text-left">
+                                        <v-avatar circle size="40">
+                                            <v-img src="../assets/persona.jpg" />
+                                        </v-avatar>
+                                    </v-col>
+                                    <v-col class="col-lg-6">
+                                        <h3 class="text-subtitle-2">Nombre del utilizador</h3>
+                                    </v-col>
+                                    <v-col class="col-lg-4 text-right">
+                                        <v-rating value="4.5" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
+                                    </v-col>
+                                </v-row>
+                                <v-row no-gutters class="px-4 pt-4">
+                                    <v-btn x-large block outlined rounded color="var(--indigo)">
+                                        Swap
+                                    </v-btn>
+                                </v-row>
+                            </v-col>
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-container>
