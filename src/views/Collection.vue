@@ -186,12 +186,12 @@ export default {
                 
         },
         decrease: async function (e, j) {
+            e.preventDefault();
             if (j.status != -1){
                 j.status--;
                 const user = await getCurrentUser();
                 await setInventoryFiguAsync(album, user.uid, j.id, j.status);
             }
-            e.preventDefault();
         },
         about: function () {
             Swal.fire({

@@ -1,6 +1,7 @@
-import {getFirestore, getFunctions} from "@/backend/fireGetters";
+import {getFirestore} from "@/backend/fireGetters";
 import {collection, query, where, getDocs, orderBy, limit, doc} from 'firebase/firestore';
 import {validateUserID} from "@/backend/validation";
+import {httpsCallable} from "firebase/functions";
 
 /**
  * Represents an active market post.
@@ -102,9 +103,8 @@ export async function getInactiveMarketPostsBoughtBy(uid) {
  * @returns {Promise<void>}
  */
 export async function deleteMarketPost(postID) {
-    const functions = getFunctions();
 
-    const deletePost = functions.httpsCallable('deleteMarketPost');
+    const deletePost = httpsCallable('deleteMarketPost');
     deletePost({
         postId: postID
     })
@@ -118,9 +118,7 @@ export async function deleteMarketPost(postID) {
  * @returns {Promise<string>} Returns postId of new post
  */
 export async function createMarketPost(price, figus, amounts) {
-    const functions = getFunctions();
-
-    const createPost = functions.httpsCallable('createMarketPost');
+    const createPost = httpsCallable('createMarketPost');
     return createPost({
         price: price,
         figus: figus,
@@ -137,9 +135,7 @@ export async function createMarketPost(price, figus, amounts) {
  * @returns {Promise<void>}
  */
 export async function updateMarketPost(postID, price, figus, amounts) {
-    const functions = getFunctions();
-
-    const updatePost = functions.httpsCallable('updateMarketPost');
+    const updatePost = httpsCallable('updateMarketPost');
     updatePost({
         postId: postID,
         price: price,
@@ -155,9 +151,8 @@ export async function updateMarketPost(postID, price, figus, amounts) {
  * @return {Promise<void>}
  */
 export async function buyMarketPost(postId) {
-    const functions = getFunctions();
 
-    const buyPost = functions.httpsCallable('buyMarketPost');
+    const buyPost = httpsCallable('buyMarketPost');
     buyPost({
         postId: postId
     })
@@ -200,7 +195,6 @@ export async function markMarketPostAsReceived(uid, postId) {
  * @returns {Promise<void>}
  */
 export async function markMarketPostAsInRevision( postId) {
-    const functions = getFunctions();
-    const markPost = functions.httpsCallable('setMarketPostInRevision');
+    const markPost = httpsCallable('setMarketPostInRevision');
     markPost({postId: postId});
 }

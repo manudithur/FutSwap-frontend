@@ -3,7 +3,7 @@
         <NavBar />
         <v-main class="bg fill-height">
             <v-container class="mb-8 pa-0 fill-height">
-                <v-row class="ma-0 align-start">
+                <v-row class="ma-0 align-start" v-if="!isLoading">
                     <v-col class="mr-2 elevation-8 pa-4" cols="4" style="background-color: white; border-radius: 4px;">
                         <h1 class="text-overline" style="color:#999;">Market</h1>
                         <h1 class="text-h5 mb-4">Crear publicación</h1>
@@ -11,45 +11,26 @@
                             <v-select
                                 v-model="equipo"
                                 :items="teams"
-                                item-text="team"
+                                item-text="id"
                                 item-value="index"
-                                :rules="[v => !!v || 'This field is required']"
+                                :rules="[v => !!(v+1) || 'This field is required']"
                                 label="Equipo"
                                 color="var(--gold)"
                                 required
                                 outlined
-                                @input="disabled = disabled + 1"
                             ></v-select>
                             <v-select
-                                v-if="!equipo"
                                 v-model="player"
-                                :items="teams[1].players"
-                                item-text="name"
-                                item-value="url"
+                                :items="teams[equipo].players"
+                                item-text="id"
+                                item-value="index"
                                 :rules="[v => !!v || 'This field is required']"
                                 label="Figurita"
                                 color="var(--gold)"
                                 required
                                 outlined
                                 return-object
-                                :disabled="disabled == 1"
                             ></v-select>
-
-                            <v-select
-                                v-if="equipo"
-                                v-model="player"
-                                :items="teams[equipo-1].players"
-                                item-text="name"
-                                item-value="url"
-                                :rules="[v => !!v || 'This field is required']"
-                                label="Figurita"
-                                color="var(--gold)"
-                                required
-                                outlined
-                                return-object
-                                :disabled="disabled == 1"
-                            ></v-select>
-
                             <v-row>
                                 <v-col cols="6">
                                     <v-text-field
@@ -62,14 +43,7 @@
                                         hide-spin-buttons
                                         required
                                         outlined
-                                        :disabled="disabled == 1"
                                     ></v-text-field>
-                                </v-col>
-                                <v-col class="6">
-                                    <h4 class="text-caption font-italic" style="color: #999;">Precio medio de mercado:</h4>
-                                    <v-chip small color="var(--gold)" text-color="white" v-if="player">
-                                        25 FutCoins
-                                    </v-chip>
                                 </v-col>
                             </v-row>
 
@@ -87,7 +61,7 @@
                                     Reset
                                 </v-btn>
 
-                                <v-btn :disabled="!valid" text rounded color="var(--gold)" @click="validate">
+                                <v-btn :disabled="!valid" text rounded color="var(--gold)" @click="createPost">
                                     Publicar
                                 </v-btn>
                             </div>
@@ -117,21 +91,16 @@
                                         <v-row no-gutters class="align-center">
                                             <v-col class="col-lg-2 pa-0 text-center">
                                                 <v-avatar circle size="50">
-                                                    <v-img src="../assets/persona.jpg" />
+                                                    <v-img :src="profilePictureUrl" v-if="profilePictureUrl"/>
                                                 </v-avatar>
                                             </v-col>
                                             <v-col class="col-lg-6 pl-2">
-                                                <h3 class="text-subtitle-1">Nombre del utilizador</h3>
+                                                <h3 class="text-subtitle-1">{{name}}</h3>
                                             </v-col>
                                             <v-col class="col-lg-4 text-right">
-                                                <v-rating value="4.5" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
+                                                <v-rating :value="rating" half-increments color="var(--gold)" background-color="var(--gold)" size="18" dense readonly></v-rating>
                                             </v-col>
                                         </v-row>
-                                    </v-container>
-                                    <v-container class="d-flex align-end justify-end" style="height: 20%;">
-                                        <v-btn x-large outlined rounded color="var(--indigo)">
-                                            Swap
-                                        </v-btn>
                                     </v-container>
                                 </v-col>
                             </v-row>
@@ -164,75 +133,34 @@
 </style>
   
 <script>
-import {
-  getCurrentUser,
-  getUserProfilePictureAsync,
-  getUserPublicProfileAsync,
-} from "../backend/users";
-    import NavBar from "../components/NavBar.vue";
-    import FooterBar from "../components/FooterBar.vue";
+import NavBar from "../components/NavBar.vue";
+import FooterBar from "../components/FooterBar.vue";
+import { getCurrentUser } from '@/backend/users';
+import {getInventoryAllIntoAsync} from '@/backend/inventory';
+import {getAllFigusDataAsync} from "@/backend/figuritas";
+import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
+import { createMarketPost } from '@/backend/market';
+import Swal from 'sweetalert2';
     
     export default {
         data: () => ({
             isLoading: true,
             name: null,
-            address: null,
             profilePictureUrl: null,
+            rating: 0,
+
+            error: false,
+            isCreatingPost: false,
+            
 
             valid: true,
-            equipo: null,
+            equipo: 0,
             player: null,
             price: null,
             checkbox: false,
             disabled: 1,
-            teams: [
-                {   team: "Argentina", index: 1,
-                    players: [
-                        { name:"Argentina", url: require("../assets/figuritas/arg01.jpg"), status: -1 },
-                        { name:"Emiliano Martínez", url: require("../assets/figuritas/arg02.jpg"), status: -1 },
-                        { name:"Franco Armani", url: require("../assets/figuritas/arg03.jpg"), status: -1 },
-                        { name:"Marcos Acuña", url: require("../assets/figuritas/arg04.jpg"), status: -1 },
-                        { name:"Nahuel Molina", url: require("../assets/figuritas/arg05.jpg"), status: -1 },
-                        { name:"Nicolás Otamendi", url: require("../assets/figuritas/arg06.jpg"), status: -1 },
-                        { name:"Germán Pezzella", url: require("../assets/figuritas/arg07.jpg"), status: -1 },
-                        { name:"Cristian Romero", url: require("../assets/figuritas/arg08.jpg"), status: -1 },
-                        { name:"Rodrigo De Paul", url: require("../assets/figuritas/arg09.jpg"), status: -1 },
-                        { name:"Ángel Di María", url: require("../assets/figuritas/arg10.jpg"), status: -1 },
-                        { name:"Giovani Lo Celso", url: require("../assets/figuritas/arg11.jpg"), status: -1 },
-                        { name:"Leandro Paredes", url: require("../assets/figuritas/arg12.jpg"), status: -1 },
-                        { name:"Guido Rodríguez", url: require("../assets/figuritas/arg13.jpg"), status: -1 },
-                        { name:"Julián Álvarez", url: require("../assets/figuritas/arg14.jpg"), status: -1 },
-                        { name:"Joaquín Correa", url: require("../assets/figuritas/arg15.jpg"), status: -1 },
-                        { name:"Alejandro Gómez", url: require("../assets/figuritas/arg16.jpg"), status: -1 },
-                        { name:"Nicolás González", url: require("../assets/figuritas/arg17.jpg"), status: -1 },
-                        { name:"Lautaro Martínez", url: require("../assets/figuritas/arg18.jpg"), status: -1 },
-                        { name:"Lionel Messi", url: require("../assets/figuritas/arg19.jpg"), status: -1 },
-                    ]
-                },
-                {   team: "Portugal", index: 2,
-                    players: [
-                        { name:"Portugal", url: require("../assets/figuritas/por01.jpg"), status: -1 },
-                        { name:"Diogo Costa", url: require("../assets/figuritas/por02.jpg"), status: -1 },
-                        { name:"Rui Patrício", url: require("../assets/figuritas/por03.jpg"), status: -1 },
-                        { name:"João Cancelo", url: require("../assets/figuritas/por04.jpg"), status: -1 },
-                        { name:"José Fonte", url: require("../assets/figuritas/por05.jpg"), status: -1 },
-                        { name:"Nuno Mendes", url: require("../assets/figuritas/por06.jpg"), status: -1 },
-                        { name:"Pepe", url: require("../assets/figuritas/por07.jpg"), status: -1 },
-                        { name:"Raphaël Guerreiro", url: require("../assets/figuritas/por08.jpg"), status: -1 },
-                        { name:"Rúben Dias", url: require("../assets/figuritas/por09.jpg"), status: -1 },
-                        { name:"Bernardo Silva", url: require("../assets/figuritas/por10.jpg"), status: -1 },
-                        { name:"Bruno Fernandes", url: require("../assets/figuritas/por11.jpg"), status: -1 },
-                        { name:"Danilo Pereira", url: require("../assets/figuritas/por12.jpg"), status: -1 },
-                        { name:"João Moutinho", url: require("../assets/figuritas/por13.jpg"), status: -1 },
-                        { name:"Renato Sanches", url: require("../assets/figuritas/por14.jpg"), status: -1 },
-                        { name:"Rúben Neves", url: require("../assets/figuritas/por15.jpg"), status: -1 },
-                        { name:"André Silva", url: require("../assets/figuritas/por16.jpg"), status: -1 },
-                        { name:"Cristiano Ronaldo", url: require("../assets/figuritas/por17.jpg"), status: -1 },
-                        { name:"Diogo Jota", url: require("../assets/figuritas/por18.jpg"), status: -1 },
-                        { name:"Gonçalo Guedes", url: require("../assets/figuritas/por19.jpg"), status: -1 },
-                    ]
-                },
-            ],
+            teams: null,
+            sections: null,
         }),
 
         props: {
@@ -240,35 +168,107 @@ import {
         },
         mounted() {
             // Empiezo a buscar el dato a la API. Esta tarea queda corriendo en el fondo.
+            this.isLoading = true
             this.loadData();
-            this.loadProfilePicture();
+        },
+        created(){
+            this.isLoading = true
+            this.loadData();
         },
         methods: {
+
+            async createPost(){
+                try{
+                    //export async function createMarketPost(price, figus, amounts)
+                    this.isCreatingPost = true
+                    this.validate()
+                    
+                    if(this.price > 0 && this.player)
+                        await createMarketPost(this.price, this.player.id, 1)
+                    else
+                        this.error = true
+                    
+                }catch(e){
+                    if(e)
+                        this.error = true
+                } finally{
+                    this.isCreatingPost = false
+                    if(!this.error)
+                        await Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: "Publicacion Creada",
+                            showConfirmButton: true,
+                        });
+                }
+
+            },
+
+            async loadData() {
+                this.isLoading = true;
+                const album = 'qatar2022'
+                try {
+                    const user = await getCurrentUser();
+                    const allFigus = await getAllFigusDataAsync(album);
+                    await getInventoryAllIntoAsync(album, user.uid, allFigus);
+
+                    const sections = [];
+                    const teams = [];
+                    var teamIdx = 0;
+                    var playerIndex = 0;
+
+                    for (let i = 0; i < allFigus.length; i++) {
+                        const figu = allFigus[i];
+                        let teamObj = teams.find((t) => t.id === figu.category);
+                        if (!teamObj) {
+                            playerIndex = 0
+                            teamObj = {id: figu.category, players: [], index: teamIdx};
+                            teamIdx++;
+                            sections.push(figu.category);
+                            teams.push(teamObj);
+                        }
+
+                        let url = null;
+                        try {
+                            url = require("../assets/figuritas/" + figu.figuCode + ".jpg");
+                        } catch(e) {
+                            // console.log('No se pudo cargar img 💀', figu.figuCode, e);
+                        }
+
+                        teamObj.players.push({
+                            id: figu.figuCode,
+                            index: playerIndex,
+                            url: url,
+                        });
+                        playerIndex++
+                    }
+                    this.teams = teams;
+                    this.sections = sections;
+
+                    const userPublicData = await getUserPublicProfileAsync(user.uid)
+                    this.name = userPublicData.displayName
+                    this.profilePictureUrl = await getUserProfilePictureAsync(user.uid)
+
+                    this.rating = (await getUserRatingAsync(user.uid)).average / 2;
+
+                } finally {
+                    this.isLoading = false;
+                }
+            },
+
+            test(){
+                alert(this.player.id)
+            },
+
             validate () {
                 this.$refs.form.validate()
             },
             reset () {
                 this.$refs.form.reset()
+                this.equipo = 0
+                this.player = null
             },
 
-            async loadData() {
-                try {
-                    const publicProfile = await getUserPublicProfileAsync(getCurrentUser().uid);
-                    this.name = publicProfile.displayName;
-                } finally {
-                    // Haya pasado lo que haya pasado, pongo esto en false para indicar que ya no estoy cargando más.
-                    this.isLoading = false;
-                }
-            },
-
-            async loadProfilePicture() {
-                this.isLoadingProfileUrl = true;
-                try {
-                    this.profilePictureUrl = await getUserProfilePictureAsync(getCurrentUser().uid);
-                } finally {
-                    this.isLoadingProfileUrl = false;
-                }
-            },
         },
         components: { NavBar, FooterBar },
         };
