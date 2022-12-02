@@ -1,4 +1,5 @@
 import {getFirestore} from './fireGetters';
+import {doc, getDoc} from 'firebase/firestore'
 import {validateUserID} from '@/backend/validation';
 import {getFunctions, httpsCallable} from 'firebase/functions';
 
@@ -10,7 +11,7 @@ import {getFunctions, httpsCallable} from 'firebase/functions';
 export async function getUserCoinsAsync(uid) {
     uid = validateUserID(uid);
     const db = getFirestore();
-    const c = await db.collection('coins').doc(uid).get();
+    const c = await getDoc(doc(db, 'coins/' + uid));
     return c.exists ? c.data().amount : 0;
 }
 

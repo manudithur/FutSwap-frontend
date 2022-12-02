@@ -141,6 +141,7 @@ import {getAllFigusDataAsync} from "@/backend/figuritas";
 import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
 import { createMarketPost } from '@/backend/market';
 import Swal from 'sweetalert2';
+import { Router } from "../router/index.js";
     
     export default {
         data: () => ({
@@ -182,26 +183,33 @@ import Swal from 'sweetalert2';
                     //export async function createMarketPost(price, figus, amounts)
                     this.isCreatingPost = true
                     this.validate()
-                    
                     if(this.price > 0 && this.player)
-                        await createMarketPost(this.price, this.player.id, 1)
+                        await createMarketPost(this.price, [{figu: this.player.id}], [1])
                     else
                         this.error = true
                     
                 }catch(e){
-                    if(e)
+                    if(e){
                         this.error = true
-                } finally{
-                    this.isCreatingPost = false
-                    if(!this.error)
+                        await Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: "Publicacion Creada",
+                            showConfirmButton: true,
+                        });
+                    }
+                }  finally{
+                    if(!this.error){
                         await Swal.fire({
                             position: 'center',
                             icon: 'success',
                             title: "Publicacion Creada",
                             showConfirmButton: true,
                         });
+                        Router.push('/market')
+                    }
+                    this.isCreatingPost = false
                 }
-
             },
 
             async loadData() {

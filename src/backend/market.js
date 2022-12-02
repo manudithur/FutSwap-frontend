@@ -1,7 +1,7 @@
-import {getFirestore} from "@/backend/fireGetters";
-import {collection, query, where, getDocs, orderBy, limit, doc} from 'firebase/firestore';
-import {validateUserID} from "@/backend/validation";
+import {getFirestore, getFunctions} from "@/backend/fireGetters";
+import {collection, getDocs, limit, orderBy, query, where} from 'firebase/firestore';
 import {httpsCallable} from "firebase/functions";
+import {validateUserID} from "@/backend/validation";
 
 /**
  * Represents an active market post.
@@ -36,7 +36,7 @@ import {httpsCallable} from "firebase/functions";
  * @returns {Promise<ActiveMarketPost[]>}
  */
 export async function getActiveMarketPosts(uid, limitNum) {
-    validateUserID(uid);
+    uid = validateUserID(uid);
 
     const db = getFirestore();
     let q;
@@ -63,7 +63,7 @@ export async function getActiveMarketPosts(uid, limitNum) {
  * @returns {Promise<InactiveMarketPost[]>}
  */
 export async function getInactiveMarketPostsSoldBy(uid) {
-    validateUserID(uid);
+    uid = validateUserID(uid);
     const db = getFirestore();
     const q = query(collection(db, 'market-closed'), where('seller', '==', uid), orderBy('closed', 'desc'));
 
@@ -83,7 +83,7 @@ export async function getInactiveMarketPostsSoldBy(uid) {
  * @returns {Promise<InactiveMarketPost[]>}
  */
 export async function getInactiveMarketPostsBoughtBy(uid) {
-    validateUserID(uid);
+    uid = validateUserID(uid);
     const db = getFirestore();
     const q = query(collection(db, 'market-closed'), where('buyer', '==', uid), orderBy('closed', 'desc'));
 
@@ -103,11 +103,11 @@ export async function getInactiveMarketPostsBoughtBy(uid) {
  * @returns {Promise<void>}
  */
 export async function deleteMarketPost(postID) {
+    const functions = getFunctions();
 
-    const deletePost = httpsCallable('deleteMarketPost');
-    deletePost({
-        postId: postID
-    })
+    const deletePost = httpsCallable(functions, 'deleteMarketPost');
+    const result = await deletePost({postId: postID});
+    return result.data;
 }
 
 /**
@@ -118,12 +118,15 @@ export async function deleteMarketPost(postID) {
  * @returns {Promise<string>} Returns postId of new post
  */
 export async function createMarketPost(price, figus, amounts) {
-    const createPost = httpsCallable('createMarketPost');
-    return createPost({
+    const functions = getFunctions();
+
+    const createPost = httpsCallable(functions, 'createMarketPost');
+    const result = await createPost({
         price: price,
         figus: figus,
         amounts: amounts
-    })
+    });
+    return result.data;
 }
 
 /**
@@ -135,13 +138,16 @@ export async function createMarketPost(price, figus, amounts) {
  * @returns {Promise<void>}
  */
 export async function updateMarketPost(postID, price, figus, amounts) {
-    const updatePost = httpsCallable('updateMarketPost');
-    updatePost({
+    const functions = getFunctions();
+
+    const updatePost = httpsCallable(functions, 'updateMarketPost');
+    const result = await updatePost({
         postId: postID,
         price: price,
         figus: figus,
         amounts: amounts
-    })
+    });
+    return result.data;
 }
 
 /**
@@ -151,11 +157,11 @@ export async function updateMarketPost(postID, price, figus, amounts) {
  * @return {Promise<void>}
  */
 export async function buyMarketPost(postId) {
+    const functions = getFunctions();
 
-    const buyPost = httpsCallable('buyMarketPost');
-    buyPost({
-        postId: postId
-    })
+    const buyPost = httpsCallable(functions, 'buyMarketPost');
+    const result = await buyPost({postId: postId});
+    return result.data;
 }
 
 /**
@@ -166,26 +172,11 @@ export async function buyMarketPost(postId) {
  * @returns {Promise<void>}
  */
 export async function markMarketPostAsReceived(uid, postId) {
-    const db = getFirestore()
+    const functions = getFunctions();
 
-    const docRef = doc(db, 'market-pending', postId);
-    const post = await docRef.get();
-
-    if (!post.exists())
-        throw new Error('Post does not exist');
-
-    if (post.data().buyer !== uid) {
-        if (post.data().seller !== uid) {
-            throw new Error("Not authorized")
-        }
-        await docRef.update({
-            buyerConfirmed: true
-        })
-    } else {
-        await docRef.update({
-            vendorConfirmed: true
-        })
-    }
+    const markPost = httpsCallable(functions, 'markMarketPostAsReceived');
+    const result = await markPost({postId: postId});
+    return result.data;
 }
 
 /**
@@ -194,7 +185,10 @@ export async function markMarketPostAsReceived(uid, postId) {
  * @param {string} postId
  * @returns {Promise<void>}
  */
-export async function markMarketPostAsInRevision( postId) {
-    const markPost = httpsCallable('setMarketPostInRevision');
-    markPost({postId: postId});
+export async function markMarketPostAsInRevision(postId) {
+    const functions = getFunctions();
+
+    const markPost = httpsCallable(functions, 'setMarketPostInRevision');
+    const result = await markPost({postId: postId});
+    return result.data;
 }
