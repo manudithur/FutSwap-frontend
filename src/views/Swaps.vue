@@ -6,7 +6,7 @@
                 <h1 class="text-h3 text-uppercase white--text font-weight-black"
                 style="text-shadow: 0px 1px 4px #3E4D7C">Mis Swaps</h1>
             </v-container>
-            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;">
+            <v-container class="mb-8 elevation-8" style="background-color: white; border-radius: 4px;" v-if="!isLoading">
                 <!-- <v-row>
                     <v-card width="100%">
                         <v-img class="align-center" style="border-radius: 4px 4px 0 0;" :aspect-ratio="5" src="../assets/banner4.jpg"
@@ -69,6 +69,9 @@
                             <v-chip :color="getColor(item.status)" dark>
                                 {{ item.status }}
                             </v-chip>
+                            <v-icon v-if="item.isNew" class="blue--text">
+                              mdi-bell-alert
+                            </v-icon>
                         </template>
                         <template v-slot:item.actions="{ item }">
                             <v-row>
@@ -167,9 +170,14 @@ subtitle-1 {
 <script>
 import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
+import { getCurrentUser } from '@/backend/users';
+import { getUserReceivedActiveSwapsAsync, getUserSentActiveSwapsAsync } from '@/backend/swaps';
+import { getUserProfilePictureAsync, getUserPublicProfileAsync } from "../backend/users";
 
 export default {
+
   data: () => ({
+    isLoading: true,
     dialog: false,
     dialogReport: false,
     headers: [
@@ -181,7 +189,7 @@ export default {
       { text: "Acciones", value: "actions", sortable: false },
     ],
     statuses: ["En curso", "Terminado"],
-    swaps: [],
+    swaps: null,
     editedIndex: -1,
     editedItem: {
       name: "",
@@ -198,6 +206,7 @@ export default {
       doy: 0,
     },
   }),
+
   computed: {
     formTitle() {
       return this.editedIndex === -1
@@ -205,9 +214,11 @@ export default {
         : "Quieres actualizar el estado de este swap?";
     },
   },
+
   props: {
     source: String,
   },
+
   watch: {
     dialog(val) {
       val || this.close();
@@ -216,130 +227,112 @@ export default {
       val || this.closeReport();
     },
   },
-  created() {
+
+  mounted() {
     this.initialize();
   },
+
   methods: {
     getColor(status) {
-      if (status == "Cancelado") return "error";
-      else if (status == "Pendiente") return "warning";
-      else if (status == "En curso") return "info";
-      else if (status == "Terminado") return "success";
+      if (status == "NUEVA OFERTA") return "blue";
+      if (status == "ESPERANDO RESPUESTA") return "orange";
       else return "#9ea7ad";
     },
-    initialize() {
-      this.swaps = [
-        {
-          name: "Nestor",
-          img: require("../assets/persona1.jpeg"),
-          date: "2022/10/08",
-          status: "En curso",
-          recibo: 5,
-          doy: 3,
-        },
-        {
-          name: "Cristian",
-          img: require("../assets/persona2.jpg"),
-          date: "2022/10/07",
-          status: "Cancelado",
-          recibo: 1,
-          doy: 2,
-        },
-        {
-          name: "Miguel",
-          img: require("../assets/persona3.jpg"),
-          date: "2022/10/06",
-          status: "En curso",
-          recibo: 13,
-          doy: 6,
-        },
-        {
-          name: "Jony",
-          img: require("../assets/persona4.jpg"),
-          date: "2022/10/05",
-          status: "Terminado",
-          recibo: 29,
-          doy: 11,
-        },
-        {
-          name: "Esequiel",
-          img: require("../assets/persona5.webp"),
-          date: "2022/10/04",
-          status: "Pendiente",
-          recibo: 100,
-          doy: 39,
-        },
-        {
-          name: "Ricardo",
-          img: require("../assets/persona6.webp"),
-          date: "2022/10/03",
-          status: "Pendiente",
-          recibo: 94,
-          doy: 25,
-        },
-        {
-          name: "Nestor",
-          img: require("../assets/persona1.jpeg"),
-          date: "2022/10/02",
-          status: "En curso",
-          recibo: 5,
-          doy: 3,
-        },
-        {
-          name: "Cristian",
-          img: require("../assets/persona2.jpg"),
-          date: "2022/10/01",
-          status: "Cancelado",
-          recibo: 1,
-          doy: 2,
-        },
-        {
-          name: "Miguel",
-          img: require("../assets/persona3.jpg"),
-          date: "2022/09/30",
-          status: "En curso",
-          recibo: 13,
-          doy: 6,
-        },
-        {
-          name: "Jony",
-          img: require("../assets/persona4.jpg"),
-          date: "2022/09/29",
-          status: "Terminado",
-          recibo: 29,
-          doy: 11,
-        },
-        {
-          name: "Esequiel",
-          img: require("../assets/persona5.webp"),
-          date: "2022/09/28",
-          status: "Pendiente",
-          recibo: 100,
-          doy: 39,
-        },
-        {
-          name: "Ricardo",
-          img: require("../assets/persona6.webp"),
-          date: "2022/09/27",
-          status: "Pendiente",
-          recibo: 94,
-          doy: 25,
-        },
-      ];
+
+    test(){
+      alert(this.swaps[0].status)
     },
+
+    async initialize() {
+        // {
+        //   name: "Nestor",
+        //   img: require("../assets/persona1.jpeg"),
+        //   date: "2022/10/08",
+        //   status: "En curso",
+        //   recibo: 5,
+        //   doy: 3,
+        // },
+        try{
+          const user = await getCurrentUser();
+          const receivedSwapsRet = await getUserReceivedActiveSwapsAsync('qatar2022', user.uid) 
+          var toRet = []
+
+          for(var i = 0 ; i < receivedSwapsRet.length ; i++ ){
+            var uid = receivedSwapsRet[i].uidSender
+            var publicData = await getUserPublicProfileAsync(uid)
+            var userImg = await getUserProfilePictureAsync(uid)
+            if(!userImg){
+              userImg = require("../assets/empty-profile.jpg")
+            }
+            var isNew = false
+            var status = receivedSwapsRet[i].status
+            if(status == "PROPOSED"){
+              status = "NUEVA OFERTA"
+              isNew = true
+            } else if(status == "ACCEPTED"){
+              status = "ACEPTADO"
+            }
+              
+
+            toRet.push({
+              name: publicData.displayName,
+              img: userImg,
+              date: receivedSwapsRet[i].createDate.toLocaleDateString("es-AR"),
+              status: status,
+              isNew: isNew,
+              recibo: receivedSwapsRet[i].figuCodesSender.length - 1,
+              doy: receivedSwapsRet[i].figuCodesReceiver.length - 1
+            })
+          }
+
+          const sentSwapsRet = await getUserSentActiveSwapsAsync('qatar2022', user.uid)
+
+          for(var j = 0 ; j < sentSwapsRet.length ; j++ ){
+            var sentuid = sentSwapsRet[j].uidReceiver
+            var sentPublicData = await getUserPublicProfileAsync(sentuid)
+            var sentUserImg = await getUserProfilePictureAsync(sentuid)
+          
+            if(!sentUserImg){
+              userImg = require("../assets/empty-profile.jpg")
+            }
+
+            var sentStatus = sentSwapsRet[j].status
+            if(sentStatus == "PROPOSED")
+              sentStatus = "ESPERANDO RESPUESTA"
+
+            toRet.push({
+              name: sentPublicData.displayName,
+              img: userImg,
+              date: sentSwapsRet[j].createDate.toLocaleDateString("es-AR"),
+              status: sentStatus,
+              recibo: sentSwapsRet[j].figuCodesReceiver.length - 1,
+              doy: sentSwapsRet[j].figuCodesSender.length - 1
+            })
+
+          }
+
+        } finally{
+          this.swaps = toRet
+          this.isLoading = false
+        }
+    },
+
     editItem(item) {
       this.editedIndex = this.swaps.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
+
     reportItem(item) {
       this.editedIndex = this.swaps.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogReport = true;
     },
+
     ReportConfirm() {
       this.closeReport();
     },
+
     close() {
       this.dialog = false;
       this.$nextTick(() => {
@@ -347,6 +340,7 @@ export default {
         this.editedIndex = -1;
       });
     },
+
     closeReport() {
       this.dialogReport = false;
       this.$nextTick(() => {
@@ -354,6 +348,7 @@ export default {
         this.editedIndex = -1;
       });
     },
+
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.swaps[this.editedIndex], this.editedItem);
@@ -362,6 +357,7 @@ export default {
       }
       this.close();
     },
+
   },
   components: { NavBar, FooterBar },
 };

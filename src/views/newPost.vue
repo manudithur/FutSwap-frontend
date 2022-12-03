@@ -141,7 +141,7 @@ import {getAllFigusDataAsync} from "@/backend/figuritas";
 import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
 import { createMarketPost } from '@/backend/market';
 import Swal from 'sweetalert2';
-import { Router } from "../router/index.js";
+import router from "../router/index";
     
     export default {
         data: () => ({
@@ -206,7 +206,7 @@ import { Router } from "../router/index.js";
                             title: "Publicacion Creada",
                             showConfirmButton: true,
                         });
-                        Router.push('/market')
+                        router.push('/market')
                     }
                     this.isCreatingPost = false
                 }
