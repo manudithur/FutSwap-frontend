@@ -78,7 +78,7 @@ const routes = [
     component: Trading
   },
   {
-    path: '/reviewOffer',
+    path: '/reviewOffer/:id',
     name: 'Review Offer',
     component: ReviewOffer
   }

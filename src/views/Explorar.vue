@@ -136,7 +136,7 @@ export default {
         this.loadSwapsError = null;
       } catch (e) {
         console.log('No swaps? 💀', e);
-        this.loadSwapsError = "¡Ups! No pudimos cargarte esos swaps 💀... ¡Macri de mierda!";
+        this.loadSwapsError = "¡Ups! No pudimos cargarte swaps";
       } finally {
         this.isLoadingSwaps = false;
       }

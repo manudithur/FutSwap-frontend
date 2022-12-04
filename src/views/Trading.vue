@@ -126,7 +126,7 @@ export default {
   mounted() {
     this.swap = this.$store.state.explore.exploreSwap;
     if (!this.swap) {
-      this.errorMessage = "¡Ups! Ocurrió un error cargando esta página... ¡Macri de mierda!";
+      this.errorMessage = "¡Ups! Ocurrió un error cargando esta página";
       return;
     }
 

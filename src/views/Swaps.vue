@@ -18,37 +18,37 @@
                     </v-card>
                 </v-row> -->
                 <v-row class="pa-4">
-                    <v-data-table style="width: 100%;" :headers="headers" :items="swaps" sort-by="date" sort-desc>
+                    <v-data-table style="width: 100%;" :headers="headers" :items="swaps" sort-by="date" sort-desc @click:row="handleClick">
                         <template v-slot:top>
-                        <v-dialog v-model="dialog" max-width="500px">
-                            <v-card>
-                                <v-card-title>
-                                    <span class="text-h6">{{ formTitle }}</span>
-                                </v-card-title>
-                                <v-card-text>
-                                    <v-container>
-                                        <v-row>
-                                            <v-col class="col-md-12">
-                                                <v-select
-                                                v-model="editedItem.status"
-                                                :items="statuses"
-                                                label="Estado"
-                                                ></v-select>
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </v-card-text>
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="var(--darkblue)" rounded text @click="close">
-                                        Cancelar
-                                    </v-btn>
-                                    <v-btn color="var(--gold)" rounded text @click="save">
-                                        Aplicar
-                                    </v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-dialog>
+                          <v-dialog v-model="dialog" max-width="500px">
+                              <v-card>
+                                  <v-card-title>
+                                      <span class="text-h6">{{ formTitle }}</span>
+                                  </v-card-title>
+                                  <v-card-text>
+                                      <v-container>
+                                          <v-row>
+                                              <v-col class="col-md-12">
+                                                  <v-select
+                                                  v-model="editedItem.status"
+                                                  :items="statuses"
+                                                  label="Estado"
+                                                  ></v-select>
+                                              </v-col>
+                                          </v-row>
+                                      </v-container>
+                                  </v-card-text>
+                                  <v-card-actions>
+                                      <v-spacer></v-spacer>
+                                      <v-btn color="var(--darkblue)" rounded text @click="close">
+                                          Cancelar
+                                      </v-btn>
+                                      <v-btn color="var(--gold)" rounded text @click="save">
+                                          Aplicar
+                                      </v-btn>
+                                  </v-card-actions>
+                              </v-card>
+                          </v-dialog>
                         <v-dialog v-model="dialogReport" max-width="500px">
                             <v-card>
                                 <v-card-title class="text-h6 justify-center">Seguro que quieres denunciar a este usuario?</v-card-title>
@@ -173,6 +173,7 @@ import FooterBar from "../components/FooterBar.vue";
 import { getCurrentUser } from '@/backend/users';
 import { getUserReceivedActiveSwapsAsync, getUserSentActiveSwapsAsync } from '@/backend/swaps';
 import { getUserProfilePictureAsync, getUserPublicProfileAsync } from "../backend/users";
+import router from "../router";
 
 export default {
 
@@ -239,6 +240,10 @@ export default {
       else return "#9ea7ad";
     },
 
+    handleClick(value) {
+      router.push("/reviewOffer/" + value.id)
+    },
+
     test(){
       alert(this.swaps[0].status)
     },
@@ -275,13 +280,14 @@ export default {
               
 
             toRet.push({
+              id: receivedSwapsRet[i].id,
               name: publicData.displayName,
               img: userImg,
               date: receivedSwapsRet[i].createDate.toLocaleDateString("es-AR"),
               status: status,
               isNew: isNew,
-              recibo: receivedSwapsRet[i].figuCodesSender.length - 1,
-              doy: receivedSwapsRet[i].figuCodesReceiver.length - 1
+              recibo: receivedSwapsRet[i].figuCodesSender.length,
+              doy: receivedSwapsRet[i].figuCodesReceiver.length
             })
           }
 
@@ -301,12 +307,13 @@ export default {
               sentStatus = "ESPERANDO RESPUESTA"
 
             toRet.push({
+              id: sentSwapsRet[j].id,
               name: sentPublicData.displayName,
               img: userImg,
               date: sentSwapsRet[j].createDate.toLocaleDateString("es-AR"),
               status: sentStatus,
-              recibo: sentSwapsRet[j].figuCodesReceiver.length - 1,
-              doy: sentSwapsRet[j].figuCodesSender.length - 1
+              recibo: sentSwapsRet[j].figuCodesReceiver.length,
+              doy: sentSwapsRet[j].figuCodesSender.length
             })
 
           }

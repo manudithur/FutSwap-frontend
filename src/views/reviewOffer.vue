@@ -1,8 +1,8 @@
 <template>
-  <v-app id="TradingSpace" class="transparent">
+  <v-app>
     <NavBar />
     <v-main class="content">
-      <v-container class="align-center pt-10">
+      <v-container class="align-center pt-10" v-if="(!isLoading && !error)">
         <v-card>
           <v-row class="justify-center">
             <v-card-title class="text-center">
@@ -166,58 +166,62 @@ import router from "../router/index";
 import Swal from "sweetalert2";
 import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
+import { getUserAllActiveSwapsAsync } from '@/backend/swaps';
+import { getCurrentUser } from '@/backend/users';
 
 export default {
   data: () => ({
-    tradeitems: [
-      {
-        name: "ARG 5",
-        img: require("../assets/figus/arg05.jpg"),
-        status: 1,
-      },
-      {
-        name: "ARG 10",
-        img: require("../assets/figus/arg10.jpg"),
-        status: 0,
-      },
-      {
-        name: "FRA 6",
-        img: require("../assets/figus/fra06.jpg"),
-        status: 1,
-      },
-      {
-        name: "JPN 3",
-        img: require("../assets/figus/jpn03.jpg"),
-        status: 1,
-      },
-    ],
-    yourinventory: [
-      {
-        name: "BEL 6",
-        img: require("../assets/figus/bel06.jpg"),
-        status: 0,
-      },
-      {
-        name: "ARG 1",
-        img: require("../assets/figus/arg01.jpg"),
-        status: 1,
-      },
-      {
-        name: "GER 6",
-        img: require("../assets/figus/ger06.jpg"),
-        status: 0,
-      },
-      {
-        name: "POR 3",
-        img: require("../assets/figus/por03.jpg"),
-        status: 0,
-      },
-    ],
+    tradeitems: [],
+    yourinventory: [],
+    isLoading: true,
+    error: false,
   }),
   props: {
     source: String,
   },
+  mounted(){
+    this.loadData()
+  },
   methods: {
+
+    // name: "ARG 5",
+    // img: require("../assets/figus/arg05.jpg"),
+    // status: 1,
+    async loadData(){
+      var toRet = []
+      try{
+        const swapId = this.$route.params.id
+        const user = await getCurrentUser()
+        const swaps = await getUserAllActiveSwapsAsync('qatar2022', user.uid)
+        var swap = null
+        for(var i = 0 ; i < swaps.length ; i++){
+          if( swaps[i].id == swapId )
+            swap = swaps[i]
+        }
+        if(swap == null){
+          this.error = true
+        } else{
+          for(var j = 0 ; j < swap.figuCodesReceiver.length ; j++){
+            const recibir = swap.figuCodesReceiver[j]
+            var url = url = require("../assets/figuritas/" + recibir + ".jpg")
+            toRet.push({ name: recibir, img: url, status: 1})
+          }
+
+          this.tradeitems = toRet
+          toRet = []
+          for(var k = 0 ; k < swap.figuCodesSender.length ; k++){
+            const entregar = swap.figuCodesSender[k]
+            var url2 = require("../assets/figuritas/" + entregar + ".jpg")
+            toRet.push({ name: entregar, img: url2, status: 1})
+          }
+          this.yourinventory = toRet
+        }
+      } finally{
+        this.isLoading = false
+      }
+
+    },  
+
     aceptar: async function () {
       await Swal.fire({
         position: "center",

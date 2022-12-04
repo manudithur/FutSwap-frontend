@@ -30,7 +30,7 @@ export default {
       loading: false,
         menuItems: [
             { title: 'Explorar', path: '/explorar' },
-            { title: 'Market', path: '/market/newPost' },
+            { title: 'Market', path: '/market' },
             { title: 'Inventario', path: '/collection' },
             { title: 'Swaps', path: '/swaps' },
         ],
