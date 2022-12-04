@@ -31,21 +31,17 @@ import {validateUserID} from "@/backend/validation";
 
 /*
  * Gets active market posts, limited by limitNum, ordered by creation date. If limitNum is null, it gets all the posts.
- * @param {string} uid
  * @param {number} limitNum
  * @returns {Promise<ActiveMarketPost[]>}
  */
-export async function getActiveMarketPosts(uid, limitNum) {
-    uid = validateUserID(uid);
-
+export async function getActiveMarketPosts(limitNum) {
     const db = getFirestore();
     let q;
 
     if (limitNum == null)
-        q = query(collection(db, 'market-active'), where('seller', '!=', uid), orderBy('created', 'desc'));
+        q = query(collection(db, 'market-active'), orderBy('created', 'desc'));
     else
-        q = query(collection(db, 'market-active'), where('seller', '!=', uid), orderBy('created', 'desc'), limit(limitNum));
-
+        q = query(collection(db, 'market-active'), orderBy('created', 'desc'), limit(limitNum));
 
     const querySnapshot = await getDocs(q);
     let array = [];
@@ -56,7 +52,6 @@ export async function getActiveMarketPosts(uid, limitNum) {
     });
     return array;
 }
-
 /*
  * Gets all inactive market posts sold by uid, ordered by creation date.
  * @param {string} uid

@@ -24,17 +24,10 @@
                             :nudge-width="200"
                             offset-y left
                         >
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn x-large icon style="color: white" @click="about" v-bind="attrs" v-on="on">
-                                    <v-icon size="40" style="text-shadow: 0px 1px 4px #3E4D7C">mdi-filter-cog-outline</v-icon>
-                                </v-btn>
-                            </template>
-
                             <v-card>
                                 <v-list>
                                     <v-list-item>
                                         <v-list-item-content>
-                                            <v-list-item-subtitle>Distancia</v-list-item-subtitle>
                                             <v-list-item-action class="ma-0 mt-7 mb-0">
                                                 <v-col class="col-md-12">
                                                     <v-slider class="align-center" v-model="radius" :max="250"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
@@ -113,32 +106,21 @@
                     <template v-slot:default="props">
                         <v-row class="pa-4">
                             <template v-for="item in props.items">
-                                <v-col :key="item.name" cols="12" sm="6" md="4" lg="3" v-if="item.distancia < radiusbtn && item.precio < pricebtn">
+                                <v-col :key="item.name" cols="12" sm="6" md="4" lg="3" v-if="item.precio < pricebtn">
                                     <v-dialog transition="dialog-bottom-transition" max-width="742">
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-card class="pa-2 grow" elevation="8" v-bind="attrs" v-on="on">
                                                 <v-img :src=item.sell style="border-radius: 4px;"></v-img>
-                                                <v-row no-gutters class="pa-4 pb-0 align-center">
-                                                    <v-col class="col-lg-6 text-left d-flex align-center">
-                                                        <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
-                                                    </v-col>
-                                                    <v-col class="col-lg-6 text-right">
-                                                        <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
-                                                    </v-col>
-                                                </v-row>
-                                                <v-row no-gutters class="pa-4 pt-0 align-center">
-                                                    <v-col class="col-lg-6">
-                                                        <h3 class="text-body-1 d-flex align-center justify-start font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
-                                                    </v-col>
-                                                    <v-col class="col-lg-6">
-                                                        <h3 class="text-body-1 d-flex align-center justify-end font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
+                                                <v-row no-gutters class="pa-4 pt-0 align-center justify-center pt-5">
+                                                    <v-col class="col-lg-10">
+                                                        <h2 class="d-flex align-center justify-center font-weight-bold" style="color:#333;"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="40">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h2>
                                                     </v-col>
                                                 </v-row>
                                                 <v-row no-gutters class="px-4 pb-2 align-center">
                                                     <v-col class="col-lg-12 text-center">
                                                         <router-link to="/trading" style="text-decoration:none">
                                                             <v-btn large block outlined rounded color="var(--indigo)">
-                                                                Swap
+                                                                COMPRAR
                                                             </v-btn>
                                                         </router-link>  
                                                     </v-col>
@@ -173,9 +155,6 @@
                                                             </v-col>
                                                         </v-row>
                                                         <v-row no-gutters class="pa-4 pt-0 align-center">
-                                                            <v-col class="col-lg-6 text-left d-flex align-center justify-start">
-                                                                <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
-                                                            </v-col>
                                                             <v-col class="col-lg-6 text-left d-flex align-center justify-end">
                                                                 <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
                                                             </v-col>
@@ -197,7 +176,7 @@
                                                         </v-row>
                                                         <v-row no-gutters class="px-4 pt-4">
                                                             <v-btn x-large block outlined rounded color="var(--indigo)">
-                                                                Swap
+                                                                COMPRAR
                                                             </v-btn>
                                                         </v-row>
                                                     </v-col>
@@ -301,7 +280,7 @@
 import NavBar from '../components/NavBar.vue';
 import FooterBar from '../components/FooterBar.vue';
 import { getActiveMarketPosts } from '@/backend/market';
-import { getCurrentUser } from '@/backend/users';
+import { getUserProfilePictureAsync, getUserPublicProfileAsync } from '../backend/users';
 
 export default {
     data: () => ({
@@ -324,7 +303,7 @@ export default {
         ],
 
         isLoading: true,
-        swaps: []
+        items: []
     }),
     computed: {
         numberOfPages () {
@@ -348,10 +327,6 @@ export default {
         // name: 'Nestor',
         // img: require("../assets/persona1.jpeg"),
         // distancia: 0.7,
-        // oferta: 7,
-        // busc: 5,
-        // past: 50,
-        // rate: 17,
         // id: 1,
         // sell: require("../assets/figuritas/arg19.jpg"),
         // figurita: "Lionel Messi",
@@ -360,12 +335,29 @@ export default {
         // rating: "5"
         async loadData(){
             this.isLoading = true;
+            var toRet = []
             try {
-                const user = await getCurrentUser()
-                const posts = await getActiveMarketPosts(user.uid, null)
-                alert(posts)
+                const posts = await getActiveMarketPosts(null)
+                for(var i = 0  ; i < posts.length ; i++){
+                    var uid = posts[i].seller
+                    var publicData = await getUserPublicProfileAsync(uid)
+                    var img = await getUserProfilePictureAsync(uid)
+                    if(!img)
+                        img = require("../assets/empty-profile.jpg")
 
+                    var url = require("../assets/figuritas/" + posts[i].figus[0].figu + ".jpg")
+                    toRet.push({name: publicData.displayName,
+                        img: img,
+                        distancia: 10,
+                        sell: url,
+                        id: posts[i].id,
+                        figurita: posts[i].figus[0].figu,
+                        precio: posts[i].price
+                    })
+                }
             } finally {
+                alert(toRet.length)
+                this.items = toRet
                 this.isLoading = false;
             }
         },
