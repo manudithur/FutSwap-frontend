@@ -2,9 +2,7 @@
   <v-col class="col-lg-3 col-md-3 col-sm-6">
     <v-card class="grow" elevation="8">
       <div class="profile-pic-container">
-        <p v-if="loadingProfilePic">carganduu...</p>
-        <v-img v-else-if="imageSrc" class="profile-pic" :src="imageSrc"/>
-        <p v-else>Fuck</p>
+        <v-img v-if="imageSrc" class="profile-pic" :src="imageSrc"/>
       </div>
       <figcaption class="text-center pa-4">
         <div style="height: 40px">

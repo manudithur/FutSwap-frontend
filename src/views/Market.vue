@@ -34,20 +34,10 @@
                                 <v-list>
                                     <v-list-item>
                                         <v-list-item-content>
-                                            <v-list-item-subtitle>Distancia</v-list-item-subtitle>
-                                            <v-list-item-action class="ma-0 mt-7 mb-0">
-                                                <v-col class="col-md-12">
-                                                    <v-slider class="align-center" v-model="radius" :max="250"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
-                                                </v-col>
-                                            </v-list-item-action>
-                                        </v-list-item-content>
-                                    </v-list-item>
-                                    <v-list-item>
-                                        <v-list-item-content>
                                             <v-list-item-subtitle>Precio</v-list-item-subtitle>
                                             <v-list-item-action class="ma-0 mt-7 mb-0">
                                                 <v-col class="col-md-12">
-                                                    <v-slider class="align-center" v-model="price" :max="250"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
+                                                    <v-slider class="align-center" v-model="price" :max="1000"  thumb-label="always" thumb-color="var(--gold)" dense color="var(--gold)" track-color="var(--lightblue)"/>
                                                 </v-col>
                                             </v-list-item-action>
                                         </v-list-item-content>
@@ -118,29 +108,14 @@
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-card class="pa-2 grow" elevation="8" v-bind="attrs" v-on="on">
                                                 <v-img :src=item.sell style="border-radius: 4px;"></v-img>
-                                                <v-row no-gutters class="pa-4 pb-0 align-center">
-                                                    <v-col class="col-lg-6 text-left d-flex align-center">
-                                                        <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
-                                                    </v-col>
-                                                    <v-col class="col-lg-6 text-right">
-                                                        <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
+                                                <v-row no-gutters class="pa-4 pb-0 align-center justify-center">
+                                                    <v-col class="col-lg-6 text-center">
+                                                        <h3 style="color: #999;">Precio:</h3>
                                                     </v-col>
                                                 </v-row>
-                                                <v-row no-gutters class="pa-4 pt-0 align-center">
+                                                <v-row no-gutters class="pa-4 pt-0 align-center justify-center">
                                                     <v-col class="col-lg-6">
-                                                        <h3 class="text-body-1 d-flex align-center justify-start font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
-                                                    </v-col>
-                                                    <v-col class="col-lg-6">
-                                                        <h3 class="text-body-1 d-flex align-center justify-end font-weight-bold" style="color:#333"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="20">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
-                                                    </v-col>
-                                                </v-row>
-                                                <v-row no-gutters class="px-4 pb-2 align-center">
-                                                    <v-col class="col-lg-12 text-center">
-                                                        <router-link to="/trading" style="text-decoration:none">
-                                                            <v-btn large block outlined rounded color="var(--indigo)">
-                                                                Swap
-                                                            </v-btn>
-                                                        </router-link>  
+                                                        <h2 class="d-flex align-center justify-center font-weight-bold" style="color:#333; font-size: 30px"><v-icon class="pr-1" style="color:var(--gold); padding-bottom: 1px;" size="40">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h2>
                                                     </v-col>
                                                 </v-row>
                                             </v-card>
@@ -196,8 +171,8 @@
                                                             </v-col>
                                                         </v-row>
                                                         <v-row no-gutters class="px-4 pt-4">
-                                                            <v-btn x-large block outlined rounded color="var(--indigo)">
-                                                                Swap
+                                                            <v-btn x-large block outlined rounded color="var(--indigo)" @click="buy(item.id)">
+                                                                COMPRAR
                                                             </v-btn>
                                                         </v-row>
                                                     </v-col>
@@ -300,8 +275,8 @@
 <script>
 import NavBar from '../components/NavBar.vue';
 import FooterBar from '../components/FooterBar.vue';
-import { getActiveMarketPosts } from '@/backend/market';
-import { getUserProfilePictureAsync, getUserPublicProfileAsync } from '../backend/users';
+import { getActiveMarketPosts, buyMarketPost } from '@/backend/market';
+import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
 
 export default {
     data: () => ({
@@ -318,7 +293,6 @@ export default {
         sortBy: 'id',
         keys: [
             'Figurita',
-            'Distancia',
             'Precio',
             'Rating'
         ],
@@ -366,6 +340,8 @@ export default {
                     if(!img)
                         img = require("../assets/empty-profile.jpg")
 
+                    var rating = await getUserRatingAsync(uid)
+
                     var url = require("../assets/figuritas/" + posts[i].figus[0].figu + ".jpg")
                     toRet.push({name: publicData.displayName,
                         img: img,
@@ -373,7 +349,8 @@ export default {
                         sell: url,
                         id: posts[i].id,
                         figurita: posts[i].figus[0].figu,
-                        precio: posts[i].price
+                        precio: posts[i].price,
+                        rating: rating.average/2
                     })
                 }
             } finally {
@@ -381,6 +358,16 @@ export default {
                 this.isLoading = false;
             }
         },
+
+        async buy(id){
+            var result = null
+            try{
+                result = await buyMarketPost(id)
+            } finally{
+                alert(JSON.stringify(result))
+            }
+        },
+
         nextPage () {
             if (this.page + 1 <= this.numberOfPages) this.page += 1
         },
