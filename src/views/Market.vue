@@ -305,8 +305,8 @@ import { getUserProfilePictureAsync, getUserPublicProfileAsync } from '../backen
 
 export default {
     data: () => ({
-        price: 250,
-        pricebtn: 250,
+        price: 1000,
+        pricebtn: 1000,
         radius: 234,
         radiusbtn: 234,
         itemsPerPageArray: [4, 8, 12],
