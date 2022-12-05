@@ -130,32 +130,18 @@
                                                     </v-col>
                                                     <v-col cols="7" class="pa-4">
                                                         <v-row no-gutters class="pa-4 pb-0 align-center">
-                                                            <v-col class="col-lg-12 pb-2 text-left">
-                                                                <h3 class="text-subtitle-2" style="color: #999;">Equipo:</h3>
-                                                                <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333">{{ item.team }}</h2>
-                                                            </v-col>
                                                             <v-col class="col-lg-12 text-left">
                                                                 <h3 class="text-subtitle-2" style="color: #999;">Figurita:</h3>
                                                                 <h2 class="text-body-1 text-uppercase font-weight-bold" style="color:#333">{{ item.figurita }}</h2>
                                                             </v-col>
                                                         </v-row>
                                                         <v-row no-gutters class="pa-4 pb-0 align-center">
-                                                            <v-col class="col-lg-6 text-left">
-                                                                <h3 class="text-subtitle-2" style="color: #999;">Distancia:</h3>
-                                                            </v-col>
-                                                            <v-col class="col-lg-6 text-right">
+                                                            <v-col class="col-lg-12 text-left">
                                                                 <h3 class="text-subtitle-2" style="color: #999;">Precio:</h3>
-                                                            </v-col>
-                                                        </v-row>
-                                                        <v-row no-gutters class="pa-4 pt-0 align-center">
-                                                            <v-col class="col-lg-6 text-left d-flex align-center justify-start">
-                                                                <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-map-marker-outline</v-icon>{{ item.distancia }} KM</h3>
-                                                            </v-col>
-                                                            <v-col class="col-lg-6 text-left d-flex align-center justify-end">
                                                                 <h3 class="text-body-1 font-weight-bold" style="color:#333"><v-icon class="pr-1 pb-1" style="color:var(--gold);" size="24">mdi-currency-usd</v-icon>{{ item.precio }} FTC</h3>
                                                             </v-col>
                                                         </v-row>
-                                                        <v-divider class="mx-4"></v-divider>
+                                                        <v-divider class="mx-4 my-5"></v-divider>
                                                         <h2 class="text-overline px-4 pb-2" style="color:#BBB;">Información del vendedor</h2>
                                                         <v-row no-gutters class="align-center px-4 pb-4">
                                                             <v-col class="col-lg-2 pa-0 text-left">
@@ -171,7 +157,7 @@
                                                             </v-col>
                                                         </v-row>
                                                         <v-row no-gutters class="px-4 pt-4">
-                                                            <v-btn x-large block outlined rounded color="var(--indigo)" @click="buy(item.id)">
+                                                            <v-btn x-large block outlined rounded color="var(--indigo)" @click="buy(item)">
                                                                 COMPRAR
                                                             </v-btn>
                                                         </v-row>
@@ -276,7 +262,8 @@
 import NavBar from '../components/NavBar.vue';
 import FooterBar from '../components/FooterBar.vue';
 import { getActiveMarketPosts, buyMarketPost } from '@/backend/market';
-import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
+import { getCurrentUser, getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
+import Swal from 'sweetalert2';
 
 export default {
     data: () => ({
@@ -296,7 +283,7 @@ export default {
             'Precio',
             'Rating'
         ],
-
+        error: false,
         isLoading: true,
         items: []
     }),
@@ -332,26 +319,29 @@ export default {
             this.isLoading = true;
             var toRet = []
             try {
+                const user = await getCurrentUser()
                 const posts = await getActiveMarketPosts(null)
                 for(var i = 0  ; i < posts.length ; i++){
                     var uid = posts[i].seller
-                    var publicData = await getUserPublicProfileAsync(uid)
-                    var img = await getUserProfilePictureAsync(uid)
-                    if(!img)
-                        img = require("../assets/empty-profile.jpg")
+                    if(uid != user.uid){
+                        var publicData = await getUserPublicProfileAsync(uid)
+                        var img = await getUserProfilePictureAsync(uid)
+                        if(!img)
+                            img = require("../assets/empty-profile.jpg")
 
-                    var rating = await getUserRatingAsync(uid)
+                        var rating = await getUserRatingAsync(uid)
 
-                    var url = require("../assets/figuritas/" + posts[i].figus[0].figu + ".jpg")
-                    toRet.push({name: publicData.displayName,
-                        img: img,
-                        distancia: 10,
-                        sell: url,
-                        id: posts[i].id,
-                        figurita: posts[i].figus[0].figu,
-                        precio: posts[i].price,
-                        rating: rating.average/2
-                    })
+                        var url = require("../assets/figuritas/" + posts[i].figus[0].figu + ".jpg")
+                        toRet.push({name: publicData.displayName,
+                            img: img,
+                            distancia: 10,
+                            sell: url,
+                            id: posts[i].postId,
+                            figurita: posts[i].figus[0].figu,
+                            precio: posts[i].price,
+                            rating: rating.average/2
+                        })
+                    }
                 }
             } finally {
                 this.items = toRet
@@ -359,12 +349,26 @@ export default {
             }
         },
 
-        async buy(id){
-            var result = null
+        async buy(item){
+            this.error = false
             try{
-                result = await buyMarketPost(id)
+                await buyMarketPost(item.id)
+            } catch(e){
+                this.error = true;
+                await Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: e.message,
+                    showConfirmButton: true,
+                });
             } finally{
-                alert(JSON.stringify(result))
+                if(!this.error)
+                await Swal.fire({
+                    position: 'center',
+                    icon: 'Success',
+                    title: "Gracias por tu compra!",
+                    showConfirmButton: true,
+                });
             }
         },
 

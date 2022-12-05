@@ -8,7 +8,7 @@
         <div style="height: 40px">
           <v-progress-circular v-if="loadingName" :indeterminate="true"/>
           <h1 v-else-if="name" class="text-h5 pb-1">{{ name }}</h1>
-          <h1 v-else class="text-h5 pb-1">Pelotudo sin nombre</h1>
+          <h1 v-else class="text-h5 pb-1">Error cargando nombre</h1>
         </div>
         <span class="text-caption faded pb-1">
           <v-icon class="faded" size="20">mdi-map-marker-outline</v-icon>

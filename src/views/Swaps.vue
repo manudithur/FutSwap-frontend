@@ -174,6 +174,7 @@ import { getCurrentUser } from '@/backend/users';
 import { getUserReceivedActiveSwapsAsync, getUserSentActiveSwapsAsync } from '@/backend/swaps';
 import { getUserProfilePictureAsync, getUserPublicProfileAsync } from "../backend/users";
 import router from "../router";
+import Swal from "sweetalert2";
 
 export default {
 
@@ -241,7 +242,17 @@ export default {
     },
 
     handleClick(value) {
-      router.push("/reviewOffer/" + value.id)
+      if(value.status != "ESPERANDO RESPUESTA")
+        router.push("/reviewOffer/" + value.id)
+      else{
+        Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: value.status,
+        showConfirmButton: false,
+        timer: 1000
+      })
+      }
     },
 
     test(){
@@ -259,16 +270,19 @@ export default {
         // },
         try{
           const user = await getCurrentUser();
+          var userImg = null
           const receivedSwapsRet = await getUserReceivedActiveSwapsAsync('qatar2022', user.uid) 
           var toRet = []
 
           for(var i = 0 ; i < receivedSwapsRet.length ; i++ ){
             var uid = receivedSwapsRet[i].uidSender
             var publicData = await getUserPublicProfileAsync(uid)
-            var userImg = await getUserProfilePictureAsync(uid)
+            userImg = null
+            userImg = await getUserProfilePictureAsync(uid)
             if(!userImg){
               userImg = require("../assets/empty-profile.jpg")
             }
+
             var isNew = false
             var status = receivedSwapsRet[i].status
             if(status == "PROPOSED"){
@@ -299,7 +313,7 @@ export default {
             var sentUserImg = await getUserProfilePictureAsync(sentuid)
           
             if(!sentUserImg){
-              userImg = require("../assets/empty-profile.jpg")
+              sentUserImg = require("../assets/empty-profile.jpg")
             }
 
             var sentStatus = sentSwapsRet[j].status
@@ -309,7 +323,7 @@ export default {
             toRet.push({
               id: sentSwapsRet[j].id,
               name: sentPublicData.displayName,
-              img: userImg,
+              img: sentUserImg,
               date: sentSwapsRet[j].createDate.toLocaleDateString("es-AR"),
               status: sentStatus,
               recibo: sentSwapsRet[j].figuCodesReceiver.length,
