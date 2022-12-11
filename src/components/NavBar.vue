@@ -11,6 +11,14 @@
                 {{ item.title }}
             </v-btn>
             <v-btn v-if="!loading" text to="/profile"><v-icon>mdi-account</v-icon></v-btn>
+            <v-btn v-if="!loading" text to="/profile">
+                <v-row class="pr-2 d-flex align-center" style="border-radius: 40px; border: solid 1px #EEE; height: 40px; background-color: #F8F8F8;">
+                    <v-container class="d-flex align-center" style="border-radius: 38px; border: solid 1px #EEE; width:38px; height: 38px; background-color: white;">
+                        <v-icon class="pl-1">mdi-wallet</v-icon>
+                    </v-container>
+                    <h2 class="d-flex align-center justify-center font-weight-light" style="color:#333; font-size: 14px"><v-icon style="color:var(--gold);" size="20">mdi-currency-usd</v-icon>9876 FTC</h2>
+                </v-row>
+            </v-btn>
             <v-btn text @click="logout">
                 <v-icon rightdark>
                     logout
