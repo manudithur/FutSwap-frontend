@@ -27,7 +27,7 @@
                     <h2 class="d-flex align-center justify-center font-weight-light" style="color:#333; font-size: 14px"><v-icon style="color:var(--gold);" size="20">mdi-currency-usd</v-icon></h2>
                 </v-row>
             </v-btn>
-            <v-btn text @click="test">
+            <v-btn text @click="logout">
                 <v-icon rightdark>
                     logout
                 </v-icon>
