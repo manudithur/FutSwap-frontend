@@ -14,20 +14,3 @@ export async function getUserCoinsAsync(uid) {
     const c = await getDoc(doc(db, 'coins/' + uid));
     return c.exists ? c.data().amount : 0;
 }
-
-/**
- * Perform checkout of futcoins, should use the string returned to call to mercadopago.checkout
- * and render the checkout page.
- * @param {number} quantity
- * @returns {Promise<string>}
- */
-export async function checkoutFutcoinsAsync(quantity) {
-    const functions = getFunctions();
-    const create_preference = httpsCallable(functions, 'create_preference');
-    try {
-        const result = await create_preference({quantity: quantity});
-        return result.data.id;
-    } catch (e) {
-        console.log(e);
-    }
-}
