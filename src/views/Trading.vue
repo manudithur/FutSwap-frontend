@@ -198,11 +198,14 @@ export default {
           showConfirmButton: true,
         });
         await this.$router.back();
-      } catch(e) {
+      } catch (e) {
+        let message = e.message ? e.message.toString() : e.message;
+        if (!message || !message.trim())
+          message = "Ocurrió un error mandando el swap! :/\n Vuelva a intentar más tarde.";
         Swal.fire({
           position: "center",
           icon: "error",
-          title: "Ocurrió un error mandando el swap! :/\n Vuelva a intentar más tarde.",
+          title: message,
           showConfirmButton: true,
         });
       } finally {
