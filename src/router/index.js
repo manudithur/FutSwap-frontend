@@ -12,6 +12,7 @@ import Collection from '../views/Collection.vue'
 import Swaps from '../views/Swaps.vue'
 import Trading from '../views/Trading.vue'
 import ReviewOffer from '../views/reviewOffer.vue'
+import ViewMarketPost from '../views/viewMarketPost.vue'
 
 import mdiVue from 'mdi-vue/v2'
 import * as mdijs from '@mdi/js'
@@ -81,6 +82,11 @@ const routes = [
     path: '/reviewOffer/:id',
     name: 'Review Offer',
     component: ReviewOffer
+  },
+  {
+    path: '/viewMarketPost/:id',
+    name: 'ViewMarketPost',
+    component: ViewMarketPost
   }
 ]
 

@@ -1,7 +1,8 @@
 import {getFirestore, getFunctions} from "@/backend/fireGetters";
-import {collection, getDocs, limit, orderBy, query, where} from 'firebase/firestore';
+import {collection, getDocs, doc, getDoc, limit, orderBy, query, where} from 'firebase/firestore';
 import {httpsCallable} from "firebase/functions";
 import {validateUserID} from "@/backend/validation";
+
 
 /**
  * Represents an active market post.
@@ -70,6 +71,18 @@ export async function getInactiveMarketPostsSoldBy(uid) {
         array.push(data);
     })
     return array;
+}
+
+export async function getPendingMarketPostAsync(album, postId) {
+    const db = getFirestore();
+    const d = doc(db, 'market-pending/' + postId);
+    const snapshot = await getDoc(d);
+    if (!snapshot.exists())
+        return null
+
+    let post = snapshot.data();
+    post.postId = d.id;
+    return post;
 }
 
 /*

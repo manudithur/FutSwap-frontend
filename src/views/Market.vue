@@ -264,6 +264,7 @@ import FooterBar from '../components/FooterBar.vue';
 import { getActiveMarketPosts, buyMarketPost } from '@/backend/market';
 import { getCurrentUser, getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from '../backend/users';
 import Swal from 'sweetalert2';
+import router from '../router';
 
 export default {
     data: () => ({
@@ -369,6 +370,7 @@ export default {
                     title: "Gracias por tu compra!",
                     showConfirmButton: true,
                 });
+                router.push("/viewMarketPost/" + item.id)
             }
         },
 
