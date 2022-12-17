@@ -248,7 +248,7 @@ export default {
     async submitReview(){
       var error = false
       try{
-        await rateUserOnSwapAsync("qatar2022", this.id, this.rating)
+        await rateUserOnSwapAsync("qatar2022", this.id, this.rating*2)
         alert(this.rating)
       } catch(e){
         error = true
