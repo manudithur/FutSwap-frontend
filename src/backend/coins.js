@@ -1,7 +1,6 @@
 import {getFirestore} from './fireGetters';
 import {doc, getDoc} from 'firebase/firestore'
 import {validateUserID} from '@/backend/validation';
-import {getFunctions, httpsCallable} from 'firebase/functions';
 
 /**
  * Get the amount of coins of a user
