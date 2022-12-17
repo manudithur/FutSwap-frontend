@@ -178,8 +178,7 @@
                 <v-row class="justify-center pt-8">
                   <h1 style="color: rgb(62, 77, 124)">Calificar</h1>
                 </v-row>
-                <v-row class="align-center justify-center pb-5">
-                  <v-col cols="3">
+                <v-row class="align-center justify-center my-8">
                     <v-rating
                       background-color="grey lighten-1"
                       color="warning"
@@ -187,15 +186,14 @@
                       full-icon="mdi-star"
                       hover
                       length="5"
-                      size="40"
+                      size="35"
                       v-model="rating"
                     ></v-rating>
-                  </v-col>
-                  <v-col cols="3" class="mx-9 my-9">
+                </v-row>
+                <v-row class="align-center justify-center pb-5">
                     <v-btn color="rgb(62,77,124)" style="color: white" :loading="isSavingProfile" @click="submitReview">
                         <v-icon dark>mdi-send</v-icon>
                       </v-btn>
-                  </v-col>
                 </v-row>
             </v-card>
           </v-container>
