@@ -66,6 +66,7 @@
 import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
 import { getPendingMarketPostAsync } from "@/backend/market"
+import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from "../backend/users";
 
 export default {
     data: () => ({
@@ -73,7 +74,14 @@ export default {
         yourinventory: [],
         isLoading: true,
         error: false,
-        item: { img: require("../assets/figuritas/arg01.jpg"), figurita: "arg01", precio: 500, name: "Pedro", seller: require("../assets/persona2.jpg"), rating: 4, phone: "110000000"}
+        item: { img: require("../assets/figuritas/arg01.jpg"),
+                figurita: "arg01",
+                precio: 500,
+                name: "Pedro", 
+                seller: require("../assets/persona2.jpg"), 
+                rating: 4, 
+                phone: "110000000"
+        }
 
     }),
     props: {
@@ -90,13 +98,20 @@ export default {
         async loadData() {
             try {
                 const id = this.$route.params.id
-                alert(id)
                 const swap = await getPendingMarketPostAsync(id)
 
                 if (swap == null)
-                    alert("ERROR")
+                    this.error = true
                 else{
-                    alert(JSON.stringify(swap))
+                    const user = swap.seller
+                    const figu = swap.figus[0].figu
+                    this.item.figurita = figu
+                    this.item.precio = swap.price
+                    this.item.seller = await getUserProfilePictureAsync(user)
+                    const data = await getUserPublicProfileAsync(user)
+                    this.item.name = data.displayName
+                    this.item.rating = (await getUserRatingAsync(user))/2
+                    this.item.phone = data.phone
                 }
 
                 

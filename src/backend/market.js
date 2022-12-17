@@ -73,14 +73,14 @@ export async function getInactiveMarketPostsSoldBy(uid) {
     return array;
 }
 
-export async function getPendingMarketPostAsync(album, postId) {
+export async function getPendingMarketPostAsync(postId) {
     const db = getFirestore();
     const d = doc(db, 'market-pending/' + postId);
     const snapshot = await getDoc(d);
-    if (!snapshot.exists())
-        return null
-
     let post = snapshot.data();
+    if (!post)
+        return null;
+
     post.postId = d.id;
     return post;
 }
