@@ -194,7 +194,7 @@ import router from "../router/index";
                         await Swal.fire({
                             position: 'center',
                             icon: 'error',
-                            title: "Publicacion Creada",
+                            title: e.message,
                             showConfirmButton: true,
                         });
                     }

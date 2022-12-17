@@ -148,27 +148,59 @@
             </v-card-actions>
           </v-row>
         </v-card>
-        <v-container class="justify-center text-center">
-          <v-card class="my-15 justify-center text-center align-center" max-width="800px" v-if="(isAccepted)">
-              <v-row class="justify-center pt-8">
-                <h1 style="color: rgb(62, 77, 124)">Información de contacto</h1>
-              </v-row>
-              <v-row class="align-center justify-center">
-                  <v-col cols="2" class="align-center justify-center text-center">
-                      <v-avatar circle size="80">
-                          <v-img :src=url v-if="url"/>
-                          <v-img src="../assets/empty-profile.jpg" v-if="!url" />
-                      </v-avatar>
+        <v-row>
+          <v-col cols="6">
+          <v-container class="justify-center text-center">
+            <v-card class="my-15 justify-center text-center align-center" v-if="(isAccepted)">
+                <v-row class="justify-center pt-8">
+                  <h1 style="color: rgb(62, 77, 124)">Información de contacto</h1>
+                </v-row>
+                <v-row class="align-center justify-center">
+                    <v-col cols="2" class="align-center justify-center text-center">
+                        <v-avatar circle size="80">
+                            <v-img :src=url v-if="url"/>
+                            <v-img src="../assets/empty-profile.jpg" v-if="!url" />
+                        </v-avatar>
+                    </v-col>
+                    <v-col cols="3" class="align-center justify-center text-center">
+                        <p style="font-size: 30px" class="align-center">{{ name }}</p>
+                    </v-col>
+                </v-row>
+                <v-row class="justify-center pt-2 pb-8">
+                  <p style="font-size: 25px"><v-icon class="px-3" size="30" color="var(--gold)">mdi-phone</v-icon> Telefono: {{phone}} </p>
+                </v-row>
+            </v-card>
+          </v-container>
+        </v-col>
+        <v-col cols="6">
+          <v-container class="justify-center text-center">
+            <v-card class="my-15 justify-center text-center align-center" v-if="(isAccepted)">
+                <v-row class="justify-center pt-8">
+                  <h1 style="color: rgb(62, 77, 124)">Calificar</h1>
+                </v-row>
+                <v-row class="align-center justify-center pb-5">
+                  <v-col cols="3">
+                    <v-rating
+                      background-color="grey lighten-1"
+                      color="warning"
+                      empty-icon="mdi-star-outline"
+                      full-icon="mdi-star"
+                      hover
+                      length="5"
+                      size="40"
+                      v-model="rating"
+                    ></v-rating>
                   </v-col>
-                  <v-col cols="3" class="align-center justify-center text-center">
-                      <p style="font-size: 30px" class="align-center">{{ name }}</p>
+                  <v-col cols="3" class="mx-9 my-9">
+                    <v-btn color="rgb(62,77,124)" style="color: white" :loading="isSavingProfile" @click="submitReview">
+                        <v-icon dark>mdi-send</v-icon>
+                      </v-btn>
                   </v-col>
-              </v-row>
-              <v-row class="justify-center pt-2 pb-8">
-                <p style="font-size: 25px"><v-icon class="px-3" size="30" color="var(--gold)">mdi-phone</v-icon> Telefono: {{phone}} </p>
-              </v-row>
-          </v-card>
-        </v-container>
+                </v-row>
+            </v-card>
+          </v-container>
+        </v-col>
+        </v-row>        
       </v-container>
     </v-main>
     <FooterBar />
@@ -189,7 +221,8 @@ import NavBar from "../components/NavBar.vue";
 import FooterBar from "../components/FooterBar.vue";
 import { getUserAllActiveSwapsAsync, acceptSwapAsync, rejectSwapAsync} from '@/backend/swaps';
 import { getCurrentUser } from '@/backend/users';
-import { getUserProfilePictureAsync, getUserPublicProfileAsync, getUserRatingAsync } from "../backend/users";
+import { getUserProfilePictureAsync, getUserPublicProfileAsync } from "../backend/users";
+import { rateUserOnSwapAsync } from '@/backend/swaps';
 
 export default {
   data: () => ({
@@ -204,7 +237,7 @@ export default {
     phone: null,
     status: "",
     rating: 0,
-    id: null
+    id: null,
   }),
   props: {
     source: String,
@@ -213,6 +246,32 @@ export default {
     this.loadData()
   },
   methods: {
+
+    async submitReview(){
+      var error = false
+      try{
+        await rateUserOnSwapAsync("qatar2022", this.id, this.rating)
+        alert(this.rating)
+      } catch(e){
+        error = true
+        await Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: e.message,
+            showConfirmButton: true,
+        });
+      } finally{ 
+        if(!error){
+          await Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: "Usuario Calificado",
+              showConfirmButton: true,
+          });
+        }
+      }
+
+    },
 
     // name: "ARG 5",
     // img: require("../assets/figus/arg05.jpg"),
@@ -273,8 +332,6 @@ export default {
             this.phone = data.phone
             var profileUrl = await getUserProfilePictureAsync(uid)
             this.url = profileUrl
-            var rating = await getUserRatingAsync(uid)
-            this.rating = rating.average/2
           }
 
           this.status = status
